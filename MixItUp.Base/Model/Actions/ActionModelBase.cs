@@ -2,6 +2,7 @@
 using MixItUp.Base.Services;
 using MixItUp.Base.Util;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
@@ -64,15 +65,17 @@ namespace MixItUp.Base.Model.Actions
         Repeat,
         VTSPog,
         MtionStudio = 42,
-        MeldStudio,
-        Kick,
-        Velora,
-        VPZone,
-        Veadotube,
-        PlatformMessage,
-        UserLookup,
-        VConnect,
-        RahiTuber,
+        MeldStudio = 43,
+        Kick = 44,
+        Velora = 45,
+        Veadotube = 46,
+        PlatformMessage = 47,
+        UserLookup = 48,
+        VPZone = 49,
+        VConnect = 50,
+        RahiTuber = 51,
+        // Values are persisted numerically in saved command data. Always append new
+        // actions with the next value, never insert into the order above.
     }
 
     [DataContract]
@@ -100,6 +103,29 @@ namespace MixItUp.Base.Model.Actions
 
         [Obsolete]
         public ActionModelBase() { }
+
+        private static readonly ConcurrentDictionary<System.Type, ActionTypeEnum?> classActionTypes = new ConcurrentDictionary<System.Type, ActionTypeEnum?>();
+
+        // Data saved by builds where the ActionTypeEnum values shifted can carry the wrong Type.
+        // The concrete class is authoritative, so repair Type from it on load.
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            ActionTypeEnum? actual = classActionTypes.GetOrAdd(this.GetType(), type =>
+            {
+                const string suffix = "ActionModel";
+                if (type.Name.EndsWith(suffix) && Enum.TryParse(type.Name.Substring(0, type.Name.Length - suffix.Length), out ActionTypeEnum result))
+                {
+                    return result;
+                }
+                return null;
+            });
+
+            if (actual.HasValue && this.Type != actual.Value)
+            {
+                this.Type = actual.Value;
+            }
+        }
 
         public virtual async Task TestPerform(Dictionary<string, string> specialIdentifiers)
         {
