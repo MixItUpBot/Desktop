@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
 	  <AssemblyTitle>MixItUp.SignalR.Client</AssemblyTitle>
-    <AssemblyVersion>1.8.200.0</AssemblyVersion>
-    <FileVersion>1.8.200.0</FileVersion>
+    <AssemblyVersion>1.8.201.0</AssemblyVersion>
+    <FileVersion>1.8.201.0</FileVersion>
 	  <Company>Blazing Cacti LLC</Company>
 	  <Copyright>Copyright © 2026 Blazing Cacti LLC, All Rights Reserved. </Copyright>
 	  <Configurations>Debug;Dev;Public;Preview</Configurations>

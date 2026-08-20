@@ -1,5 +1,13 @@
 # Mix It Up Desktop Changelog
 
+## 1.8.201 (HOTFIX)
+
+Release Date: 2026-08-19
+
+### FIXES
+
+- Fixed a crash when opening a command containing a Platform Message, User Lookup, or Veadotube action
+
 ## 1.8.200
 
 Release Date: 2026-08-19
@@ -4081,3 +4089,4 @@ Release Date: 2017-12-16
 Release Date: 2017-12-16
 
 - Initial Pre-Release Alpha
+

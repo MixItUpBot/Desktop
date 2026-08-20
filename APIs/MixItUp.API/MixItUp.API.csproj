@@ -5,8 +5,8 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<AssemblyTitle>MixItUp.API</AssemblyTitle>
-    <AssemblyVersion>1.8.200.0</AssemblyVersion>
-    <FileVersion>1.8.200.0</FileVersion>
+    <AssemblyVersion>1.8.201.0</AssemblyVersion>
+    <FileVersion>1.8.201.0</FileVersion>
 		<Company>Blazing Cacti LLC</Company>
 		<Copyright>Copyright © 2026 Blazing Cacti LLC, All Rights Reserved. </Copyright>
 		<Configurations>Debug;Preview;Dev;Public</Configurations>
