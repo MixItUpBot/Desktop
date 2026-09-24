@@ -216,3 +216,5 @@ MixItUp.WPF/Counters
 Util/SignTool/*
 !Util/SignTool/*.zip
 /ResXManager.config.xml
+
+.DS_Store
