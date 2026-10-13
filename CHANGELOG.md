@@ -1,5 +1,13 @@
 # Mix It Up Desktop Changelog
 
+## 1.8.202 (HOTFIX)
+
+Release Date: 2026-10-12
+
+### FIXES
+
+- Reprioritizing log capture to catch startup initialization crashes in better detail
+
 ## 1.8.201 (HOTFIX)
 
 Release Date: 2026-08-19
