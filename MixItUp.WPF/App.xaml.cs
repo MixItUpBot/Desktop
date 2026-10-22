@@ -35,13 +35,17 @@ namespace MixItUp.WPF
             // Disabled for now. Not needed anymore?
             //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
-            ToolTipService.ShowDurationProperty.OverrideMetadata(typeof(DependencyObject), new FrameworkPropertyMetadata(Int32.MaxValue));
-
             try
             {
+                ServiceManager.Add<IFileService>(new WindowsFileService());
+                FileLoggerHandler.Initialize();
+                Logger.AlwaysLogFullStackTraceWithExceptions = true;
+                Logger.ForceLog(LogLevel.Information, "Application startup: registering services");
+
+                ToolTipService.ShowDurationProperty.OverrideMetadata(typeof(DependencyObject), new FrameworkPropertyMetadata(Int32.MaxValue));
+
                 // We need to load the language setting VERY early, so this is the minimal code necessary to get this value
                 ServiceManager.Add<IDatabaseService>(new WindowsDatabaseService());
-                ServiceManager.Add<IFileService>(new WindowsFileService());
                 ServiceManager.Add<IInputService>(new WindowsInputService());
                 ServiceManager.Add<IImageService>(new WindowsImageService());
                 ServiceManager.Add<IAudioService>(new WindowsAudioService());
@@ -62,7 +66,9 @@ namespace MixItUp.WPF
                 ServiceManager.Add(new WindowsAmazonPollyService());
                 ServiceManager.Add<IThemeService>(new WindowsThemeService());
 
+                Logger.ForceLog(LogLevel.Information, "Application startup: initializing ChannelSession");
                 ChannelSession.Initialize().Wait();
+                Logger.ForceLog(LogLevel.Information, "Application startup: ChannelSession initialized");
 
                 System.Threading.Thread.CurrentThread.CurrentUICulture = Languages.GetLanguageLocaleCultureInfo();
 
@@ -72,7 +78,14 @@ namespace MixItUp.WPF
                     System.Windows.Media.RenderOptions.ProcessRenderMode = System.Windows.Interop.RenderMode.SoftwareOnly;
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Logger.ForceLog(LogLevel.Fatal, "Application startup failed");
+                Logger.Log(LogLevel.Fatal, ex, includeStackTrace: true);
+                FileLoggerHandler.Flush();
+                // Do not pump the dispatcher or allow the queued login startup to run.
+                throw;
+            }
         }
 
 
@@ -83,8 +96,6 @@ namespace MixItUp.WPF
             RegistryHelpers.RegisterFileAssociation();
             RegistryHelpers.RegisterURIActivationProtocol();
             //RegistryHelpers.RegisterUninstaller(); // Disabled for now
-
-            FileLoggerHandler.Initialize();
 
             DispatcherHelper.RegisterDispatcher(new WindowsDispatcher(this.Dispatcher));
 
@@ -105,7 +116,6 @@ namespace MixItUp.WPF
             }
 
             Logger.ForceLog(LogLevel.Information, "Application Version: " + ServiceManager.Get<IFileService>().GetApplicationVersion() + " [" + VersionHelper.GetFullVersionString() + BuildChannelHelper.BUILD_CHANNEL_SUFFIX + "]");
-            Logger.AlwaysLogFullStackTraceWithExceptions = true;
             if (ChannelSession.IsDebug() || (ChannelSession.AppSettings != null && ChannelSession.AppSettings.DiagnosticLogging))
             {
                 Logger.SetLogLevel(LogLevel.Debug);

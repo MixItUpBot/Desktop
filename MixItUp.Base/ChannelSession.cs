@@ -173,9 +173,12 @@ namespace MixItUp.Base
             }
             catch (Exception ex) { Logger.Log(ex); }
 
+            Logger.ForceLog(LogLevel.Information, "Application startup: initializing SettingsService");
             ServiceManager.Get<SettingsService>().Initialize();
 
+            Logger.ForceLog(LogLevel.Information, "Application startup: loading application settings");
             ChannelSession.AppSettings = await ApplicationSettingsV2Model.Load();
+            Logger.ForceLog(LogLevel.Information, "Application startup: application settings loaded");
         }
 
         public static async Task Close()

@@ -55,6 +55,7 @@ dlldata.c
 *.tlh
 *.tmp
 *.tmp_proj
+*[gG][eE][nN]*
 *.log
 *.vspscc
 *.vssscc
