@@ -178,7 +178,7 @@ namespace MixItUp.Base.Services
         {
             try
             {
-                string channel = (ChannelSession.AppSettings.PreviewProgram || ChannelSession.AppSettings.TestBuild) ? "preview" : "public";
+                string channel = BuildChannelHelper.GetUpdateChannel(ChannelSession.AppSettings.UpdateChannel, ChannelSession.AppSettings.PreviewProgram, ChannelSession.AppSettings.TestBuild);
                 ChannelSession.AppSettings.TestBuild = false;
 
                 UpdateVersionCheckModel check = await this.FetchVersionCheckAsync(channel);

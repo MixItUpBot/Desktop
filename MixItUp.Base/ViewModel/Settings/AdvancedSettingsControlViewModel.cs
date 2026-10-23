@@ -58,8 +58,14 @@ namespace MixItUp.Base.ViewModel.Settings
                 ChannelSession.AppSettings.PreviewProgram,
                 async (value) =>
                 {
-                    await DialogHelper.ShowMessage(MixItUp.Base.Resources.UpdatePreviewProgramTooltip);
+                    if (ChannelSession.AppSettings.PreviewProgram == value)
+                    {
+                        return;
+                    }
                     ChannelSession.AppSettings.PreviewProgram = value;
+                    ChannelSession.AppSettings.UpdateChannel = value ? "Preview" : "Public";
+                    await ChannelSession.AppSettings.Save();
+                    await DialogHelper.ShowMessage(MixItUp.Base.Resources.UpdatePreviewProgramTooltip);
                 },
                 MixItUp.Base.Resources.UpdatePreviewProgramTooltip);
 

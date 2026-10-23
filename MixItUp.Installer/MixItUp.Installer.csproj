@@ -14,9 +14,9 @@
 		<Description>Mix It Up Desktop Installer</Description>
 		<Company>Blazing Cacti LLC</Company>
 		<Copyright>Copyright © 2026 Blazing Cacti LLC, All Rights Reserved.</Copyright>
-    <AssemblyVersion>0.9.0.0</AssemblyVersion>
-    <FileVersion>0.9.0.0</FileVersion>
-		<Version>0.6.0</Version>
+    <AssemblyVersion>0.9.1.0</AssemblyVersion>
+    <FileVersion>0.9.1.0</FileVersion>
+		<Version>0.9.1</Version>
 		<Configurations>Debug;Dev;Public;Preview</Configurations>
 	</PropertyGroup>
 
@@ -52,8 +52,12 @@
 
 	<Target Name="EmbedReferencedAssemblies" AfterTargets="ResolveReferences">
 		<ItemGroup>
-			<EmbeddedResource Include="@(ReferenceCopyLocalPaths)" Condition="'%(ReferenceCopyLocalPaths.Extension)' == '.dll'">
-				<LogicalName>%(ReferenceCopyLocalPaths.FileName)%(ReferenceCopyLocalPaths.Extension)</LogicalName>
+			<_InstallerEmbeddedReference Include="@(ReferenceCopyLocalPaths)" Condition="'%(ReferenceCopyLocalPaths.Extension)' == '.dll'" />
+			<EmbeddedResource Include="@(_InstallerEmbeddedReference)" Condition="'$(InstallerSignedDependenciesDirectory)' == ''">
+				<LogicalName>%(_InstallerEmbeddedReference.FileName)%(_InstallerEmbeddedReference.Extension)</LogicalName>
+			</EmbeddedResource>
+			<EmbeddedResource Include="@(_InstallerEmbeddedReference->'$(InstallerSignedDependenciesDirectory)/%(FileName)%(Extension)')" Condition="'$(InstallerSignedDependenciesDirectory)' != ''">
+				<LogicalName>%(FileName)%(Extension)</LogicalName>
 			</EmbeddedResource>
 		</ItemGroup>
 	</Target>

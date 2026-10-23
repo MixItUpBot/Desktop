@@ -1,5 +1,13 @@
 # Mix It Up Desktop Changelog
 
+## 1.8.203 (HOTFIX)
+
+Release Date: 2026-10-23
+
+### FIXES
+
+- Windows App Control publisher signature update
+
 ## 1.8.202 (HOTFIX)
 
 Release Date: 2026-10-12
