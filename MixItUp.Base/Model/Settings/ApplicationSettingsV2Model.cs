@@ -48,7 +48,8 @@ namespace MixItUp.Base.Model.Settings
         public static async Task<ApplicationSettingsV2Model> Load()
         {
             ApplicationSettingsV2Model settings = null;
-            if (ServiceManager.Get<IFileService>().FileExists(ApplicationSettingsFileName))
+            bool settingsFileExists = ServiceManager.Get<IFileService>().FileExists(ApplicationSettingsFileName);
+            if (settingsFileExists)
             {
                 try
                 {
@@ -59,14 +60,34 @@ namespace MixItUp.Base.Model.Settings
                     Logger.Log(ex);
                 }
             }
+            // Do not overwrite an existing file that failed to deserialize.
+            bool canSaveSettings = settings != null || !settingsFileExists;
             if (settings == null)
             {
                 settings = new ApplicationSettingsV2Model();
             }
+            bool settingsChanged = false;
             if (settings.ForceResetPreviewProgram)
             {
                 settings.ForceResetPreviewProgram = false;
-                settings.PreviewProgram = false;
+                settingsChanged = true;
+            }
+
+            string updateChannel = BuildChannelHelper.GetUpdateChannel(settings.UpdateChannel, settings.PreviewProgram, false);
+            if (updateChannel != "internal")
+            {
+                string savedUpdateChannel = updateChannel == "preview" ? "Preview" : "Public";
+                bool previewProgram = updateChannel == "preview";
+                if (settings.UpdateChannel != savedUpdateChannel || settings.PreviewProgram != previewProgram)
+                {
+                    settings.UpdateChannel = savedUpdateChannel;
+                    settings.PreviewProgram = previewProgram;
+                    settingsChanged = true;
+                }
+            }
+            if (settingsChanged && canSaveSettings)
+            {
+                await settings.Save();
             }
             return settings;
         }
@@ -79,6 +100,9 @@ namespace MixItUp.Base.Model.Settings
 
         [DataMember]
         public bool PreviewProgram { get; set; } = false;
+
+        [DataMember]
+        public string UpdateChannel { get; set; } = string.Empty;
 
         [DataMember]
         public bool ForceResetPreviewProgram { get; set; } = true;

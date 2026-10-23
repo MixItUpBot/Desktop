@@ -84,7 +84,7 @@ namespace MixItUp.WPF.Services
                     .AddAttributes(new Dictionary<string, object>
                     {
                         ["deployment.environment"] = ChannelSession.IsDebug() ? "development" : "production",
-                        ["app.release_channel"] = ChannelSession.AppSettings.PreviewProgram ? "preview" : "public",
+                        ["app.release_channel"] = BuildChannelHelper.GetUpdateChannel(ChannelSession.AppSettings.UpdateChannel, ChannelSession.AppSettings.PreviewProgram, false),
                         ["app.language"] = Languages.GetLangauge().ToString(),
                         ["os.version"] = Environment.OSVersion.Version.ToString(),
                         ["os.locale"] = CultureInfo.CurrentUICulture.Name
@@ -187,7 +187,7 @@ namespace MixItUp.WPF.Services
                 var appVersion = Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "0.0.0.0";
                 var appLanguage = Languages.GetLangauge().ToString();
                 var osVersion = Environment.OSVersion.Version.ToString();
-                var releaseChannel = ChannelSession.AppSettings.PreviewProgram ? "preview" : "public";
+                var releaseChannel = BuildChannelHelper.GetUpdateChannel(ChannelSession.AppSettings.UpdateChannel, ChannelSession.AppSettings.PreviewProgram, false);
 
                 using var activity = ActivitySource.StartActivity("Login", ActivityKind.Internal);
                 if (activity != null)

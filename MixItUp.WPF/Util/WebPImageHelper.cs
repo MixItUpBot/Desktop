@@ -10,10 +10,9 @@ namespace MixItUp.WPF.Util
 {
     /// <summary>
     /// Transcodes WebP images to PNG so WPF's WIC-based BitmapImage can decode them (Velora serves
-    /// all of its emote, badge, and avatar assets as WebP). Decoding uses the already-referenced
-    /// SixLabors.ImageSharp 2.x, which handles static WebP only - it throws on animated WebP, and
-    /// Velora serves animated WebP at every emote size variant (including the "static" ones) - so a
-    /// representative animation frame is extracted from the RIFF container and decoded standalone.
+    /// all of its emote, badge, and avatar assets as WebP). A representative animation frame is
+    /// extracted from the RIFF container and decoded standalone so animated assets retain the
+    /// same poster selection as the animation pipeline.
     /// </summary>
     public static class WebPImageHelper
     {
