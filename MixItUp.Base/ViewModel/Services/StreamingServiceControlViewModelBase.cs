@@ -25,6 +25,10 @@ namespace MixItUp.Base.ViewModel.Services
             {
                 connected.Add(StreamingSoftwareTypeEnum.StreamlabsDesktop);
             }
+            if (ServiceManager.Get<VelumStudioService>().IsConnected)
+            {
+                connected.Add(StreamingSoftwareTypeEnum.VelumStudio);
+            }
 
             if (connected.Count == 1)
             {

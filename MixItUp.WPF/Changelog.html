@@ -5,6 +5,117 @@
     <body>
         <h1 style="color: #5e9ca0;">Changelog</h1>
 
+        <h2 style="color: #2e6c80;">v1.8.210-Preview:</h2>
+        <p>Release Date: 2026-11-06</p>
+        <h3>FEATURES</h3>
+        <ul>
+            <li>Update the Twitch connection with a required streamer sign-in and migration of Mix It Up channel point rewards and linked commands.
+                <ul>
+                    <li>Bot sign-in is optional, and skipping it disconnects the bot until it is signed in again.</li>
+                    <li>Custom reward images must be uploaded again in Twitch after migration.</li>
+                </ul>
+            </li>
+            <li>Add Velora Create Poll, End Poll, and Get Active Poll actions, with results available through $velorapoll and $velorapollid.
+            </li>
+            <li>Add Change Channel Name to the Discord action, requiring the bot&#39;s Manage Channels permission.
+            </li>
+            <li>Add Trigger Hotkey By Name to the VTube Studio action.
+            </li>
+            <li>Add Meld Studio to the Streaming Software action.
+            </li>
+            <li>Add a native Velum Studio connection with saved address and port settings, plus Streaming Software actions for scenes, layer visibility, text, effects, audio mute, collections, recording, replays, and streaming.
+            </li>
+            <li>Add Toggle Source Visibility to the Streaming Software action for OBS Studio and Meld Studio.
+            </li>
+            <li>Add OBS Studio Mute Audio Source, Unmute Audio Source, and Toggle Audio Mute actions, including global Desktop Audio and Mic/Aux inputs.
+            </li>
+            <li>Add an OBS Studio setting for automatically starting the replay buffer, enabled by default for existing setups.
+            </li>
+            <li>Add a Reconnect Services button for retrying enabled services that are disconnected.
+            </li>
+            <li>Add a setting to hide actions and events for platforms you do not use.
+            </li>
+            <li>Add a Windows launch-at-login setting and a --profile argument for opening a saved profile by its ID.
+            </li>
+            <li>Add search to the Music Player library and queue, and a repeat-current-song mode.
+            </li>
+            <li>Add $musicplayeralbumart and $musicplayeralbumcover for the current song&#39;s embedded album cover.
+            </li>
+            <li>Add Search First Occurrence and Search and Loop to the File action, with a linenumber suffix for each result&#39;s line number.
+            </li>
+            <li>Add special identifiers to Heist win-chance fields, evaluated separately for each participant.
+            </li>
+            <li>Add special identifiers to overlay position fields.
+            </li>
+            <li>Add $commandid for the running command&#39;s ID and $banreason for Twitch ban events.
+            </li>
+            <li>Add $messageemotes and $messageemoteurls for comma-separated emote names and image URLs in the triggering chat message.
+            </li>
+            <li>Add Shared Chat message identifiers: $messageinmychannel, $messageissharedchat, $messagesourcechannel, and $messagesourcechannelid.
+            </li>
+            <li>Add Twitch Shared Chat Started and Ended events with $sharedchatsessionid, $sharedchathostid, and $sharedchathost.
+            </li>
+            <li>Add Hype Train identifiers: $hypetraintype, $hypetrainisgoldenkappa, $hypetrainistreasure, and $hypetrainisshared.
+            </li>
+            <li>Expose all chat triggers and command role requirements through Developer API v2.
+            </li>
+            <li>Add support-code diagnostics collection and upload, with consent before sending original settings, the database, logs, and machine details.
+            </li>
+        </ul>
+        <h3>FIXES</h3>
+        <ul>
+            <li>Fixed viewer-controlled identifiers being interpreted as HTML or scripts in overlays, reported by Faith V.
+                <ul>
+                    <li>Authored markup remains supported, but identifiers cannot supply executable attributes, script sources, or embedded-page origins.</li>
+                </ul>
+            </li>
+            <li>Fixed the blank repeat-current-song button icon.
+            </li>
+            <li>Fixed command editors closing without a warning when an existing command, action, or requirement has unsaved changes.
+            </li>
+            <li>Fixed command searches losing their filter after a command is saved.
+            </li>
+            <li>Fixed unrated Community Commands displaying a misleading rating.
+            </li>
+            <li>Fixed Total Followers overlay labels initializing from the wrong platform and counting follows from other platforms.
+            </li>
+            <li>Fixed VTube Studio reconnects clearing the saved authentication token.
+            </li>
+            <li>Fixed Twitch bans triggering the Chat Messages Deleted event repeatedly.
+            </li>
+            <li>Fixed YouTube mass gifted membership events losing the gifter.
+            </li>
+            <li>Fixed OBS Studio failing to reconnect after its initial connection attempt fails.
+            </li>
+            <li>Fixed Crowd Control losing its connection after the socket closes.
+            </li>
+            <li>Fixed long audio playback ending its Wait For Finish period after the default timeout.
+            </li>
+            <li>Fixed Script actions hanging or losing JavaScript exceptions and rejected promises.
+            </li>
+            <li>Fixed rank requirements checking the current rank&#39;s threshold instead of the next rank&#39;s threshold.
+            </li>
+            <li>Fixed NaN input matching numeric equality conditions.
+            </li>
+            <li>Fixed negative goal updates being applied incorrectly across cumulative segments.
+            </li>
+            <li>Fixed Web Request actions rejecting a complete URL supplied through a special identifier.
+            </li>
+            <li>Fixed AvalonEdit link colors failing to follow theme changes.
+            </li>
+        </ul>
+        <h3>PERFORMANCE &amp; GENERAL IMPROVEMENTS</h3>
+        <ul>
+            <li>Add settings migration snapshots and rollback on failed upgrades, while preserving the guard against settings from newer model versions.
+            </li>
+            <li>Update usage telemetry with installation, profile, and session identifiers and four-minute batches, with telemetry enabled for all installations.
+            </li>
+            <li>Clarify that Microsoft Azure Speech requires your own Azure resource, subscription key, and region.
+            </li>
+            <li>Update third-party notices for the overlay HTML parser.
+            </li>
+        </ul>
+
         <h2 style="color: #2e6c80;">v1.3.0.5:</h2>
         <ul>
             <li>Adding $userbitslifetimeamount Special Identifier for pulling the total amount of bits cheered by a user from Twitch</li>

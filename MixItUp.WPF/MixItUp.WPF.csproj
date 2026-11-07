@@ -10,9 +10,9 @@
     <AssemblyTitle>MixItUp.Client</AssemblyTitle>
     <Company>Blazing Cacti LLC</Company>
 		<Copyright>Copyright © 2026 Blazing Cacti LLC, All Rights Reserved.</Copyright>
-    <AssemblyVersion>1.8.203.0</AssemblyVersion>
-    <FileVersion>1.8.203.0</FileVersion>
-		<Version>1.6.0</Version>
+    <AssemblyVersion>1.8.210.0</AssemblyVersion>
+    <FileVersion>1.8.210.0</FileVersion>
+		<Version>1.8.210</Version>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -25,7 +25,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <ApplicationVersion>1.8.210.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>

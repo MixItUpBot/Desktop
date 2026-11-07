@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Util;
+using MixItUp.Base.Util;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -73,9 +73,13 @@ namespace MixItUp.Base.Services
 
         bool Repeat { get; }
 
+        bool RepeatOne { get; }
+
         TimeSpan CurrentPosition { get; }
 
         TimeSpan CurrentDuration { get; }
+
+        Task<string> GetAlbumArt(MusicPlayerSong song);
 
         Task Play();
 
@@ -94,6 +98,8 @@ namespace MixItUp.Base.Services
         Task SetShuffle(bool enabled);
 
         Task SetRepeat(bool enabled);
+
+        Task SetRepeatOne(bool enabled);
 
         Task Seek(TimeSpan position);
 

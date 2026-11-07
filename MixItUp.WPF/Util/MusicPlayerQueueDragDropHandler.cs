@@ -23,7 +23,7 @@ namespace MixItUp.WPF.Util
         {
             if (dropInfo.Data is MusicPlayerSong sourceItem && dropInfo.TargetCollection != null)
             {
-                var items = dropInfo.TargetCollection as ObservableCollection<MusicPlayerSong>;
+                var items = ServiceManager.Get<IMusicPlayerService>().Songs;
                 if (items != null)
                 {
                     int oldIndex = items.IndexOf(sourceItem);

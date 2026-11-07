@@ -1,4 +1,4 @@
-﻿using MixItUp.Base;
+using MixItUp.Base;
 using MixItUp.Base.Services;
 using MixItUp.Base.Util;
 using NAudio.Wave;
@@ -21,6 +21,7 @@ namespace MixItUp.WPF.Services
         private Dictionary<CancellationToken, CancellationTokenSource> audioTasks = new Dictionary<CancellationToken, CancellationTokenSource>();
 
         private HashSet<Guid> activeOverlaySounds = new HashSet<Guid>();
+        private static readonly TimeSpan WaitForFinishTimeout = TimeSpan.FromMinutes(5);
 
         public async Task Play(string filePath, int volume, string deviceName, bool waitForFinish = false)
         {
@@ -100,15 +101,21 @@ namespace MixItUp.WPF.Services
             OverlayEndpointV3Service overlay = ServiceManager.Get<OverlayV3Service>().GetDefaultOverlayEndpointService();
             if (overlay != null)
             {
-                Guid id = await overlay.PlayAudio(filePath, volume);
-                lock (this.activeOverlaySounds)
-                {
-                    this.activeOverlaySounds.Add(id);
-                }
+                Guid id = Guid.NewGuid();
+                lock (this.activeOverlaySounds) { this.activeOverlaySounds.Add(id); }
+                try { await overlay.PlayAudio(filePath, volume, id); }
+                catch { this.OverlaySoundFinished(id); throw; }
 
                 if (waitForFinish)
                 {
                     bool contains = false;
+                    TimeSpan timeout = WaitForFinishTimeout;
+                    try
+                    {
+                        if (File.Exists(filePath)) { timeout = GetWaitForFinishTimeout(TimeSpan.FromSeconds(new ATL.Track(filePath).Duration)); }
+                    }
+                    catch (Exception ex) { Logger.Log(ex); }
+                    var elapsed = System.Diagnostics.Stopwatch.StartNew();
                     do
                     {
                         await Task.Delay(100);
@@ -118,7 +125,11 @@ namespace MixItUp.WPF.Services
                             contains = this.activeOverlaySounds.Contains(id);
                         }
 
-                    } while (contains);
+                    } while (contains && elapsed.Elapsed < timeout);
+                    if (contains)
+                    {
+                        Logger.Log(LogLevel.Warning, "Timed out waiting for overlay audio to finish");
+                    }
                 }
             }
         }
@@ -264,10 +275,18 @@ namespace MixItUp.WPF.Services
             return (deviceNumber < 0) ? new WaveOutEvent() : new WaveOutEvent() { DeviceNumber = deviceNumber };
         }
 
+        private static TimeSpan GetWaitForFinishTimeout(TimeSpan duration)
+        {
+            return duration > WaitForFinishTimeout ? duration + TimeSpan.FromSeconds(30) : WaitForFinishTimeout;
+        }
+
         private async Task PlayAndCleanUp(Tuple<WaveOutEvent, WaveStream> output, bool waitForFinish = false)
         {
             if (output != null)
             {
+                TimeSpan timeout = WaitForFinishTimeout;
+                try { timeout = GetWaitForFinishTimeout(output.Item2.TotalTime); }
+                catch (Exception ex) { Logger.Log(ex); }
                 CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
                 audioTasks[cancellationTokenSource.Token] = cancellationTokenSource;
                 Task t = Task.Run(async () =>
@@ -296,7 +315,14 @@ namespace MixItUp.WPF.Services
 
                 if (waitForFinish)
                 {
-                    await t;
+                    if (await Task.WhenAny(t, Task.Delay(timeout)) != t)
+                    {
+                        Logger.Log(LogLevel.Warning, "Timed out waiting for audio to finish");
+                    }
+                    else
+                    {
+                        await t;
+                    }
                 }
             }
         }

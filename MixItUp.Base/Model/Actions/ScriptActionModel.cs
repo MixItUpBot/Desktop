@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Commands;
+using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Overlay;
 using MixItUp.Base.Services;
 using MixItUp.Base.Util;
@@ -141,11 +141,16 @@ namespace MixItUp.Base.Model.Actions
 
                     overlayEndpoint.PacketListeningItems[overlayItem.ID] = overlayItem;
 
-                    await overlayEndpoint.Add(overlayItem.ID.ToString(), iframeHTML);
-
-                    result = await overlayItem.WaitForResult();
-
-                    await overlayEndpoint.Remove(overlayItem.ID.ToString());
+                    try
+                    {
+                        await overlayEndpoint.Add(overlayItem.ID.ToString(), iframeHTML);
+                        result = await overlayItem.WaitForResult();
+                    }
+                    finally
+                    {
+                        overlayEndpoint.PacketListeningItems.Remove(overlayItem.ID);
+                        await overlayEndpoint.Remove(overlayItem.ID.ToString());
+                    }
                 }
 
                 if (!string.IsNullOrEmpty(result))

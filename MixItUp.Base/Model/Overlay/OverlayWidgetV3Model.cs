@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Commands;
+using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Services;
 using MixItUp.Base.Util;
 using System;
@@ -109,17 +109,12 @@ namespace MixItUp.Base.Model.Overlay.Widgets
                 string iframeHTML = overlay.GetItemIFrameHTML();
                 iframeHTML = OverlayV3Service.ReplaceProperty(iframeHTML, nameof(this.Item.HTML), this.Item.HTML);
                 iframeHTML = OverlayV3Service.ReplaceProperty(iframeHTML, nameof(this.Item.CSS), this.Item.CSS);
-                iframeHTML = OverlayV3Service.ReplaceProperty(iframeHTML, nameof(this.Item.Javascript), this.Item.Javascript);
+                iframeHTML = OverlayV3Service.ReplaceProperty(iframeHTML, nameof(this.Item.Javascript), this.Item.GetJavascript());
 
                 CommandParametersModel parametersModel = new CommandParametersModel();
 
-                await this.Item.ProcessGenerationProperties(properties, parametersModel);
-                foreach (var property in properties)
-                {
-                    iframeHTML = OverlayV3Service.ReplaceProperty(iframeHTML, property.Key, property.Value);
-                }
-
-                iframeHTML = await SpecialIdentifierStringBuilder.ProcessSpecialIdentifiers(iframeHTML, parametersModel);
+                await this.Item.ProcessAllGenerationProperties(properties, parametersModel);
+                iframeHTML = await this.Item.ProcessHTML(iframeHTML, properties, parametersModel);
 
                 await overlay.Add(this.ID.ToString(), iframeHTML, this.Item.Layer);
             }
@@ -182,10 +177,12 @@ namespace MixItUp.Base.Model.Overlay.Widgets
                         {
                             if (data[key] != null)
                             {
-                                data[key] = await SpecialIdentifierStringBuilder.ProcessSpecialIdentifiers(data[key].ToString(), parameters);
+                                data[key] = this.Item is OverlayHTMLV3Model && key == nameof(this.Item.HTML)
+                                    ? await OverlayHTMLHelper.ProcessSpecialIdentifiers(data[key].ToString(), parameters)
+                                    : await SpecialIdentifierStringBuilder.ProcessSpecialIdentifiers(data[key].ToString(), parameters);
                             }
                         }
-                        await this.Item.ProcessGenerationProperties(data, new CommandParametersModel());
+                        await this.Item.ProcessAllGenerationProperties(data, new CommandParametersModel());
                         await this.Item.CallFunction("update", data);
                     }
 

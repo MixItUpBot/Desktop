@@ -34,13 +34,13 @@ function add(data)
     {
         let pronouns = pronounsTemplate.content.cloneNode(true);
         pronouns.firstElementChild.style.color = data.User.Color;
-        pronouns.firstElementChild.innerHTML = `[${data.User.AlejoPronoun}]`;
+        pronouns.firstElementChild.textContent = `[${data.User.AlejoPronoun}]`;
         messageSpan.appendChild(pronouns);
     }
     
     let username = usernameTemplate.content.cloneNode(true);
     username.firstElementChild.style.color = data.User.Color;
-    username.firstElementChild.innerHTML = data.User.DisplayName + ":";
+    username.firstElementChild.textContent = data.User.DisplayName + ":";
     messageSpan.appendChild(username);
     
     data.Message.forEach(messagePart =>

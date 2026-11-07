@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Services;
+using MixItUp.Base.Services;
 using MixItUp.Base.Util;
 using Newtonsoft.Json;
 using System;
@@ -23,7 +23,7 @@ namespace MixItUp.Base.Model.Settings
     {
         private const string ApplicationSettingsFileName = "ApplicationSettings.json";
 
-        /// <summary>
+/// <summary>
         /// The packaged font that the application UI uses unless the user selects a different one.
         /// </summary>
         public const string DefaultUIFontFamily = "Noto Sans";

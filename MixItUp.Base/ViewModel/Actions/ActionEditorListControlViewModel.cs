@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Actions;
+using MixItUp.Base.Model.Actions;
 using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Util;
 using MixItUp.Base.ViewModels;
@@ -34,6 +34,7 @@ namespace MixItUp.Base.ViewModel.Actions
         {
             List<ActionTypeEnum> actionTypes = new List<ActionTypeEnum>(EnumHelper.GetEnumList<ActionTypeEnum>());
             actionTypes.Remove(ActionTypeEnum.Custom);
+            actionTypes.RemoveAll(action => ChannelSession.Settings.PlatformsToHide.Any(platform => platform.ToString() == action.ToString()));
             foreach (ActionTypeEnum hiddenActions in ChannelSession.Settings.ActionsToHide)
             {
                 actionTypes.Remove(hiddenActions);

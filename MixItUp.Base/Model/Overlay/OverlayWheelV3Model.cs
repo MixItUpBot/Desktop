@@ -106,10 +106,10 @@ namespace MixItUp.Base.Model.Overlay
         }
 
         [JsonIgnore]
-        public string OutcomeNames { get { return string.Join(", ", this.Outcomes.Select(s => $"\"{s.Name}\"")); } }
+        public string OutcomeNames { get { return string.Join(", ", this.Outcomes.Select(s => OverlayHTMLHelper.SerializeJavascriptData(s.Name))); } }
 
         [JsonIgnore]
-        public string OutcomeColors { get { return string.Join(", ", this.Outcomes.Select(s => $"\"{s.Color}\"")); } }
+        public string OutcomeColors { get { return string.Join(", ", this.Outcomes.Select(s => OverlayHTMLHelper.SerializeJavascriptData(s.Color))); } }
 
         [JsonIgnore]
         public string WheelClickSoundURL { get { return ServiceManager.Get<OverlayV3Service>().GetURLForFile(this.WheelClickSoundFilePath, "sound"); } }

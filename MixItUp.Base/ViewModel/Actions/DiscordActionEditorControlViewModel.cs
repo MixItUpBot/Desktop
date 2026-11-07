@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Actions;
+using MixItUp.Base.Model.Actions;
 using MixItUp.Base.Services;
 using MixItUp.Base.Services.External;
 using MixItUp.Base.Util;
@@ -22,6 +22,7 @@ namespace MixItUp.Base.ViewModel.Actions
             set
             {
                 this.selectedActionType = value;
+                this.NotifyPropertyChanged(nameof(this.ShowChangeChannelName));
                 this.NotifyPropertyChanged();
                 this.NotifyPropertyChanged("ShowSendMessageGrid");
                 this.NotifyPropertyChanged("ShowMuteGrid");
@@ -36,6 +37,8 @@ namespace MixItUp.Base.ViewModel.Actions
         public bool ShowSendEmbedGrid { get { return this.SelectedActionType == DiscordActionTypeEnum.SendEmbed; } }
 
         public ObservableCollection<DiscordChannel> Channels { get; set; } = new ObservableCollection<DiscordChannel>();
+        public ObservableCollection<DiscordChannel> RenameChannels { get; } = new ObservableCollection<DiscordChannel>();
+        public bool ShowChangeChannelName => this.SelectedActionType == DiscordActionTypeEnum.ChangeChannelName;
 
         public DiscordChannel SelectedChannel
         {
@@ -236,7 +239,7 @@ namespace MixItUp.Base.ViewModel.Actions
             : base(action)
         {
             this.SelectedActionType = action.ActionType;
-            if (this.SelectedActionType == DiscordActionTypeEnum.SendMessage)
+            if (this.SelectedActionType == DiscordActionTypeEnum.SendMessage || this.ShowChangeChannelName)
             {
                 this.existingSelectedChannel = action.ChannelID;
                 this.ChatMessage = action.MessageText;
@@ -287,12 +290,14 @@ namespace MixItUp.Base.ViewModel.Actions
 
                     var channels = await ServiceManager.Get<DiscordService>().RefreshCachedServerChannels(ServiceManager.Get<DiscordService>().Server);
 
+                    this.RenameChannels.Clear();
+                    this.RenameChannels.AddRange(channels);
                     this.Channels.Clear();
                     this.Channels.AddRange(channels.Where(c => c.Type == DiscordChannel.DiscordChannelTypeEnum.Announcements || c.Type == DiscordChannel.DiscordChannelTypeEnum.Text));
 
                     if (!string.IsNullOrEmpty(currentSelectedChannelID))
                     {
-                        this.SelectedChannel = this.Channels.FirstOrDefault(c => c.ID.Equals(currentSelectedChannelID));
+                        this.SelectedChannel = (this.ShowChangeChannelName ? this.RenameChannels : this.Channels).FirstOrDefault(c => c.ID.Equals(currentSelectedChannelID));
                     }
                 }
             });
@@ -300,6 +305,14 @@ namespace MixItUp.Base.ViewModel.Actions
 
         public override Task<Result> Validate()
         {
+            if (this.ShowChangeChannelName)
+            {
+                if (this.SelectedChannel == null) { return Task.FromResult(new Result(Resources.DiscordActionMissingChannel)); }
+                if (string.IsNullOrWhiteSpace(this.ChatMessage) || (!SpecialIdentifierStringBuilder.ContainsSpecialIdentifiers(this.ChatMessage) && this.ChatMessage.Length > 100))
+                {
+                    return Task.FromResult(new Result(Resources.DiscordChannelNameInvalid));
+                }
+            }
             if (this.ShowSendMessageGrid)
             {
                 if (this.SelectedChannel == null)
@@ -333,6 +346,10 @@ namespace MixItUp.Base.ViewModel.Actions
 
         protected override Task<ActionModelBase> GetActionInternal()
         {
+            if (this.ShowChangeChannelName)
+            {
+                return Task.FromResult<ActionModelBase>(DiscordActionModel.CreateForChannelName(this.SelectedChannel, this.ChatMessage));
+            }
             if (this.ShowSendMessageGrid)
             {
                 return Task.FromResult<ActionModelBase>(DiscordActionModel.CreateForChatMessage(this.SelectedChannel, this.ChatMessage, this.UploadFilePath));
@@ -372,11 +389,12 @@ namespace MixItUp.Base.ViewModel.Actions
             if (ServiceManager.Get<DiscordService>().IsConnected)
             {
                 List<DiscordChannel> channels = new List<DiscordChannel>(await ServiceManager.Get<DiscordService>().GetCachedServerChannels(ServiceManager.Get<DiscordService>().Server));
+                this.RenameChannels.AddRange(channels);
                 this.Channels.AddRange(channels.Where(c => c.Type == DiscordChannel.DiscordChannelTypeEnum.Announcements || c.Type == DiscordChannel.DiscordChannelTypeEnum.Text));
 
                 if (!string.IsNullOrEmpty(this.existingSelectedChannel))
                 {
-                    this.SelectedChannel = this.Channels.FirstOrDefault(c => c.ID.Equals(this.existingSelectedChannel));
+                    this.SelectedChannel = (this.ShowChangeChannelName ? this.RenameChannels : this.Channels).FirstOrDefault(c => c.ID.Equals(this.existingSelectedChannel));
 
                     // Fallback: if we couldn't find the channel in the list but have a saved ID, create a placeholder
                     // This prevents losing the saved channel if the API fails

@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model;
+using MixItUp.Base.Model;
 using MixItUp.Base.Model.Actions;
 using MixItUp.Base.Model.Settings;
 using MixItUp.Base.Services;
@@ -15,6 +15,8 @@ namespace MixItUp.Base.ViewModel.Settings
     {
         public GenericTextSettingsOptionControlViewModel ProfileName { get; set; }
         public GenericToggleSettingsOptionControlViewModel AutoLogIn { get; set; }
+        public GenericToggleSettingsOptionControlViewModel LaunchAtLogin { get; set; }
+        private bool revertingLaunchAtLogin;
 
         public GenericComboBoxSettingsOptionControlViewModel<LanguageOptions> Language { get; set; }
         public GenericComboBoxSettingsOptionControlViewModel<StreamingPlatformTypeEnum> DefaultStreamingPlatform { get; set; }
@@ -23,6 +25,7 @@ namespace MixItUp.Base.ViewModel.Settings
 
         public GenericToggleSettingsOptionControlViewModel DontSaveLastWindowPosition { get; set; }
         public GenericToggleSettingsOptionControlViewModel OptOutOfDataTracking { get; set; }
+
 
         public GeneralSettingsControlViewModel()
         {
@@ -35,6 +38,20 @@ namespace MixItUp.Base.ViewModel.Settings
                 (value) => { ChannelSession.AppSettings.AutoLogInID = (value) ? ChannelSession.Settings.ID : Guid.Empty; },
                 MixItUp.Base.Resources.AutoLogInCurrentAccountTooltip);
 
+
+            IProcessService processService = ServiceManager.Get<IProcessService>();
+            this.LaunchAtLogin = new GenericToggleSettingsOptionControlViewModel(Resources.LaunchAtLogin, processService.LaunchAtLoginEnabled, async (bool value) =>
+            {
+                if (this.revertingLaunchAtLogin) { return; }
+                Result result = processService.SetLaunchAtLogin(value);
+                if (!result.Success)
+                {
+                    this.revertingLaunchAtLogin = true;
+                    try { this.LaunchAtLogin.Value = processService.LaunchAtLoginEnabled; }
+                    finally { this.revertingLaunchAtLogin = false; }
+                    await DialogHelper.ShowMessage(result.Message);
+                }
+            });
 
             var languageOptions = EnumHelper.GetEnumList<LanguageOptions>().ToList();
             if (!ChannelSession.IsDebug())
@@ -52,7 +69,7 @@ namespace MixItUp.Base.ViewModel.Settings
                 StreamingPlatforms.SupportedPlatforms, ChannelSession.Settings.DefaultStreamingPlatform, (value) => { ChannelSession.Settings.DefaultStreamingPlatform = value; });
 
             this.DefaultStreamingSoftware = new GenericComboBoxSettingsOptionControlViewModel<StreamingSoftwareTypeEnum>(MixItUp.Base.Resources.DefaultStreamingSoftware,
-                new List<StreamingSoftwareTypeEnum>() { StreamingSoftwareTypeEnum.OBSStudio, StreamingSoftwareTypeEnum.XSplit, StreamingSoftwareTypeEnum.StreamlabsDesktop },
+                new List<StreamingSoftwareTypeEnum>() { StreamingSoftwareTypeEnum.OBSStudio, StreamingSoftwareTypeEnum.XSplit, StreamingSoftwareTypeEnum.StreamlabsDesktop, StreamingSoftwareTypeEnum.MeldStudio },
                 ChannelSession.Settings.DefaultStreamingSoftware, (value) => { ChannelSession.Settings.DefaultStreamingSoftware = value; });
 
             string defaultAudioOption = ServiceManager.Get<IAudioService>().DefaultAudioDevice;
@@ -80,6 +97,7 @@ namespace MixItUp.Base.ViewModel.Settings
                 ChannelSession.AppSettings.DontSaveLastWindowPosition, (value) => { ChannelSession.AppSettings.DontSaveLastWindowPosition = value; });
             this.OptOutOfDataTracking = new GenericToggleSettingsOptionControlViewModel(MixItUp.Base.Resources.OptOutofDataTracking,
                 ChannelSession.Settings.OptOutTracking, (value) => { ChannelSession.Settings.OptOutTracking = value; }, MixItUp.Base.Resources.OptOutofDataTrackingTooltip);
+
         }
     }
 }

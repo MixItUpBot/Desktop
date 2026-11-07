@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Commands;
+using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Services;
 using Newtonsoft.Json.Linq;
 using MixItUp.Base.Util;
@@ -113,9 +113,9 @@ namespace MixItUp.Base.Model.Actions
                     }
 
                     string targetUrl = await ReplaceStringWithSpecialModifiers(this.Url, parameters, encode: true);
-                    if (!Uri.IsWellFormedUriString(targetUrl, UriKind.RelativeOrAbsolute))
+                    if (!Uri.TryCreate(targetUrl, UriKind.Absolute, out _))
                     {
-                        targetUrl = await ReplaceStringWithSpecialModifiers(this.Url, parameters);
+                        targetUrl = url;
                     }
 
                     HttpContent content = null;

@@ -1,4 +1,4 @@
-﻿<html>
+<html>
 <head>
     <meta charset="utf-8">
     <style>
@@ -187,9 +187,11 @@
                                 for (let j = 0; j < items.length; j++) {
                                     try {
                                         if (items[j].setVisible) {
-                                            await items[j].setVisible(data.sourceVisible);
+                                            const visible = data.toggleVisibility ? !(await items[j].isVisible()) : data.sourceVisible;
+                                            await items[j].setVisible(visible);
                                         } else if (items[j].setMute) {
-                                            await items[j].setMute(!data.sourceVisible);
+                                            const muted = data.toggleVisibility ? !(await items[j].isMute()) : !data.sourceVisible;
+                                            await items[j].setMute(muted);
                                         }
                                     }
                                     catch (err) { logException(err); }

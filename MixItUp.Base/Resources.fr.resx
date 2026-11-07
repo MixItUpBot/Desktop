@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -10663,16 +10663,16 @@ Ne l'activez que si vous savez ce que vous faites. Continuer ?</value>
     <value>L'utilisation d'Amazon Polly pour la fonctionnalité de synthèse vocale est un service payant avec AWS qui couvre directement Mix It Up, mais il y a des limites au montant que nous pouvons couvrir financièrement pour l'utilisation du service pour tous les utilisateurs. Pour équilibrer cela, nous limitons l'utilisation de la synthèse vocale Amazon Polly à une requête toutes les 5 minutes. Les utilisateurs peuvent connecter leurs propres comptes AWS pour supprimer cette limitation, mais toutes les dépenses liées à l'utilisation d'Amazon Polly seront alors facturées sur le compte AWS de l'utilisateur. Pour plus d’informations sur la configuration, veuillez visiter le lien ci-dessous :</value>
   </data>
   <data name="MicrosoftAzureSpeechInfo1" xml:space="preserve">
-    <value>La connectivité du service Microsoft Azure Speech vous permet de connecter votre propre compte Microsoft Azure pour contourner la limitation de débit de l'utilisation par défaut de Microsoft Azure Speech avec l'action Text To Speech.</value>
+    <value>Microsoft Azure Speech nécessite votre propre ressource Azure Speech, une clé d&apos;abonnement et une région.</value>
   </data>
   <data name="MicrosoftAzureSpeechInfo2" xml:space="preserve">
-    <value>L'utilisation de Microsoft Azure Speech pour la fonctionnalité de synthèse vocale est un service payant avec Microsoft Azure qui couvre directement Mix It Up, mais il existe des limites au montant que nous pouvons couvrir financièrement pour l'utilisation du service pour tous les utilisateurs. Pour équilibrer cela, nous limitons l’utilisation de la synthèse vocale Microsoft Azure Speech à une requête toutes les 5 minutes. Les utilisateurs peuvent connecter leurs propres comptes Microsoft Azure pour supprimer cette limitation, mais toutes les dépenses liées à l'utilisation de Microsoft Azure Speech seront alors facturées sur le compte Microsoft Azure de l'utilisateur. Pour plus d’informations sur la configuration, veuillez visiter le lien ci-dessous :</value>
+    <value>Mix It Up ne fournit pas d&apos;accès partagé à Azure Speech. L&apos;utilisation est facturée à votre compte Azure selon les tarifs Microsoft. Suivez le guide ci-dessous pour connecter votre ressource.</value>
   </data>
   <data name="NoCustomAmazonPollyAccount" xml:space="preserve">
     <value>Aucun compte Amazon Polly n'est connecté, l'utilisation sera donc limitée à 1 action toutes les 5 minutes. Pour supprimer cette limite de débit, veuillez visiter la section Amazon Polly sur la page Services pour connecter votre propre compte Amazon Polly.</value>
   </data>
   <data name="NoCustomMicrosoftAzureSpeechAccount" xml:space="preserve">
-    <value>Aucun compte Microsoft Azure Speech n'est connecté, l'utilisation sera donc limitée à 1 action toutes les 5 minutes. Pour supprimer cette limite de débit, veuillez visiter la section Microsoft Azure Speech sur la page Services pour connecter votre propre compte Microsoft Azure Speech.</value>
+    <value>Connectez votre ressource dans Services &gt; Microsoft Azure Speech avant d&apos;utiliser cette voix.</value>
   </data>
   <data name="TextToSpeechActionResponsiveVoicePitch" xml:space="preserve">
     <value>Pas (0% - 200%)</value>
@@ -12515,5 +12515,124 @@ Cela peut être fait en cliquant sur Créer une récompense de points de chaîne
   </data>
   <data name="VPZoneChannelPointsGrantFailed" xml:space="preserve">
     <value>Échec de l'attribution des points de chaîne VPZone. Une clé API liée à la chaîne avec la portée d'attribution est requise.</value>
+  </data>
+  <data name="NotYetRated" xml:space="preserve">
+    <value>Pas encore évalué</value>
+  </data>
+  <data name="OBSStudioAutoStartReplayBuffer" xml:space="preserve">
+    <value>Démarrer automatiquement le tampon de relecture</value>
+  </data>
+  <data name="ToggleSourceVisibility" xml:space="preserve">
+    <value>Basculer la visibilité de la source</value>
+  </data>
+  <data name="SearchFirstOccurrenceInFile" xml:space="preserve">
+    <value>Rechercher la première occurrence dans le fichier</value>
+  </data>
+  <data name="SearchAndLoopInFile" xml:space="preserve">
+    <value>Rechercher et parcourir les résultats du fichier</value>
+  </data>
+  <data name="FileSearchLineNumberHint" xml:space="preserve">
+    <value>Le résultat contient la ligne correspondante. Ajoutez linenumber au nom de votre identifiant spécial pour obtenir son numéro de ligne (0 si aucune correspondance).</value>
+  </data>
+  <data name="ChangeChannelName" xml:space="preserve">
+    <value>Modifier le nom du salon</value>
+  </data>
+  <data name="DiscordChannelNameInvalid" xml:space="preserve">
+    <value>Le nom du salon doit contenir entre 1 et 100 caractères.</value>
+  </data>
+  <data name="DiscordManageChannelsRequired" xml:space="preserve">
+    <value>Le bot Discord nécessite la permission Gérer les salons. Reconnectez Discord ou accordez cette permission à son rôle et au salon.</value>
+  </data>
+  <data name="DiscardUnsavedCommandChanges" xml:space="preserve">
+    <value>Des modifications de commande ne sont pas enregistrées. Les abandonner et fermer ?</value>
+  </data>
+  <data name="HidePlatformActionsAndEvents" xml:space="preserve">
+    <value>Masquer les actions et événements des plateformes</value>
+  </data>
+  <data name="EndPoll" xml:space="preserve">
+    <value>Terminer le sondage</value>
+  </data>
+  <data name="GetActivePoll" xml:space="preserve">
+    <value>Obtenir le sondage actif</value>
+  </data>
+  <data name="PollIdentifier" xml:space="preserve">
+    <value>Identifiant du sondage</value>
+  </data>
+  <data name="AllowMultipleSelections" xml:space="preserve">
+    <value>Autoriser plusieurs choix</value>
+  </data>
+  <data name="VeloraPollSettingsHint" xml:space="preserve">
+    <value>Saisissez 2 à 6 options, une par ligne, et une durée de 15 à 3600 secondes. Résultats : $velorapoll et $velorapollid.</value>
+  </data>
+  <data name="CollectDiagnostics" xml:space="preserve">
+    <value>Collecter et envoyer les diagnostics</value>
+  </data>
+  <data name="DiagnosticsAccessCode" xml:space="preserve">
+    <value>Saisissez le code d&apos;assistance à six caractères.</value>
+  </data>
+  <data name="DiagnosticsSuccess" xml:space="preserve">
+    <value>Diagnostics envoyés à votre demande d&apos;assistance.</value>
+  </data>
+  <data name="DiagnosticsFailure" xml:space="preserve">
+    <value>Les diagnostics n&apos;ont pas été entièrement envoyés. Réessayez avec les mêmes fichiers préparés ou contactez l&apos;assistance.</value>
+  </data>
+  <data name="DiagnosticsPartialConsent" xml:space="preserve">
+    <value>Certaines vérifications Windows nécessitent les droits administrateur. Envoyer les diagnostics disponibles ?</value>
+  </data>
+  <data name="DiagnosticsConsent" xml:space="preserve">
+    <value>Envoyer les paramètres enregistrés originaux, la base de données, sept journaux, l&apos;inventaire d&apos;installation, les détails Windows et réseau et les vérifications d&apos;intégration à l&apos;équipe Mix It Up pour cette demande ? Les fichiers ne sont pas expurgés et peuvent contenir des identifiants et des informations personnelles.</value>
+  </data>
+  <data name="IUnderstand" xml:space="preserve">
+    <value>Je comprends et j&apos;accepte</value>
+  </data>
+  <data name="TwitchChannelSharedChatStarted" xml:space="preserve">
+    <value>Chat partagé Twitch démarré</value>
+  </data>
+  <data name="TwitchChannelSharedChatEnded" xml:space="preserve">
+    <value>Chat partagé Twitch terminé</value>
+  </data>
+  <data name="ReconnectServices" xml:space="preserve">
+    <value>Reconnecter les services</value>
+  </data>
+  <data name="RepeatCurrentSong" xml:space="preserve">
+    <value>Répéter le morceau actuel</value>
+  </data>
+  <data name="LaunchAtLogin" xml:space="preserve">
+    <value>Lancer Mix It Up à la connexion Windows</value>
+  </data>
+  <data name="TwitchMigrationFailed" xml:space="preserve">
+    <value>La mise à jour de la connexion à Twitch n’a pas abouti. Reconnectez-vous pour continuer.</value>
+  </data>
+  <data name="TwitchMigrationAccountMismatch" xml:space="preserve">
+    <value>Cette connexion Twitch ne correspond pas au compte ou à l’application attendu. Connectez-vous avec le même compte Twitch et réessayez.</value>
+  </data>
+  <data name="TwitchMigrationTitle" xml:space="preserve">
+    <value>Se reconnecter à Twitch</value>
+  </data>
+  <data name="TwitchMigrationPrompt" xml:space="preserve">
+    <value>Connectez-vous avec le même compte de streamer Twitch pour mettre à jour la connexion. Mix It Up transférera ses récompenses de points de chaîne et mettra à jour les commandes associées. Les images personnalisées des récompenses doivent être importées à nouveau dans Twitch.</value>
+  </data>
+  <data name="TwitchMigrationBotOptional" xml:space="preserve">
+    <value>La connexion du bot est facultative. Si vous l’ignorez, votre bot sera déconnecté jusqu’à sa prochaine connexion.</value>
+  </data>
+  <data name="TwitchMigrationSignedIn" xml:space="preserve">
+    <value>Connecté</value>
+  </data>
+  <data name="MuteAudioSource" xml:space="preserve">
+    <value>Couper le son de la source audio</value>
+  </data>
+  <data name="UnmuteAudioSource" xml:space="preserve">
+    <value>R&#233;tablir le son de la source audio</value>
+  </data>
+  <data name="ToggleAudioMute" xml:space="preserve">
+    <value>Basculer la sourdine audio</value>
+  </data>
+  <data name="VelumStudio" xml:space="preserve"><value>Velum Studio</value></data>
+  <data name="VelumStudioInfo" xml:space="preserve"><value>Les connexions distantes nécessitent un jeton d’authentification. Les connexions locales le trouvent automatiquement. Laissez l’adresse vide pour détecter une instance locale.</value></data>
+  <data name="VelumStudioToken" xml:space="preserve"><value>Jeton d’authentification (à distance)</value></data>
+  <data name="VelumStudioFingerprint" xml:space="preserve"><value>Empreinte du certificat (facultatif)</value></data>
+  <data name="VelumStudioInvalidConnection" xml:space="preserve"><value>Utilisez une adresse ws:// ou wss://. Si elle est fournie, l’empreinte du certificat doit contenir 64 caractères hexadécimaux.</value></data>
+  <data name="RunHotKeyByName" xml:space="preserve">
+    <value>Déclencher un raccourci par son nom</value>
   </data>
 </root>

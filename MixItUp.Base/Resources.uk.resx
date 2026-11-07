@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -10662,16 +10662,16 @@ print(run())</value>
     <value>Використання Amazon Polly для функції перетворення тексту в мовлення є платною послугою з AWS, яку безпосередньо покриває Mix It Up, але існують обмеження щодо того, скільки ми можемо фінансово покрити за використання послуги для всіх користувачів. Щоб збалансувати це, ми обмежуємо використання мовлення Amazon Polly одним запитом кожні 5 хвилин. Користувачі можуть підключити власні облікові записи AWS, щоб усунути це обмеження, але всі витрати на використання Amazon Polly потім будуть оплачуватися з власного облікового запису AWS користувача. Щоб отримати інформацію про це налаштування, перейдіть за посиланням нижче:</value>
   </data>
   <data name="MicrosoftAzureSpeechInfo1" xml:space="preserve">
-    <value>Підключення служби Microsoft Azure Speech дає змогу підключити власний обліковий запис Microsoft Azure, щоб обійти обмеження швидкості використання за замовчуванням Microsoft Azure Speech за допомогою дії Text To Speech.</value>
+    <value>Для Microsoft Azure Speech потрібні власний ресурс Azure Speech, ключ підписки та регіон.</value>
   </data>
   <data name="MicrosoftAzureSpeechInfo2" xml:space="preserve">
-    <value>Використання Microsoft Azure Speech для функції перетворення тексту в мовлення є платною послугою з Microsoft Azure, яка покриває безпосередньо Mix It Up, але існують обмеження щодо того, скільки ми можемо фінансово покрити за використання служби для всіх користувачів. Щоб збалансувати це, ми обмежуємо використання мовлення Microsoft Azure одним запитом кожні 5 хвилин. Користувачі можуть підключити власні облікові записи Microsoft Azure, щоб усунути це обмеження, але всі витрати на використання Microsoft Azure Speech будуть оплачені з власного облікового запису Microsoft Azure користувача. Щоб отримати інформацію про це налаштування, перейдіть за посиланням нижче:</value>
+    <value>Mix It Up не надає спільний доступ до Azure Speech. Використання оплачується через ваш обліковий запис Azure за тарифами Microsoft. Підключіть ресурс за інструкцією нижче.</value>
   </data>
   <data name="NoCustomAmazonPollyAccount" xml:space="preserve">
     <value>Обліковий запис Amazon Polly не підключено, тому використання буде обмежено 1 дією кожні 5 хвилин. Щоб скасувати це обмеження, відвідайте розділ Amazon Polly на сторінці «Послуги», щоб підключити свій обліковий запис Amazon Polly.</value>
   </data>
   <data name="NoCustomMicrosoftAzureSpeechAccount" xml:space="preserve">
-    <value>Обліковий запис Microsoft Azure Speech не підключено, тому використання буде обмежено 1 дією кожні 5 хвилин. Щоб зняти це обмеження швидкості, відвідайте розділ Microsoft Azure Speech на сторінці «Служби», щоб підключити власний обліковий запис Microsoft Azure Speech.</value>
+    <value>Перш ніж використовувати голос, підключіть власний ресурс у розділі Сервіси &gt; Microsoft Azure Speech.</value>
   </data>
   <data name="TextToSpeechActionResponsiveVoicePitch" xml:space="preserve">
     <value>Висота (0% - 200%)</value>
@@ -12545,5 +12545,124 @@ print(run())</value>
   </data>
   <data name="VPZoneChannelPointsGrantFailed" xml:space="preserve">
     <value>Не вдалося нарахувати бали каналу VPZone. Потрібен прив'язаний до каналу ключ API з областю нарахування.</value>
+  </data>
+  <data name="NotYetRated" xml:space="preserve">
+    <value>Ще немає оцінок</value>
+  </data>
+  <data name="OBSStudioAutoStartReplayBuffer" xml:space="preserve">
+    <value>Автоматично запускати буфер повтору</value>
+  </data>
+  <data name="ToggleSourceVisibility" xml:space="preserve">
+    <value>Перемкнути видимість джерела</value>
+  </data>
+  <data name="SearchFirstOccurrenceInFile" xml:space="preserve">
+    <value>Знайти перший збіг у файлі</value>
+  </data>
+  <data name="SearchAndLoopInFile" xml:space="preserve">
+    <value>Знайти й перебрати збіги у файлі</value>
+  </data>
+  <data name="FileSearchLineNumberHint" xml:space="preserve">
+    <value>Результат містить знайдений рядок. Додайте linenumber до назви спеціального ідентифікатора, щоб отримати номер рядка (0, якщо збігів немає).</value>
+  </data>
+  <data name="ChangeChannelName" xml:space="preserve">
+    <value>Змінити назву каналу</value>
+  </data>
+  <data name="DiscordChannelNameInvalid" xml:space="preserve">
+    <value>Назва каналу має містити від 1 до 100 символів.</value>
+  </data>
+  <data name="DiscordManageChannelsRequired" xml:space="preserve">
+    <value>Боту Discord потрібен дозвіл «Керувати каналами». Підключіть Discord знову або надайте цей дозвіл його ролі й каналу.</value>
+  </data>
+  <data name="DiscardUnsavedCommandChanges" xml:space="preserve">
+    <value>У команді є незбережені зміни. Відкинути їх і закрити?</value>
+  </data>
+  <data name="HidePlatformActionsAndEvents" xml:space="preserve">
+    <value>Приховати дії та події платформ</value>
+  </data>
+  <data name="EndPoll" xml:space="preserve">
+    <value>Завершити опитування</value>
+  </data>
+  <data name="GetActivePoll" xml:space="preserve">
+    <value>Отримати активне опитування</value>
+  </data>
+  <data name="PollIdentifier" xml:space="preserve">
+    <value>ID опитування</value>
+  </data>
+  <data name="AllowMultipleSelections" xml:space="preserve">
+    <value>Дозволити кілька варіантів</value>
+  </data>
+  <data name="VeloraPollSettingsHint" xml:space="preserve">
+    <value>Введіть 2–6 варіантів, по одному в рядку, і тривалість 15–3600 секунд. Результати: $velorapoll і $velorapollid.</value>
+  </data>
+  <data name="CollectDiagnostics" xml:space="preserve">
+    <value>Зібрати й надіслати діагностику</value>
+  </data>
+  <data name="DiagnosticsAccessCode" xml:space="preserve">
+    <value>Введіть шестизначний код підтримки.</value>
+  </data>
+  <data name="DiagnosticsSuccess" xml:space="preserve">
+    <value>Діагностику додано до вашого запиту в підтримку.</value>
+  </data>
+  <data name="DiagnosticsFailure" xml:space="preserve">
+    <value>Діагностику надіслано не повністю. Повторіть надсилання тих самих підготовлених файлів або зверніться в підтримку.</value>
+  </data>
+  <data name="DiagnosticsPartialConsent" xml:space="preserve">
+    <value>Для деяких перевірок Windows потрібні права адміністратора. Надіслати доступну діагностику?</value>
+  </data>
+  <data name="DiagnosticsConsent" xml:space="preserve">
+    <value>Надіслати команді Mix It Up для цього запиту оригінали збережених налаштувань, базу даних, сім журналів, відомості про встановлення, Windows, мережу та перевірки інтеграцій? Дані у файлах не приховуються й можуть містити облікові дані та особисту інформацію.</value>
+  </data>
+  <data name="IUnderstand" xml:space="preserve">
+    <value>Я розумію й надаю згоду</value>
+  </data>
+  <data name="TwitchChannelSharedChatStarted" xml:space="preserve">
+    <value>Спільний чат Twitch розпочато</value>
+  </data>
+  <data name="TwitchChannelSharedChatEnded" xml:space="preserve">
+    <value>Спільний чат Twitch завершено</value>
+  </data>
+  <data name="ReconnectServices" xml:space="preserve">
+    <value>Повторно підключити сервіси</value>
+  </data>
+  <data name="RepeatCurrentSong" xml:space="preserve">
+    <value>Повторювати поточну пісню</value>
+  </data>
+  <data name="LaunchAtLogin" xml:space="preserve">
+    <value>Запускати Mix It Up під час входу у Windows</value>
+  </data>
+  <data name="TwitchMigrationFailed" xml:space="preserve">
+    <value>Оновлення підключення до Twitch не завершено. Увійдіть ще раз, щоб продовжити.</value>
+  </data>
+  <data name="TwitchMigrationAccountMismatch" xml:space="preserve">
+    <value>Цей вхід у Twitch не відповідає очікуваному обліковому запису або застосунку. Увійдіть у той самий обліковий запис Twitch і спробуйте ще раз.</value>
+  </data>
+  <data name="TwitchMigrationTitle" xml:space="preserve">
+    <value>Повторне підключення до Twitch</value>
+  </data>
+  <data name="TwitchMigrationPrompt" xml:space="preserve">
+    <value>Увійдіть у той самий обліковий запис стримера Twitch, щоб оновити підключення. Mix It Up перенесе свої нагороди за бали каналу й оновить пов’язані команди. Власні зображення нагород потрібно буде завантажити у Twitch знову.</value>
+  </data>
+  <data name="TwitchMigrationBotOptional" xml:space="preserve">
+    <value>Вхід в обліковий запис бота необов’язковий. Якщо пропустити цей крок, бот залишатиметься відключеним до повторного входу.</value>
+  </data>
+  <data name="TwitchMigrationSignedIn" xml:space="preserve">
+    <value>Вхід виконано</value>
+  </data>
+  <data name="MuteAudioSource" xml:space="preserve">
+    <value>Вимкнути звук джерела</value>
+  </data>
+  <data name="UnmuteAudioSource" xml:space="preserve">
+    <value>Увімкнути звук джерела</value>
+  </data>
+  <data name="ToggleAudioMute" xml:space="preserve">
+    <value>Перемкнути вимкнення звуку</value>
+  </data>
+  <data name="VelumStudio" xml:space="preserve"><value>Velum Studio</value></data>
+  <data name="VelumStudioInfo" xml:space="preserve"><value>Для віддалених підключень потрібен токен автентифікації. Локальні підключення знаходять токен автоматично. Залиште адресу порожньою для пошуку локального екземпляра.</value></data>
+  <data name="VelumStudioToken" xml:space="preserve"><value>Токен автентифікації (лише віддалено)</value></data>
+  <data name="VelumStudioFingerprint" xml:space="preserve"><value>Відбиток сертифіката (необов’язково)</value></data>
+  <data name="VelumStudioInvalidConnection" xml:space="preserve"><value>Використовуйте адресу ws:// або wss://. Якщо вказано відбиток сертифіката, він має містити 64 шістнадцяткові символи.</value></data>
+  <data name="RunHotKeyByName" xml:space="preserve">
+    <value>Запустити гарячу клавішу за назвою</value>
   </data>
 </root>

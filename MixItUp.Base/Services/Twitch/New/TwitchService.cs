@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -33,6 +34,9 @@ namespace MixItUp.Base.Services.Twitch.New
 
         private const string BaseAddressFormat = "https://api.twitch.tv/helix/";
 
+        internal const string LegacyClientID = "50ipfqzuqbv61wujxcm80zyzqwoqp1";
+        private readonly bool useLegacyApplication;
+
         public static DateTimeOffset GetTwitchDateTime(string dateTime)
         {
             return DateTimeOffsetExtensions.FromGeneralString(dateTime);
@@ -40,17 +44,105 @@ namespace MixItUp.Base.Services.Twitch.New
 
         public override string Name { get { return Resources.Twitch; } }
 
-        public override string ClientID { get { return "50ipfqzuqbv61wujxcm80zyzqwoqp1"; } }
-        public override string ClientSecret { get { return ServiceManager.Get<SecretsService>().GetSecret("TwitchSecret"); } }
+        public override string ClientID { get { return this.useLegacyApplication ? LegacyClientID : ServiceManager.Get<SecretsService>().GetSecret("TwitchClientIDV2"); } }
+        public override string ClientSecret { get { return ServiceManager.Get<SecretsService>().GetSecret(this.useLegacyApplication ? "TwitchSecret" : "TwitchSecretV2"); } }
 
         public override StreamingPlatformTypeEnum Platform { get { return StreamingPlatformTypeEnum.Twitch; } }
 
         public override bool IsConnected { get; protected set; }
 
-        public TwitchService(IEnumerable<string> scopes, bool isBotService = false)
+        protected override OAuthTokenModel OAuthToken
+        {
+            get { return base.OAuthToken; }
+            set
+            {
+                // Secrets are loaded after the platform sessions are constructed.
+                this.HttpClient.DefaultRequestHeaders.Remove("Client-Id");
+                this.HttpClient.AddHeader("Client-Id", this.ClientID);
+                base.OAuthToken = value;
+            }
+        }
+
+        public TwitchService(IEnumerable<string> scopes, bool isBotService = false, bool useLegacyApplication = false)
             : base(BaseAddressFormat, scopes, isBotService)
         {
-            this.HttpClient.AddHeader("Client-Id", this.ClientID);
+            this.useLegacyApplication = useLegacyApplication;
+        }
+
+        internal async Task<JObject> ValidateMigrationToken(OAuthTokenModel token, IEnumerable<string> scopes, string expectedUserID)
+        {
+            this.IsConnected = false;
+            if (string.IsNullOrWhiteSpace(token?.accessToken)) { return null; }
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("OAuth", token.accessToken);
+                using (HttpResponseMessage response = await client.GetAsync("https://id.twitch.tv/oauth2/validate"))
+                {
+                    if (response.StatusCode == HttpStatusCode.Unauthorized) { return null; }
+                    response.EnsureSuccessStatusCode();
+                    JObject validation = JObject.Parse(await response.Content.ReadAsStringAsync());
+                    if (!this.IsMigrationTokenUsable(validation, scopes, expectedUserID)) { return null; }
+                    this.OAuthToken = JSONSerializerHelper.Clone<OAuthTokenModel>(token);
+                    this.OAuthToken.clientID = this.ClientID;
+                    this.OAuthToken.ScopeList = OAuthTokenModel.GenerateScopeList(scopes);
+                    return validation;
+                }
+            }
+        }
+
+        private bool IsMigrationTokenUsable(JObject validation, IEnumerable<string> scopes, string expectedUserID)
+        {
+            if ((string)validation?["client_id"] != this.ClientID ||
+                string.IsNullOrEmpty((string)validation?["user_id"]) ||
+                (!string.IsNullOrEmpty(expectedUserID) && (string)validation["user_id"] != expectedUserID))
+            {
+                throw new InvalidOperationException(Resources.TwitchMigrationAccountMismatch);
+            }
+            HashSet<string> granted = new HashSet<string>(validation["scopes"]?.Values<string>() ?? Enumerable.Empty<string>());
+            return granted.IsSupersetOf(scopes) && validation["expires_in"]?.Type == JTokenType.Integer && (long)validation["expires_in"] >= 60;
+        }
+
+        internal async Task<List<CustomChannelPointRewardModel>> GetMigrationRewards(string broadcasterID)
+        {
+            try
+            {
+                JObject result = await this.HttpClient.GetJObjectAsync($"channel_points/custom_rewards?broadcaster_id={broadcasterID}&only_manageable_rewards=true");
+                if (!(result?["data"] is JArray rewards)) { throw new InvalidOperationException("Missing Twitch reward inventory"); }
+                return rewards.ToObject<List<CustomChannelPointRewardModel>>();
+            }
+            catch (HttpRestRequestException ex) when (ex.Response?.StatusCode == HttpStatusCode.Forbidden)
+            {
+                string message = await ex.Response.Content.ReadAsStringAsync();
+                JObject users = await this.HttpClient.GetJObjectAsync("users");
+                string broadcasterType = (string)users?["data"]?.FirstOrDefault()?["broadcaster_type"];
+                if (broadcasterType == string.Empty && message.Contains("affiliate", StringComparison.OrdinalIgnoreCase))
+                {
+                    return new List<CustomChannelPointRewardModel>();
+                }
+                throw;
+            }
+        }
+
+        internal async Task DeleteMigrationReward(string broadcasterID, Guid rewardID)
+        {
+            if (!await this.HttpClient.DeleteAsync($"channel_points/custom_rewards?broadcaster_id={broadcasterID}&id={rewardID}"))
+            {
+                throw new InvalidOperationException("Twitch reward deletion failed");
+            }
+        }
+
+        internal async Task<CustomChannelPointRewardModel> CreateMigrationReward(string broadcasterID, JObject fields)
+        {
+            JObject result = await this.HttpClient.PostAsync<JObject>($"channel_points/custom_rewards?broadcaster_id={broadcasterID}", AdvancedHttpClient.CreateContentFromObject(fields));
+            CustomChannelPointRewardModel reward = result?["data"]?.FirstOrDefault()?.ToObject<CustomChannelPointRewardModel>();
+            if (reward == null || reward.id == Guid.Empty) { throw new InvalidOperationException("Missing Twitch reward creation result"); }
+            return reward;
+        }
+
+        internal async Task RestoreMigrationReward(string broadcasterID, Guid rewardID, bool enabled, bool paused)
+        {
+            JObject fields = new JObject { ["is_enabled"] = enabled, ["is_paused"] = paused };
+            await this.HttpClient.PatchAsync<JObject>($"channel_points/custom_rewards?broadcaster_id={broadcasterID}&id={rewardID}", AdvancedHttpClient.CreateContentFromObject(fields));
         }
 
         public async Task<UserModel> GetNewAPICurrentUser()
@@ -951,6 +1043,7 @@ namespace MixItUp.Base.Services.Twitch.New
                 { "scope", ConvertClientScopesToString(scopes) },
                 { "response_type", "code" },
                 { "redirect_uri", LocalOAuthKestrelServer.REDIRECT_URL },
+                { "state", state },
             };
 
             if (forceApprovalPrompt)
@@ -975,7 +1068,7 @@ namespace MixItUp.Base.Services.Twitch.New
             };
             FormUrlEncodedContent content = new FormUrlEncodedContent(parameters.AsEnumerable());
 
-            OAuthTokenModel token = await this.HttpClient.PostAsync<OAuthTokenModel>("https://id.twitch.tv/oauth2/token?" + await content.ReadAsStringAsync());
+            OAuthTokenModel token = await RequestToken(content);
             if (token != null)
             {
                 token.clientID = ClientID;
@@ -996,12 +1089,28 @@ namespace MixItUp.Base.Services.Twitch.New
             };
             FormUrlEncodedContent content = new FormUrlEncodedContent(parameters.AsEnumerable());
 
-            OAuthTokenModel newToken = await this.HttpClient.PostAsync<OAuthTokenModel>("https://id.twitch.tv/oauth2/token?" + await content.ReadAsStringAsync());
+            if (this.OAuthToken.clientID != this.ClientID)
+            {
+                throw new InvalidOperationException(Resources.TwitchMigrationAccountMismatch);
+            }
+            OAuthTokenModel newToken = await RequestToken(content);
             if (newToken != null)
             {
                 newToken.clientID = OAuthToken.clientID;
                 newToken.ScopeList = OAuthToken.ScopeList;
                 OAuthToken = newToken;
+            }
+            else { throw new InvalidOperationException(Resources.AuthenticationTokenExchangeFailed); }
+        }
+
+        private static async Task<OAuthTokenModel> RequestToken(FormUrlEncodedContent content)
+        {
+            // OAuth credentials and token responses must not go through REST body logging.
+            using (HttpClient client = new HttpClient())
+            using (HttpResponseMessage response = await client.PostAsync("https://id.twitch.tv/oauth2/token", content))
+            {
+                response.EnsureSuccessStatusCode();
+                return JSONSerializerHelper.DeserializeFromString<OAuthTokenModel>(await response.Content.ReadAsStringAsync());
             }
         }
 

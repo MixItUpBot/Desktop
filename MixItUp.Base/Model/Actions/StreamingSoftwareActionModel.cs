@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Commands;
+using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Services;
 using MixItUp.Base.Services.External;
 using MixItUp.Base.Util;
@@ -16,6 +16,8 @@ namespace MixItUp.Base.Model.Actions
         OBSStudio,
         XSplit,
         StreamlabsDesktop,
+        MeldStudio,
+        VelumStudio,
     }
 
     public enum StreamingSoftwareActionTypeEnum
@@ -40,6 +42,10 @@ namespace MixItUp.Base.Model.Actions
         ImageSource,
         MediaSource,
         SaveSourceScreenshot,
+        ToggleSourceVisibility,
+        MuteAudioSource,
+        UnmuteAudioSource,
+        ToggleAudioMute,
     }
 
     [DataContract]
@@ -239,6 +245,52 @@ namespace MixItUp.Base.Model.Actions
 
         protected override async Task PerformInternal(CommandParametersModel parameters)
         {
+            if (this.SelectedStreamingSoftware == StreamingSoftwareTypeEnum.VelumStudio)
+            {
+                await ServiceManager.Get<VelumStudioService>().PerformAction(this.ActionType,
+                    await ReplaceStringWithSpecialModifiers(this.ItemName ?? string.Empty, parameters),
+                    await ReplaceStringWithSpecialModifiers(this.ParentName ?? string.Empty, parameters), this.Visible,
+                    await ReplaceStringWithSpecialModifiers(this.SourceText ?? string.Empty, parameters));
+                return;
+            }
+            if (this.SelectedStreamingSoftware == StreamingSoftwareTypeEnum.MeldStudio)
+            {
+                MeldStudioService meld = ServiceManager.Get<MeldStudioService>();
+                if (!meld.IsEnabled || (!meld.IsConnected && !(await meld.AutomaticConnect()).Success))
+                {
+                    Logger.Log(LogLevel.Error, "Meld Studio is not connected");
+                    return;
+                }
+
+                string itemName = await ReplaceStringWithSpecialModifiers(this.ItemName ?? string.Empty, parameters);
+                string parentName = await ReplaceStringWithSpecialModifiers(this.ParentName ?? string.Empty, parameters);
+                switch (this.ActionType)
+                {
+                    case StreamingSoftwareActionTypeEnum.Scene:
+                        await meld.ShowScene(itemName);
+                        break;
+                    case StreamingSoftwareActionTypeEnum.SourceVisibility:
+                        await meld.ChangeLayerState(parentName, itemName, this.Visible);
+                        break;
+                    case StreamingSoftwareActionTypeEnum.ToggleSourceVisibility:
+                        await meld.ChangeLayerState(parentName, itemName, null);
+                        break;
+                    case StreamingSoftwareActionTypeEnum.StartStopStream:
+                        await meld.ChangeStreamState(null);
+                        break;
+                    case StreamingSoftwareActionTypeEnum.StartStopRecording:
+                        await meld.ChangeRecordState(null);
+                        break;
+                    case StreamingSoftwareActionTypeEnum.SaveReplayBuffer:
+                        await meld.RecordClip();
+                        break;
+                    default:
+                        Logger.Log(LogLevel.Error, "Streaming Software action is not supported by Meld Studio: " + this.ActionType);
+                        break;
+                }
+                return;
+            }
+
             IStreamingSoftwareService ssService = null;
             if (this.SelectedStreamingSoftware == StreamingSoftwareTypeEnum.OBSStudio)
             {
@@ -316,6 +368,17 @@ namespace MixItUp.Base.Model.Actions
                             await ssService.SetSceneCollection(name);
                         }
                     }
+                    else if (this.ActionType == StreamingSoftwareActionTypeEnum.MuteAudioSource ||
+                        this.ActionType == StreamingSoftwareActionTypeEnum.UnmuteAudioSource ||
+                        this.ActionType == StreamingSoftwareActionTypeEnum.ToggleAudioMute)
+                    {
+                        if (ssService is IOBSStudioService obs && !string.IsNullOrWhiteSpace(name))
+                        {
+                            await obs.SetInputMute(name, this.ActionType == StreamingSoftwareActionTypeEnum.ToggleAudioMute
+                                ? (bool?)null : this.ActionType == StreamingSoftwareActionTypeEnum.MuteAudioSource);
+                        }
+                        else { Logger.Log(LogLevel.Error, Resources.NotSupportedStreamingSoftware); }
+                    }
                     else if (!string.IsNullOrEmpty(name))
                     {
                         if (this.ActionType == StreamingSoftwareActionTypeEnum.WebBrowserSource && !string.IsNullOrEmpty(this.SourceURL))
@@ -358,6 +421,10 @@ namespace MixItUp.Base.Model.Actions
                             {
                                 await ssService.SaveSourceScreenshot(name, await ReplaceStringWithSpecialModifiers(this.ImageFormat, parameters), await ReplaceStringWithSpecialModifiers(this.ImageFilePath, parameters), this.ImageWidth, this.ImageHeight);
                             }
+                        }
+                        else if (this.ActionType == StreamingSoftwareActionTypeEnum.ToggleSourceVisibility)
+                        {
+                            await ssService.ToggleSourceVisibility(parentName, name);
                         }
                         else
                         {

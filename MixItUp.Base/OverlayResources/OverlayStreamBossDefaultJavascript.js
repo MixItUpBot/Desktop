@@ -8,7 +8,7 @@ const bossHealthBarRemaining = document.getElementById("bossHealthBarRemaining")
 
 function damage(data)
 {
-    bossHealth.innerHTML = data.BossHealth;
+    bossHealth.textContent = data.BossHealth;
     adjustProgress(data);
     performAnimation("{DamageAnimationFramework}", "{DamageAnimationName}", main).then((result) =>
     {
@@ -18,7 +18,7 @@ function damage(data)
 
 function heal(data)
 {
-    bossHealth.innerHTML = data.BossHealth;
+    bossHealth.textContent = data.BossHealth;
     adjustProgress(data);
     performAnimation("{HealingAnimationFramework}", "{HealingAnimationName}", main).then((result) =>
     {
@@ -29,9 +29,9 @@ function heal(data)
 function newboss(data)
 {
     bossImage.src = data.BossImage;
-    bossName.innerHTML = data.BossName;
-    bossHealth.innerHTML = data.BossHealth;
-    bossMaxHealth.innerHTML = data.BossMaxHealth;
+    bossName.textContent = data.BossName;
+    bossHealth.textContent = data.BossHealth;
+    bossMaxHealth.textContent = data.BossMaxHealth;
     adjustProgress(data);
     performAnimation("{NewBossAnimationFramework}", "{NewBossAnimationName}", main).then((result) =>
     {

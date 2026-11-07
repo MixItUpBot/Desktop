@@ -66,6 +66,7 @@ namespace MixItUp.Base.Web
                 </html>";
 
         private string authorizationCode;
+        private string expectedState;
 
         public LocalOAuthKestrelServer() { }
 
@@ -98,6 +99,7 @@ namespace MixItUp.Base.Web
 
         public async Task<Result<string>> GetAuthorizationCode(string authorizationURL, CancellationToken cancellationToken)
         {
+            this.expectedState = System.Web.HttpUtility.ParseQueryString(new Uri(authorizationURL).Query)["state"];
             Result portAvailability = CheckRedirectPortAvailability();
             if (!portAvailability.Success)
             {
@@ -243,6 +245,11 @@ namespace MixItUp.Base.Web
 
         protected override async Task ProcessConnection(HttpContext context)
         {
+            if (!string.IsNullOrEmpty(this.expectedState) && this.GetRequestParameter(context, "state") != this.expectedState)
+            {
+                await this.CloseConnection(context, StatusCodes.Status400BadRequest, string.Empty);
+                return;
+            }
             int statusCode = StatusCodes.Status500InternalServerError;
             string result = string.Empty;
 

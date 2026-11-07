@@ -1,5 +1,7 @@
 using MixItUp.Base.Model.Actions;
 using MixItUp.Base.Util;
+using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -19,6 +21,8 @@ namespace MixItUp.Base.ViewModel.Actions
             set
             {
                 this.selectedActionType = value;
+                this.NotifyPropertyChanged(nameof(this.ShowPoll));
+                if (this.ShowPoll && string.IsNullOrEmpty(this.Amount)) { this.Amount = "120"; }
                 this.NotifyPropertyChanged();
                 this.NotifyPropertyChanged(nameof(this.ShowText));
                 this.NotifyPropertyChanged(nameof(this.TextHint));
@@ -53,6 +57,12 @@ namespace MixItUp.Base.ViewModel.Actions
         }
         private string amount;
 
+        public bool ShowPoll => this.SelectedActionType == VeloraActionType.CreatePoll;
+        public string PollOptions { get { return this.pollOptions; } set { this.pollOptions = value; this.NotifyPropertyChanged(); } }
+        private string pollOptions;
+        public bool PollMultiple { get { return this.pollMultiple; } set { this.pollMultiple = value; this.NotifyPropertyChanged(); } }
+        private bool pollMultiple;
+
         public string Reason
         {
             get { return this.reason; }
@@ -82,7 +92,7 @@ namespace MixItUp.Base.ViewModel.Actions
                 return this.SelectedActionType == VeloraActionType.SetTitle
                     || this.SelectedActionType == VeloraActionType.SetGame
                     || this.SelectedActionType == VeloraActionType.Announce
-                    || this.SelectedActionType == VeloraActionType.Raid;
+                    || this.SelectedActionType == VeloraActionType.Raid || this.ShowPoll || this.SelectedActionType == VeloraActionType.EndPoll;
             }
         }
 
@@ -116,7 +126,7 @@ namespace MixItUp.Base.ViewModel.Actions
             {
                 return this.SelectedActionType == VeloraActionType.TimeoutUser
                     || this.SelectedActionType == VeloraActionType.GrantChannelPoints
-                    || this.SelectedActionType == VeloraActionType.DeductChannelPoints;
+                    || this.SelectedActionType == VeloraActionType.DeductChannelPoints || this.ShowPoll;
             }
         }
 
@@ -136,6 +146,8 @@ namespace MixItUp.Base.ViewModel.Actions
             {
                 switch (this.SelectedActionType)
                 {
+                    case VeloraActionType.CreatePoll: return Resources.Question;
+                    case VeloraActionType.EndPoll: return Resources.PollIdentifier;
                     case VeloraActionType.SetTitle: return MixItUp.Base.Resources.Title;
                     case VeloraActionType.SetGame: return MixItUp.Base.Resources.Game;
                     case VeloraActionType.Announce: return MixItUp.Base.Resources.Message;
@@ -147,7 +159,7 @@ namespace MixItUp.Base.ViewModel.Actions
 
         public string AmountHint
         {
-            get { return this.SelectedActionType == VeloraActionType.TimeoutUser ? MixItUp.Base.Resources.Duration : MixItUp.Base.Resources.Amount; }
+            get { return this.SelectedActionType == VeloraActionType.TimeoutUser || this.ShowPoll ? MixItUp.Base.Resources.DurationSeconds : MixItUp.Base.Resources.Amount; }
         }
 
         public VeloraActionEditorControlViewModel(VeloraActionModel action)
@@ -160,12 +172,23 @@ namespace MixItUp.Base.ViewModel.Actions
             this.Reason = action.Reason;
             this.SelectedAnnounceColor = action.AnnounceColor;
             this.SendAsStreamer = action.SendAsStreamer;
+            this.PollOptions = action.PollOptions;
+            this.PollMultiple = action.PollMultiple;
         }
 
         public VeloraActionEditorControlViewModel() : base() { }
 
         public override async Task<Result> Validate()
         {
+            if (this.ShowPoll)
+            {
+                int count = (this.PollOptions ?? string.Empty).Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Count(o => !string.IsNullOrWhiteSpace(o));
+                if (string.IsNullOrWhiteSpace(this.PollOptions) || (!SpecialIdentifierStringBuilder.ContainsSpecialIdentifiers(this.PollOptions) && (count < 2 || count > 6)) ||
+                    (!SpecialIdentifierStringBuilder.ContainsSpecialIdentifiers(this.Amount) && (!int.TryParse(this.Amount, out int duration) || duration < 15 || duration > 3600)))
+                {
+                    return new Result(Resources.VeloraPollSettingsHint);
+                }
+            }
             if (this.ShowText && string.IsNullOrEmpty(this.Text))
             {
                 return new Result(MixItUp.Base.Resources.ValidValueMustBeSpecified);
@@ -189,6 +212,8 @@ namespace MixItUp.Base.ViewModel.Actions
             action.Reason = this.Reason;
             action.AnnounceColor = this.SelectedAnnounceColor;
             action.SendAsStreamer = this.SendAsStreamer;
+            action.PollOptions = this.PollOptions;
+            action.PollMultiple = this.PollMultiple;
             return Task.FromResult<ActionModelBase>(action);
         }
     }

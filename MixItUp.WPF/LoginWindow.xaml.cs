@@ -1,4 +1,4 @@
-﻿using MixItUp.Base;
+using MixItUp.Base;
 using MixItUp.Base.Model.API;
 using MixItUp.Base.Model.API.Files.V2;
 using MixItUp.Base.Model.Settings;
@@ -98,10 +98,11 @@ namespace MixItUp.WPF
                 this.RestoreBackupButton.IsEnabled = false;
             }
 
-            if (ChannelSession.AppSettings.AutoLogInID != Guid.Empty)
+            Guid autoLoginProfileID = StartupOptions.GetAutoLoginProfileID(Environment.GetCommandLineArgs(), ChannelSession.AppSettings.AutoLogInID);
+            if (!isBackupOnlyMode && autoLoginProfileID != Guid.Empty)
             {
                 var allSettings = this.streamerSettings.ToList();
-                SettingsV3Model autoLogInSettings = allSettings.FirstOrDefault(s => s.ID == ChannelSession.AppSettings.AutoLogInID);
+                SettingsV3Model autoLogInSettings = allSettings.FirstOrDefault(s => s.ID == autoLoginProfileID);
                 if (autoLogInSettings != null)
                 {
                     await Task.Delay(5000);

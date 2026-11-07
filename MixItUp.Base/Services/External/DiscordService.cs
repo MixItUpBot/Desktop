@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model;
+using MixItUp.Base.Model;
 using MixItUp.Base.Util;
 using MixItUp.Base.Web;
 using Microsoft.AspNetCore.Http;
@@ -950,6 +950,18 @@ namespace MixItUp.Base.Services.External
             catch (Exception ex) { Logger.Log(ex); }
         }
 
+        public async Task<Result> ChangeChannelName(string channelID, string name)
+        {
+            if (string.IsNullOrWhiteSpace(name) || name.Length > 100) { return new Result(Resources.DiscordChannelNameInvalid); }
+            using (HttpResponseMessage response = await this.PatchAsync("channels/" + channelID,
+                AdvancedHttpClient.CreateContentFromObject(new JObject() { ["name"] = name })))
+            {
+                if (response.StatusCode == System.Net.HttpStatusCode.Forbidden) { return new Result(Resources.DiscordManageChannelsRequired); }
+                response.EnsureSuccessStatusCode();
+                return new Result();
+            }
+        }
+
         public async Task<DiscordChannel> GetChannel(string channelID)
         {
             try
@@ -1103,9 +1115,9 @@ namespace MixItUp.Base.Services.External
     public class DiscordService : OAuthExternalServiceBase, IDisposable
     {
         /// <summary>
-        /// View Channels, Send Messages, Send TTS Messages, Embed Links, Attach Files, Mention Everyone, Use External Emojis, Connect, Mute Members, Deafen Members
+        /// Manage Channels, View Channels, Send Messages, Send TTS Messages, Embed Links, Attach Files, Mention Everyone, Use External Emojis, Connect, Mute Members, Deafen Members
         /// </summary>
-        public const string ClientBotPermissions = "14081024";
+        public const string ClientBotPermissions = "14081040";
 
         public event EventHandler<string> OnUserJoinedVoice = delegate { };
         public event EventHandler<string> OnUserLeftVoice = delegate { };
@@ -1283,6 +1295,13 @@ namespace MixItUp.Base.Services.External
         }
 
         public async Task<DiscordChannel> GetChannel(string channelID) { return await this.botService.GetChannel(channelID); }
+
+        public async Task<Result> ChangeChannelName(string channelID, string name)
+        {
+            Result result = await this.botService.ChangeChannelName(channelID, name);
+            if (result.Success) { this.cachedChannelsTimestamp = DateTimeOffset.MinValue; }
+            return result;
+        }
 
         public async Task<IEnumerable<DiscordEmoji>> GetEmojis(DiscordServer server) { return await this.botService.GetEmojis(server); }
 

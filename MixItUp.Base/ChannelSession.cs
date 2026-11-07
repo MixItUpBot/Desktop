@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model;
+using MixItUp.Base.Model;
 using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Currency;
 using MixItUp.Base.Model.Settings;
@@ -147,6 +147,7 @@ namespace MixItUp.Base
             ServiceManager.Add(new MtionStudioService());
             ServiceManager.Add(new TikTokTTSService());
             ServiceManager.Add(new MeldStudioService());
+            ServiceManager.Add(new VelumStudioService());
             ServiceManager.Add(new EdgeTTSService());
             ServiceManager.Add(new GoogleCloudTTSService());
 
@@ -219,6 +220,12 @@ namespace MixItUp.Base
         {
             ChannelSession.Settings = settings;
 
+            Result twitchMigration = await TwitchAuthenticationMigrationService.Migrate(settings);
+            if (!twitchMigration.Success)
+            {
+                return twitchMigration;
+            }
+
             Dictionary<StreamingPlatformTypeEnum, Task<Result>> streamerTasks = new Dictionary<StreamingPlatformTypeEnum, Task<Result>>();
             Dictionary<StreamingPlatformTypeEnum, Task<Result>> botTasks = new Dictionary<StreamingPlatformTypeEnum, Task<Result>>();
 
@@ -281,6 +288,96 @@ namespace MixItUp.Base
             return new Result();
         }
 
+        private static Dictionary<IExternalService, OAuthTokenModel> GetConfiguredExternalServices()
+        {
+            Dictionary<IExternalService, OAuthTokenModel> externalServiceToConnect = new Dictionary<IExternalService, OAuthTokenModel>();
+            if (ChannelSession.Settings.StreamlabsOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<StreamlabsService>()] = ChannelSession.Settings.StreamlabsOAuthToken; }
+            if (ChannelSession.Settings.StreamElementsOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<StreamElementsService>()] = ChannelSession.Settings.StreamElementsOAuthToken; }
+            if (ChannelSession.Settings.RainMakerOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<RainmakerService>()] = ChannelSession.Settings.RainMakerOAuthToken; }
+            if (ChannelSession.Settings.TipeeeStreamOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<TipeeeStreamService>()] = ChannelSession.Settings.TipeeeStreamOAuthToken; }
+            if (ChannelSession.Settings.TreatStreamOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<TreatStreamService>()] = ChannelSession.Settings.TreatStreamOAuthToken; }
+            if (ChannelSession.Settings.StreamlootsOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<StreamlootsService>()] = ChannelSession.Settings.StreamlootsOAuthToken; }
+            if (ChannelSession.Settings.TiltifyOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<TiltifyService>()] = ChannelSession.Settings.TiltifyOAuthToken; }
+            if (ChannelSession.Settings.JustGivingPageShortName != null) { externalServiceToConnect[ServiceManager.Get<JustGivingService>()] = null; }
+            if (ChannelSession.Settings.IFTTTOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<IFTTTService>()] = ChannelSession.Settings.IFTTTOAuthToken; }
+            if (!string.IsNullOrEmpty(ChannelSession.Settings.DonorDriveParticipantID)) { externalServiceToConnect[ServiceManager.Get<DonorDriveService>()] = null; }
+            if (ChannelSession.Settings.PatreonOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<PatreonService>()] = ChannelSession.Settings.PatreonOAuthToken; }
+            if (ChannelSession.Settings.DiscordOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<DiscordService>()] = ChannelSession.Settings.DiscordOAuthToken; }
+            if (ChannelSession.Settings.PixelChatOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<PixelChatService>()] = ChannelSession.Settings.PixelChatOAuthToken; }
+            if (ChannelSession.Settings.VTubeStudioOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<VTubeStudioService>()] = ChannelSession.Settings.VTubeStudioOAuthToken; }
+            if (ChannelSession.Settings.TITSOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<TITSService>()] = ChannelSession.Settings.TITSOAuthToken; }
+            if (ChannelSession.Settings.LumiaStreamOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<LumiaStreamService>()] = ChannelSession.Settings.LumiaStreamOAuthToken; }
+            if (ChannelSession.Settings.PulsoidOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<PulsoidService>()] = ChannelSession.Settings.PulsoidOAuthToken; }
+            if (ChannelSession.Settings.PallyOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<PallyService>()] = ChannelSession.Settings.PallyOAuthToken; }
+            if (ChannelSession.Settings.EnableVoicemodStudio) { externalServiceToConnect[ServiceManager.Get<IVoicemodService>()] = null; }
+            if (ChannelSession.Settings.EnableCrowdControl) { externalServiceToConnect[ServiceManager.Get<CrowdControlService>()] = null; }
+            if (ChannelSession.Settings.EnableSAMMI) { externalServiceToConnect[ServiceManager.Get<SAMMIService>()] = null; }
+            if (ServiceManager.Get<IOBSStudioService>().IsEnabled) { externalServiceToConnect[ServiceManager.Get<IOBSStudioService>()] = null; }
+            if (ServiceManager.Get<StreamlabsDesktopService>().IsEnabled) { externalServiceToConnect[ServiceManager.Get<StreamlabsDesktopService>()] = null; }
+            if (ServiceManager.Get<XSplitService>().IsEnabled) { externalServiceToConnect[ServiceManager.Get<XSplitService>()] = null; }
+            if (ChannelSession.Settings.PolyPopPortNumber > 0) { externalServiceToConnect[ServiceManager.Get<PolyPopService>()] = null; }
+            if (ChannelSession.Settings.TTSMonsterOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<ITTSMonsterService>()] = ChannelSession.Settings.TTSMonsterOAuthToken; }
+            if (ChannelSession.Settings.TTSMonsterAPIOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<ITTSMonsterAPIService>()] = ChannelSession.Settings.TTSMonsterAPIOAuthToken; }
+            if (ChannelSession.Settings.VTSPogEnabled) { externalServiceToConnect[ServiceManager.Get<VTSPogService>()] = null; }
+            if (ChannelSession.Settings.EnableOverlay) { externalServiceToConnect[ServiceManager.Get<OverlayV3Service>()] = null; }
+            if (ChannelSession.Settings.MtionStudioEnabled) { externalServiceToConnect[ServiceManager.Get<MtionStudioService>()] = null; }
+            if (ChannelSession.Settings.VeadotubeEnabled) { externalServiceToConnect[ServiceManager.Get<VeadotubeService>()] = null; }
+            if (ChannelSession.Settings.VConnectEnabled) { externalServiceToConnect[ServiceManager.Get<VConnectService>()] = null; }
+            if (ChannelSession.Settings.RahiTuberEnabled) { externalServiceToConnect[ServiceManager.Get<RahiTuberService>()] = null; }
+            if (ChannelSession.Settings.EnableDeveloperAPI) { externalServiceToConnect[ServiceManager.Get<IDeveloperAPIService>()] = null; }
+            if (ChannelSession.Settings.EnableMCPServer) { externalServiceToConnect[ServiceManager.Get<IMCPService>()] = null; }
+            return externalServiceToConnect;
+        }
+
+        public static async Task<IReadOnlyList<string>> ReconnectServices()
+        {
+            List<string> failures = new List<string>();
+            foreach (ServiceBase service in ServiceManager.GetAll<ServiceBase>().Distinct())
+            {
+                if (!service.IsEnabled || service.IsConnected)
+                {
+                    continue;
+                }
+                try
+                {
+                    Result result = await service.AutomaticConnect();
+                    if (result == null || !result.Success)
+                    {
+                        failures.Add(service.Name);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(ex);
+                    failures.Add(service.Name);
+                }
+            }
+            foreach (var service in GetConfiguredExternalServices())
+            {
+                if (service.Key.IsConnected)
+                {
+                    continue;
+                }
+
+                try
+                {
+                    Result result = service.Key is IOAuthExternalService oauth && service.Value != null
+                        ? await oauth.Connect(service.Value)
+                        : await service.Key.Connect();
+                    if (result == null || !result.Success)
+                    {
+                        failures.Add(service.Key.Name);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(ex);
+                    failures.Add(service.Key.Name);
+                }
+            }
+            return failures;
+        }
+
         public static async Task<Result> InitializeSession()
         {
             if (ChannelSession.Settings == null)
@@ -292,8 +389,8 @@ namespace MixItUp.Base
             {
                 await ServiceManager.Get<SettingsService>().Initialize(ChannelSession.Settings);
 
-                await ServiceManager.Get<ITelemetryService>().Connect();
                 ServiceManager.Get<ITelemetryService>().SetUserID(ChannelSession.Settings.TelemetryUserID);
+                await ServiceManager.Get<ITelemetryService>().Connect();
 
                 foreach (StreamingPlatformSessionBase streamingPlatformSession in StreamingPlatforms.GetConnectedPlatformSessions())
                 {
@@ -363,42 +460,7 @@ namespace MixItUp.Base
                 }
 
                 // Connect External Services
-                Dictionary<IExternalService, OAuthTokenModel> externalServiceToConnect = new Dictionary<IExternalService, OAuthTokenModel>();
-                if (ChannelSession.Settings.StreamlabsOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<StreamlabsService>()] = ChannelSession.Settings.StreamlabsOAuthToken; }
-                if (ChannelSession.Settings.StreamElementsOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<StreamElementsService>()] = ChannelSession.Settings.StreamElementsOAuthToken; }
-                if (ChannelSession.Settings.RainMakerOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<RainmakerService>()] = ChannelSession.Settings.RainMakerOAuthToken; }
-                if (ChannelSession.Settings.TipeeeStreamOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<TipeeeStreamService>()] = ChannelSession.Settings.TipeeeStreamOAuthToken; }
-                if (ChannelSession.Settings.TreatStreamOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<TreatStreamService>()] = ChannelSession.Settings.TreatStreamOAuthToken; }
-                if (ChannelSession.Settings.StreamlootsOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<StreamlootsService>()] = ChannelSession.Settings.StreamlootsOAuthToken; }
-                if (ChannelSession.Settings.TiltifyOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<TiltifyService>()] = ChannelSession.Settings.TiltifyOAuthToken; }
-                if (ChannelSession.Settings.JustGivingPageShortName != null) { externalServiceToConnect[ServiceManager.Get<JustGivingService>()] = null; }
-                if (ChannelSession.Settings.IFTTTOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<IFTTTService>()] = ChannelSession.Settings.IFTTTOAuthToken; }
-                if (!string.IsNullOrEmpty(ChannelSession.Settings.DonorDriveParticipantID)) { externalServiceToConnect[ServiceManager.Get<DonorDriveService>()] = null; }
-                if (ChannelSession.Settings.PatreonOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<PatreonService>()] = ChannelSession.Settings.PatreonOAuthToken; }
-                if (ChannelSession.Settings.DiscordOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<DiscordService>()] = ChannelSession.Settings.DiscordOAuthToken; }
-                if (ChannelSession.Settings.PixelChatOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<PixelChatService>()] = ChannelSession.Settings.PixelChatOAuthToken; }
-                if (ChannelSession.Settings.VTubeStudioOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<VTubeStudioService>()] = ChannelSession.Settings.VTubeStudioOAuthToken; }
-                if (ChannelSession.Settings.TITSOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<TITSService>()] = ChannelSession.Settings.TITSOAuthToken; }
-                if (ChannelSession.Settings.LumiaStreamOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<LumiaStreamService>()] = ChannelSession.Settings.LumiaStreamOAuthToken; }
-                if (ChannelSession.Settings.PulsoidOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<PulsoidService>()] = ChannelSession.Settings.PulsoidOAuthToken; }
-                if (ChannelSession.Settings.PallyOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<PallyService>()] = ChannelSession.Settings.PallyOAuthToken; }
-                if (ChannelSession.Settings.EnableVoicemodStudio) { externalServiceToConnect[ServiceManager.Get<IVoicemodService>()] = null; }
-                if (ChannelSession.Settings.EnableCrowdControl) { externalServiceToConnect[ServiceManager.Get<CrowdControlService>()] = null; }
-                if (ChannelSession.Settings.EnableSAMMI) { externalServiceToConnect[ServiceManager.Get<SAMMIService>()] = null; }
-                if (ServiceManager.Get<IOBSStudioService>().IsEnabled) { externalServiceToConnect[ServiceManager.Get<IOBSStudioService>()] = null; }
-                if (ServiceManager.Get<StreamlabsDesktopService>().IsEnabled) { externalServiceToConnect[ServiceManager.Get<StreamlabsDesktopService>()] = null; }
-                if (ServiceManager.Get<XSplitService>().IsEnabled) { externalServiceToConnect[ServiceManager.Get<XSplitService>()] = null; }
-                if (ChannelSession.Settings.PolyPopPortNumber > 0) { externalServiceToConnect[ServiceManager.Get<PolyPopService>()] = null; }
-                if (ChannelSession.Settings.TTSMonsterOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<ITTSMonsterService>()] = ChannelSession.Settings.TTSMonsterOAuthToken; }
-                if (ChannelSession.Settings.TTSMonsterAPIOAuthToken != null) { externalServiceToConnect[ServiceManager.Get<ITTSMonsterAPIService>()] = ChannelSession.Settings.TTSMonsterAPIOAuthToken; }
-                if (ChannelSession.Settings.VTSPogEnabled) { externalServiceToConnect[ServiceManager.Get<VTSPogService>()] = null; }
-                if (ChannelSession.Settings.EnableOverlay) { externalServiceToConnect[ServiceManager.Get<OverlayV3Service>()] = null; }
-                if (ChannelSession.Settings.MtionStudioEnabled) { externalServiceToConnect[ServiceManager.Get<MtionStudioService>()] = null; }
-                if (ChannelSession.Settings.VeadotubeEnabled) { externalServiceToConnect[ServiceManager.Get<VeadotubeService>()] = null; }
-                if (ChannelSession.Settings.VConnectEnabled) { externalServiceToConnect[ServiceManager.Get<VConnectService>()] = null; }
-                if (ChannelSession.Settings.RahiTuberEnabled) { externalServiceToConnect[ServiceManager.Get<RahiTuberService>()] = null; }
-                if (ChannelSession.Settings.EnableDeveloperAPI) { externalServiceToConnect[ServiceManager.Get<IDeveloperAPIService>()] = null; }
-                if (ChannelSession.Settings.EnableMCPServer) { externalServiceToConnect[ServiceManager.Get<IMCPService>()] = null; }
+                Dictionary<IExternalService, OAuthTokenModel> externalServiceToConnect = GetConfiguredExternalServices();
 
                 if (externalServiceToConnect.Count > 0)
                 {

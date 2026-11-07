@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model;
+using MixItUp.Base.Model;
 using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Currency;
 using MixItUp.Base.Model.Kick.Kicks;
@@ -101,6 +101,8 @@ namespace MixItUp.Base.Services
         TwitchChannelHypeTrainProgress = 281,
         TwitchChannelHypeTrainEnd = 282,
         TwitchChannelHypeTrainLevelUp = 283,
+        TwitchChannelSharedChatStarted = 284,
+        TwitchChannelSharedChatEnded = 285,
 
         TwitchChannelUserWarned = 290,
         TwitchChannelSuspiciousUserMessage = 291,

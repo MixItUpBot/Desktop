@@ -65,6 +65,7 @@ namespace MixItUp.WPF.Util
                 return;
             }
 
+            editor.TextArea.TextView.SetResourceReference(ICSharpCode.AvalonEdit.Rendering.TextView.LinkTextForegroundBrushProperty, "MaterialDesign.Brush.Primary");
             editor.TextChanged += Editor_TextChanged;
             editor.SetValue(TextChangedHookedProperty, true);
         }

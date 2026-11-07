@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Actions;
+using MixItUp.Base.Model.Actions;
 using MixItUp.Base.Model.Requirements;
 using MixItUp.Base.Model.User;
 using MixItUp.Base.Services;
@@ -52,6 +52,9 @@ namespace MixItUp.Base.Model.Commands.Games
 
         [DataMember]
         public int Probability { get; set; }
+
+        [DataMember]
+        public string ProbabilityExpression { get; set; }
 
         [DataMember]
         public double Payout { get; set; }

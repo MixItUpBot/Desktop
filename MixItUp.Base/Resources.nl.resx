@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -10663,16 +10663,16 @@ Alleen inschakelen als je weet wat je doet. Doorgaan?</value>
     <value>Het gebruik van Amazon Polly voor tekst-naar-spraak-functionaliteit is een betaalde dienst met AWS die Mix It Up rechtstreeks dekt, maar er zijn grenzen aan hoeveel we financieel kunnen dekken voor het gebruik van de dienst door alle gebruikers. Om dat in evenwicht te brengen, beperken we het gebruik van tekst-naar-spraak van Amazon Polly tot één verzoek per vijf minuten. Gebruikers kunnen hun eigen AWS-accounts koppelen om deze beperking op te heffen, maar alle kosten voor het gebruik van Amazon Polly worden dan gefactureerd op het eigen AWS-account van de gebruiker. Voor informatie over het instellen hiervan kunt u de onderstaande link raadplegen:</value>
   </data>
   <data name="MicrosoftAzureSpeechInfo1" xml:space="preserve">
-    <value>Met de connectiviteit van de Microsoft Azure Speech-service kunt u uw eigen Microsoft Azure-account verbinden om de snelheidsbeperking van het standaardgebruik van Microsoft Azure Speech te omzeilen met de Tekst-naar-spraakactie.</value>
+    <value>Microsoft Azure Speech vereist je eigen Azure Speech-resource, abonnementssleutel en regio.</value>
   </data>
   <data name="MicrosoftAzureSpeechInfo2" xml:space="preserve">
-    <value>Het gebruik van Microsoft Azure Speech voor tekst-naar-spraak-functionaliteit is een betaalde service van Microsoft Azure die rechtstreeks door Mix It Up wordt gedekt, maar er zijn grenzen aan hoeveel we financieel kunnen dekken voor het gebruik van de service door alle gebruikers. Om dat in evenwicht te brengen, beperken we het gebruik van Microsoft Azure Speech tekst-naar-spraak tot één verzoek per 5 minuten. Gebruikers kunnen hun eigen Microsoft Azure-accounts verbinden om deze beperking op te heffen, maar alle kosten voor Microsoft Azure Speech-gebruik worden dan gefactureerd op het eigen Microsoft Azure-account van de gebruiker. Voor informatie over het instellen hiervan kunt u de onderstaande link raadplegen:</value>
+    <value>Mix It Up biedt geen gedeelde toegang tot Azure Speech. Gebruik wordt volgens de tarieven van Microsoft aan je Azure-account gefactureerd. Volg de onderstaande handleiding om je resource te verbinden.</value>
   </data>
   <data name="NoCustomAmazonPollyAccount" xml:space="preserve">
     <value>Er is geen Amazon Polly-account gekoppeld, daarom is het gebruik beperkt tot 1 actie per 5 minuten. Om deze tarieflimiet te verwijderen, gaat u naar het Amazon Polly-gedeelte op de Services-pagina om uw eigen Amazon Polly-account te koppelen.</value>
   </data>
   <data name="NoCustomMicrosoftAzureSpeechAccount" xml:space="preserve">
-    <value>Er is geen Microsoft Azure Speech-account gekoppeld, daarom is het gebruik beperkt tot 1 actie per 5 minuten. Als u deze tarieflimiet wilt verwijderen, gaat u naar de sectie Microsoft Azure Speech op de pagina Services om uw eigen Microsoft Azure Speech-account te koppelen.</value>
+    <value>Verbind je eigen resource onder Services &gt; Microsoft Azure Speech voordat je deze stem gebruikt.</value>
   </data>
   <data name="TextToSpeechActionResponsiveVoicePitch" xml:space="preserve">
     <value>Toonhoogte (0% - 200%)</value>
@@ -12515,5 +12515,124 @@ Dit kun je doen door op Kanaalpuntbeloning maken te klikken op de Kanaalpuntenpa
   </data>
   <data name="VPZoneChannelPointsGrantFailed" xml:space="preserve">
     <value>Toekennen van VPZone-kanaalpunten is mislukt. Er is een kanaalgebonden API-sleutel met de grant-scope vereist.</value>
+  </data>
+  <data name="NotYetRated" xml:space="preserve">
+    <value>Nog niet beoordeeld</value>
+  </data>
+  <data name="OBSStudioAutoStartReplayBuffer" xml:space="preserve">
+    <value>Replaybuffer automatisch starten</value>
+  </data>
+  <data name="ToggleSourceVisibility" xml:space="preserve">
+    <value>Zichtbaarheid van bron omschakelen</value>
+  </data>
+  <data name="SearchFirstOccurrenceInFile" xml:space="preserve">
+    <value>Eerste overeenkomst in bestand zoeken</value>
+  </data>
+  <data name="SearchAndLoopInFile" xml:space="preserve">
+    <value>Bestand doorzoeken en overeenkomsten doorlopen</value>
+  </data>
+  <data name="FileSearchLineNumberHint" xml:space="preserve">
+    <value>Het resultaat bevat de overeenkomende regel. Voeg linenumber toe aan de naam van je speciale identificatie voor het regelnummer (0 indien niet gevonden).</value>
+  </data>
+  <data name="ChangeChannelName" xml:space="preserve">
+    <value>Kanaalnaam wijzigen</value>
+  </data>
+  <data name="DiscordChannelNameInvalid" xml:space="preserve">
+    <value>Kanaalnamen moeten 1 tot 100 tekens bevatten.</value>
+  </data>
+  <data name="DiscordManageChannelsRequired" xml:space="preserve">
+    <value>De Discord-bot heeft de machtiging Kanalen beheren nodig. Verbind Discord opnieuw of verleen deze machtiging aan zijn rol en kanaal.</value>
+  </data>
+  <data name="DiscardUnsavedCommandChanges" xml:space="preserve">
+    <value>Er zijn niet-opgeslagen opdrachtwijzigingen. Verwerpen en sluiten?</value>
+  </data>
+  <data name="HidePlatformActionsAndEvents" xml:space="preserve">
+    <value>Platformacties en gebeurtenissen verbergen</value>
+  </data>
+  <data name="EndPoll" xml:space="preserve">
+    <value>Peiling beëindigen</value>
+  </data>
+  <data name="GetActivePoll" xml:space="preserve">
+    <value>Actieve peiling ophalen</value>
+  </data>
+  <data name="PollIdentifier" xml:space="preserve">
+    <value>Peiling-ID</value>
+  </data>
+  <data name="AllowMultipleSelections" xml:space="preserve">
+    <value>Meerdere keuzes toestaan</value>
+  </data>
+  <data name="VeloraPollSettingsHint" xml:space="preserve">
+    <value>Voer 2–6 opties in, één per regel, en een duur van 15–3600 seconden. Resultaten: $velorapoll en $velorapollid.</value>
+  </data>
+  <data name="CollectDiagnostics" xml:space="preserve">
+    <value>Diagnostische gegevens verzamelen en uploaden</value>
+  </data>
+  <data name="DiagnosticsAccessCode" xml:space="preserve">
+    <value>Voer de supportcode van zes tekens in.</value>
+  </data>
+  <data name="DiagnosticsSuccess" xml:space="preserve">
+    <value>Diagnostische gegevens zijn aan je supportverzoek toegevoegd.</value>
+  </data>
+  <data name="DiagnosticsFailure" xml:space="preserve">
+    <value>De diagnostische gegevens zijn niet volledig geüpload. Probeer dezelfde voorbereide bestanden opnieuw te verzenden of neem contact op met support.</value>
+  </data>
+  <data name="DiagnosticsPartialConsent" xml:space="preserve">
+    <value>Voor sommige Windows-controles zijn beheerdersrechten nodig. Beschikbare diagnostische gegevens uploaden?</value>
+  </data>
+  <data name="DiagnosticsConsent" xml:space="preserve">
+    <value>Originele opgeslagen instellingen, de database, zeven logbestanden, installatieoverzicht, Windows- en netwerkgegevens en integratiecontroles naar het Mix It Up-team sturen voor dit supportverzoek? Bestanden worden niet bewerkt en kunnen inloggegevens en persoonlijke informatie bevatten.</value>
+  </data>
+  <data name="IUnderstand" xml:space="preserve">
+    <value>Ik begrijp het en geef toestemming</value>
+  </data>
+  <data name="TwitchChannelSharedChatStarted" xml:space="preserve">
+    <value>Gedeelde Twitch-chat gestart</value>
+  </data>
+  <data name="TwitchChannelSharedChatEnded" xml:space="preserve">
+    <value>Gedeelde Twitch-chat beëindigd</value>
+  </data>
+  <data name="ReconnectServices" xml:space="preserve">
+    <value>Services opnieuw verbinden</value>
+  </data>
+  <data name="RepeatCurrentSong" xml:space="preserve">
+    <value>Huidig nummer herhalen</value>
+  </data>
+  <data name="LaunchAtLogin" xml:space="preserve">
+    <value>Mix It Up starten bij aanmelden bij Windows</value>
+  </data>
+  <data name="TwitchMigrationFailed" xml:space="preserve">
+    <value>Het bijwerken van de Twitch-verbinding is niet voltooid. Log opnieuw in om door te gaan.</value>
+  </data>
+  <data name="TwitchMigrationAccountMismatch" xml:space="preserve">
+    <value>Deze Twitch-aanmelding komt niet overeen met het verwachte account of de verwachte applicatie. Log in met hetzelfde Twitch-account en probeer het opnieuw.</value>
+  </data>
+  <data name="TwitchMigrationTitle" xml:space="preserve">
+    <value>Opnieuw verbinden met Twitch</value>
+  </data>
+  <data name="TwitchMigrationPrompt" xml:space="preserve">
+    <value>Log in met hetzelfde Twitch-streameraccount om de verbinding bij te werken. Mix It Up zet zijn kanaalpuntenbeloningen over en werkt gekoppelde commando’s bij. Aangepaste beloningsafbeeldingen moeten opnieuw in Twitch worden geüpload.</value>
+  </data>
+  <data name="TwitchMigrationBotOptional" xml:space="preserve">
+    <value>Inloggen met de bot is optioneel. Als je dit overslaat, wordt de bot losgekoppeld totdat je er opnieuw mee inlogt.</value>
+  </data>
+  <data name="TwitchMigrationSignedIn" xml:space="preserve">
+    <value>Ingelogd</value>
+  </data>
+  <data name="MuteAudioSource" xml:space="preserve">
+    <value>Audiobron dempen</value>
+  </data>
+  <data name="UnmuteAudioSource" xml:space="preserve">
+    <value>Dempen van audiobron opheffen</value>
+  </data>
+  <data name="ToggleAudioMute" xml:space="preserve">
+    <value>Audio dempen omschakelen</value>
+  </data>
+  <data name="VelumStudio" xml:space="preserve"><value>Velum Studio</value></data>
+  <data name="VelumStudioInfo" xml:space="preserve"><value>Externe verbindingen vereisen een authenticatietoken. Lokale verbindingen vinden het token automatisch. Laat het adres leeg om een lokale instantie te vinden.</value></data>
+  <data name="VelumStudioToken" xml:space="preserve"><value>Authenticatietoken (alleen extern)</value></data>
+  <data name="VelumStudioFingerprint" xml:space="preserve"><value>Certificaatvingerafdruk (optioneel)</value></data>
+  <data name="VelumStudioInvalidConnection" xml:space="preserve"><value>Gebruik een ws://- of wss://-adres. Een opgegeven certificaatvingerafdruk moet 64 hexadecimale tekens bevatten.</value></data>
+  <data name="RunHotKeyByName" xml:space="preserve">
+    <value>Sneltoets op naam uitvoeren</value>
   </data>
 </root>

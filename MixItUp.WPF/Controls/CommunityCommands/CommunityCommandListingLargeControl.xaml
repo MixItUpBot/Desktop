@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="MixItUp.WPF.Controls.CommunityCommands.CommunityCommandListingLargeControl"
+<UserControl x:Class="MixItUp.WPF.Controls.CommunityCommands.CommunityCommandListingLargeControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:Controls="clr-namespace:MixItUp.WPF.Controls"
@@ -34,7 +34,7 @@
                     <ColumnDefinition Width="5" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="5" />
-                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="5" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="5" />
@@ -47,7 +47,7 @@
                 <TextBlock Grid.Column="4" Text="{Binding Username}" VerticalAlignment="Center" />
 
                 <Controls:MaterialSymbolIcon Grid.Column="6" IconName="star" FontSize="{DynamicResource MIU.IconSize.16}" VerticalAlignment="Center" Margin="0,0,0,1" Foreground="{DynamicResource MaterialDesign.Brush.Foreground}" />
-                <TextBlock Grid.Column="8" Text="{Binding AverageRating}" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="8" Text="{Binding AverageRatingText}" VerticalAlignment="Center" />
 
                 <Controls:MaterialSymbolIcon Grid.Column="10" IconName="download" FontSize="{DynamicResource MIU.IconSize.16}" VerticalAlignment="Center" Foreground="{DynamicResource MaterialDesign.Brush.Foreground}" />
                 <TextBlock Grid.Column="12" Text="{Binding DownloadsString}" VerticalAlignment="Center" />

@@ -51,6 +51,8 @@ namespace MixItUp.WPF.Services
 
         public bool Repeat { get { return ChannelSession.Settings.MusicPlayerRepeat; } }
 
+        public bool RepeatOne { get { return this.Repeat && ChannelSession.Settings.MusicPlayerRepeatOne; } }
+
         public TimeSpan CurrentPosition
         {
             get
@@ -107,6 +109,44 @@ namespace MixItUp.WPF.Services
         private WaveStream currentWaveStream;
 
         private SemaphoreSlim sempahore = new SemaphoreSlim(1);
+
+        private readonly SemaphoreSlim albumArtLock = new SemaphoreSlim(1, 1);
+        private string albumArtCacheKey;
+        private string albumArtCacheValue = string.Empty;
+
+        public async Task<string> GetAlbumArt(MusicPlayerSong song)
+        {
+            if (string.IsNullOrEmpty(song?.FilePath)) { return string.Empty; }
+            await this.albumArtLock.WaitAsync();
+            try
+            {
+                FileInfo file = new FileInfo(song.FilePath);
+                if (!file.Exists) { return string.Empty; }
+                string key = file.FullName + "|" + file.LastWriteTimeUtc.Ticks + "|" + file.Length;
+                if (key != this.albumArtCacheKey)
+                {
+                    string image = await Task.Run(() =>
+                    {
+                        Track track = new Track(file.FullName);
+                        PictureInfo picture = track.EmbeddedPictures?.FirstOrDefault(p => p.PicType == PictureInfo.PIC_TYPE.Front) ?? track.EmbeddedPictures?.FirstOrDefault();
+                        if (picture?.PictureData == null || picture.PictureData.Length == 0 || picture.MimeType?.StartsWith("image/", StringComparison.OrdinalIgnoreCase) != true)
+                        {
+                            return string.Empty;
+                        }
+                        return "data:" + picture.MimeType + ";base64," + Convert.ToBase64String(picture.PictureData);
+                    });
+                    this.albumArtCacheKey = key;
+                    this.albumArtCacheValue = image;
+                }
+                return this.albumArtCacheValue;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(ex);
+                return string.Empty;
+            }
+            finally { this.albumArtLock.Release(); }
+        }
 
         public async Task Play()
         {
@@ -413,6 +453,17 @@ namespace MixItUp.WPF.Services
         public Task SetRepeat(bool enabled)
         {
             ChannelSession.Settings.MusicPlayerRepeat = enabled;
+            ChannelSession.Settings.MusicPlayerRepeatOne = false;
+            return Task.CompletedTask;
+        }
+
+        public Task SetRepeatOne(bool enabled)
+        {
+            ChannelSession.Settings.MusicPlayerRepeatOne = enabled;
+            if (enabled)
+            {
+                ChannelSession.Settings.MusicPlayerRepeat = true;
+            }
             return Task.CompletedTask;
         }
 
@@ -922,6 +973,23 @@ namespace MixItUp.WPF.Services
                     if (this.stopOnSpecificSongCompletion && song == this.stopOnSpecificSong)
                     {
                         await this.Stop();
+                    }
+                    else if (this.RepeatOne)
+                    {
+                        await this.sempahore.WaitAsync();
+                        try
+                        {
+                            if (this.currentWaveOutEvent == waveOutEvent && this.CurrentSong == song && this.State == MusicPlayerState.Playing)
+                            {
+                                this.currentWaveStream?.Dispose();
+                                this.currentWaveStream = null;
+                                this.PlayInternal(song);
+                            }
+                        }
+                        finally
+                        {
+                            this.sempahore.Release();
+                        }
                     }
                     else
                     {

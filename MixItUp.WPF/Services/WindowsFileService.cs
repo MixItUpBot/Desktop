@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using MixItUp.Base.Services;
 using MixItUp.Base.Util;
 using System;
@@ -23,6 +23,13 @@ namespace MixItUp.WPF.Services
 
         private static SemaphoreSlim fileLock = new SemaphoreSlim(1);
         private static readonly HttpClient httpClient = new HttpClient();
+
+        public static async Task WithFileSnapshot(Func<Task> snapshot)
+        {
+            await fileLock.WaitAsync();
+            try { await snapshot(); }
+            finally { fileLock.Release(); }
+        }
 
         public string TextFileFilter() { return MixItUp.Base.Resources.TextFileFormatFilter; }
         public string ImageFileFilter() { return MixItUp.Base.Resources.ImageFileFormatFilter; }

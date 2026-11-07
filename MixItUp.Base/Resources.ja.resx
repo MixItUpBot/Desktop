@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -10662,16 +10662,16 @@ sendParentMessage({ タイプ: "ScriptComplete"、ID: "{ID}"、結果: 結果 })
     <value>テキスト読み上げ機能のための Amazon Polly の使用は、Mix It Up が直接カバーする AWS の有料サービスですが、全ユーザーにわたるサービスの使用量を経済的にカバーできる金額には限界があります。そのバランスを取るために、Amazon Polly のテキスト読み上げの使用を 5 分ごとに 1 つのリクエストに制限しています。ユーザーは自分の AWS アカウントに接続してこの制限を解除できますが、Amazon Polly の使用にかかるすべての費用はユーザー自身の AWS アカウントに請求されます。この設定の詳細については、以下のリンクを参照してください。</value>
   </data>
   <data name="MicrosoftAzureSpeechInfo1" xml:space="preserve">
-    <value>Microsoft Azure Speech サービス接続を使用すると、独自の Microsoft Azure アカウントに接続して、Text To Speech アクションによる Microsoft Azure Speech のデフォルト使用のレート制限を回避できます。</value>
+    <value>Microsoft Azure Speechには、ご自身のAzure Speechリソース、サブスクリプションキー、リージョンが必要です。</value>
   </data>
   <data name="MicrosoftAzureSpeechInfo2" xml:space="preserve">
-    <value>Microsoft Azure Speech のテキスト読み上げ機能の使用は、Mix It Up が直接カバーする Microsoft Azure の有料サービスですが、すべてのユーザーにわたるサービスの使用量を経済的にカバーできる金額には制限があります。このバランスを取るために、Microsoft Azure Speech のテキスト読み上げの使用を 5 分ごとに 1 つのリクエストに制限しています。ユーザーは自分の Microsoft Azure アカウントに接続してこの制限を解除できますが、Microsoft Azure Speech の使用にかかる費用はすべてユーザー自身の Microsoft Azure アカウントに請求されます。この設定の詳細については、以下のリンクを参照してください。</value>
+    <value>Mix It Upは共有のAzure Speechアクセスを提供しません。使用料はMicrosoftの料金に従ってご自身のAzureアカウントに請求されます。以下のガイドに従ってリソースを接続してください。</value>
   </data>
   <data name="NoCustomAmazonPollyAccount" xml:space="preserve">
     <value>Amazon Polly アカウントが接続されていないため、使用は 5 分ごとに 1 アクションに制限されます。このレート制限を削除するには、「サービス」ページの「Amazon Polly」セクションにアクセスして、自分の Amazon Polly アカウントに接続してください。</value>
   </data>
   <data name="NoCustomMicrosoftAzureSpeechAccount" xml:space="preserve">
-    <value>Microsoft Azure Speech アカウントが接続されていないため、使用は 5 分ごとに 1 アクションに制限されます。このレート制限を削除するには、サービス ページの Microsoft Azure Speech セクションにアクセスして、独自の Microsoft Azure Speech アカウントに接続してください。</value>
+    <value>この音声を使用する前に、サービス &gt; Microsoft Azure Speechでご自身のリソースを接続してください。</value>
   </data>
   <data name="TextToSpeechActionResponsiveVoicePitch" xml:space="preserve">
     <value>ピッチ (0% ～ 200%)</value>
@@ -12514,5 +12514,124 @@ Mix It Upを使用するには、少なくとも1つのストリーミング・�
   </data>
   <data name="VPZoneChannelPointsGrantFailed" xml:space="preserve">
     <value>VPZone チャンネルポイントの付与に失敗しました。付与スコープを持つチャンネル専用のAPIキーが必要です。</value>
+  </data>
+  <data name="NotYetRated" xml:space="preserve">
+    <value>まだ評価がありません</value>
+  </data>
+  <data name="OBSStudioAutoStartReplayBuffer" xml:space="preserve">
+    <value>リプレイバッファを自動的に開始</value>
+  </data>
+  <data name="ToggleSourceVisibility" xml:space="preserve">
+    <value>ソースの表示を切り替え</value>
+  </data>
+  <data name="SearchFirstOccurrenceInFile" xml:space="preserve">
+    <value>ファイル内の最初の一致を検索</value>
+  </data>
+  <data name="SearchAndLoopInFile" xml:space="preserve">
+    <value>ファイル内を検索して一致ごとに繰り返す</value>
+  </data>
+  <data name="FileSearchLineNumberHint" xml:space="preserve">
+    <value>結果には一致した行が入ります。特殊識別子名に linenumber を追加すると行番号を取得できます（一致なしの場合は0）。</value>
+  </data>
+  <data name="ChangeChannelName" xml:space="preserve">
+    <value>チャンネル名を変更</value>
+  </data>
+  <data name="DiscordChannelNameInvalid" xml:space="preserve">
+    <value>チャンネル名は1～100文字で入力してください。</value>
+  </data>
+  <data name="DiscordManageChannelsRequired" xml:space="preserve">
+    <value>Discordボットには「チャンネルの管理」権限が必要です。Discordに再接続するか、ボットのロールとチャンネルにこの権限を付与してください。</value>
+  </data>
+  <data name="DiscardUnsavedCommandChanges" xml:space="preserve">
+    <value>コマンドに未保存の変更があります。破棄して閉じますか？</value>
+  </data>
+  <data name="HidePlatformActionsAndEvents" xml:space="preserve">
+    <value>プラットフォームのアクションとイベントを非表示</value>
+  </data>
+  <data name="EndPoll" xml:space="preserve">
+    <value>投票を終了</value>
+  </data>
+  <data name="GetActivePoll" xml:space="preserve">
+    <value>進行中の投票を取得</value>
+  </data>
+  <data name="PollIdentifier" xml:space="preserve">
+    <value>投票ID</value>
+  </data>
+  <data name="AllowMultipleSelections" xml:space="preserve">
+    <value>複数選択を許可</value>
+  </data>
+  <data name="VeloraPollSettingsHint" xml:space="preserve">
+    <value>選択肢を1行に1つ、2～6個入力し、時間を15～3600秒で指定してください。結果: $velorapoll と $velorapollid。</value>
+  </data>
+  <data name="CollectDiagnostics" xml:space="preserve">
+    <value>診断情報を収集してアップロード</value>
+  </data>
+  <data name="DiagnosticsAccessCode" xml:space="preserve">
+    <value>6文字のサポートコードを入力してください。</value>
+  </data>
+  <data name="DiagnosticsSuccess" xml:space="preserve">
+    <value>診断情報をサポートリクエストにアップロードしました。</value>
+  </data>
+  <data name="DiagnosticsFailure" xml:space="preserve">
+    <value>診断情報のアップロードが完了していません。同じ準備済みファイルで再試行するか、サポートにお問い合わせください。</value>
+  </data>
+  <data name="DiagnosticsPartialConsent" xml:space="preserve">
+    <value>一部のWindowsチェックには管理者権限が必要です。取得できた診断情報をアップロードしますか？</value>
+  </data>
+  <data name="DiagnosticsConsent" xml:space="preserve">
+    <value>このサポートリクエストのために、保存済み設定の原本、データベース、7つのログ、インストール一覧、Windowsとネットワークの詳細、連携チェックをMix It Upチームに送信しますか？ファイルは編集されず、認証情報や個人情報が含まれる場合があります。</value>
+  </data>
+  <data name="IUnderstand" xml:space="preserve">
+    <value>内容を理解し、同意します</value>
+  </data>
+  <data name="TwitchChannelSharedChatStarted" xml:space="preserve">
+    <value>Twitch共有チャット開始</value>
+  </data>
+  <data name="TwitchChannelSharedChatEnded" xml:space="preserve">
+    <value>Twitch共有チャット終了</value>
+  </data>
+  <data name="ReconnectServices" xml:space="preserve">
+    <value>サービスに再接続</value>
+  </data>
+  <data name="RepeatCurrentSong" xml:space="preserve">
+    <value>現在の曲をリピート</value>
+  </data>
+  <data name="LaunchAtLogin" xml:space="preserve">
+    <value>Windows にサインインしたときに Mix It Up を起動する</value>
+  </data>
+  <data name="TwitchMigrationFailed" xml:space="preserve">
+    <value>Twitch 接続の更新が完了しませんでした。もう一度ログインして続行してください。</value>
+  </data>
+  <data name="TwitchMigrationAccountMismatch" xml:space="preserve">
+    <value>この Twitch ログインは、想定されたアカウントまたはアプリケーションと一致しません。同じ Twitch アカウントでログインし、もう一度お試しください。</value>
+  </data>
+  <data name="TwitchMigrationTitle" xml:space="preserve">
+    <value>Twitch に再接続</value>
+  </data>
+  <data name="TwitchMigrationPrompt" xml:space="preserve">
+    <value>接続を更新するには、同じ Twitch 配信者アカウントでログインしてください。Mix It Up が管理するチャンネルポイント報酬を移行し、関連するコマンドを更新します。報酬のカスタム画像は Twitch で再度アップロードする必要があります。</value>
+  </data>
+  <data name="TwitchMigrationBotOptional" xml:space="preserve">
+    <value>ボットのログインは任意です。スキップすると、再度ログインするまでボットは切断されます。</value>
+  </data>
+  <data name="TwitchMigrationSignedIn" xml:space="preserve">
+    <value>ログイン済み</value>
+  </data>
+  <data name="MuteAudioSource" xml:space="preserve">
+    <value>音声ソースをミュート</value>
+  </data>
+  <data name="UnmuteAudioSource" xml:space="preserve">
+    <value>音声ソースのミュートを解除</value>
+  </data>
+  <data name="ToggleAudioMute" xml:space="preserve">
+    <value>音声ミュートを切り替え</value>
+  </data>
+  <data name="VelumStudio" xml:space="preserve"><value>Velum Studio</value></data>
+  <data name="VelumStudioInfo" xml:space="preserve"><value>リモート接続には認証トークンが必要です。ローカル接続ではトークンを自動取得します。ローカルの実行中インスタンスを検出するには、アドレスを空欄にしてください。</value></data>
+  <data name="VelumStudioToken" xml:space="preserve"><value>認証トークン（リモート接続のみ）</value></data>
+  <data name="VelumStudioFingerprint" xml:space="preserve"><value>証明書のフィンガープリント（任意）</value></data>
+  <data name="VelumStudioInvalidConnection" xml:space="preserve"><value>ws:// または wss:// のアドレスを使用してください。証明書のフィンガープリントを指定する場合は、64 桁の16進数で入力してください。</value></data>
+  <data name="RunHotKeyByName" xml:space="preserve">
+    <value>名前でホットキーを実行</value>
   </data>
 </root>

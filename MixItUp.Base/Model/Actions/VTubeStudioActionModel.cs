@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Commands;
+using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Services;
 using MixItUp.Base.Services.External;
 using MixItUp.Base.Util;
@@ -13,6 +13,7 @@ namespace MixItUp.Base.Model.Actions
         LoadModel,
         MoveModel,
         RunHotKey,
+        RunHotKeyByName,
     }
 
     [DataContract]
@@ -57,6 +58,9 @@ namespace MixItUp.Base.Model.Actions
         [DataMember]
         public string HotKeyID { get; set; }
 
+        [DataMember]
+        public string HotKeyName { get; set; }
+
         public VTubeStudioActionModel(VTubeStudioActionTypeEnum actionType)
             : base(ActionTypeEnum.VTubeStudio)
         {
@@ -86,6 +90,15 @@ namespace MixItUp.Base.Model.Actions
                 else if (this.ActionType == VTubeStudioActionTypeEnum.MoveModel)
                 {
                     await ServiceManager.Get<VTubeStudioService>().MoveModel(this.MovementTimeInSeconds, this.MovementRelative, this.MovementX, this.MovementY, this.Rotation, this.Size);
+                }
+                else if (this.ActionType == VTubeStudioActionTypeEnum.RunHotKeyByName)
+                {
+                    string name = await ReplaceStringWithSpecialModifiers(this.HotKeyName, parameters);
+                    if (!string.IsNullOrWhiteSpace(name))
+                    {
+                        // VTube Studio resolves names against the model loaded at execution time.
+                        await ServiceManager.Get<VTubeStudioService>().RunHotKey(name);
+                    }
                 }
                 else if (this.ActionType == VTubeStudioActionTypeEnum.RunHotKey)
                 {

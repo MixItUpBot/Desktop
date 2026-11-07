@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.ViewModel.Settings;
+using MixItUp.Base.ViewModel.Settings;
 using MixItUp.Base.Util;
 using MixItUp.WPF.Windows.MissingFilesCheck;
 using System.Threading.Tasks;
@@ -29,6 +29,11 @@ namespace MixItUp.WPF.Controls.Settings
         protected override async Task OnVisibilityChanged()
         {
             await this.InitializeInternal();
+        }
+
+        private void Diagnostics_Click(object sender, RoutedEventArgs e)
+        {
+            new MixItUp.WPF.Windows.DiagnosticsWindow { Owner = System.Windows.Window.GetWindow(this) }.ShowDialog();
         }
 
         private async void MissingFilesButton_Click(object sender, RoutedEventArgs e)

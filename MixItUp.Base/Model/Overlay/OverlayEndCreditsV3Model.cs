@@ -179,7 +179,7 @@ namespace MixItUp.Base.Model.Overlay
 
             if (this.Type == OverlayEndCreditsSectionV3Type.HTML)
             {
-                items.Add(await SpecialIdentifierStringBuilder.ProcessSpecialIdentifiers(this.ItemTemplate, new CommandParametersModel()));
+                items.Add(await OverlayHTMLHelper.ProcessSpecialIdentifiers(this.ItemTemplate, new CommandParametersModel()));
                 return items;
             }
             else if (this.Type == OverlayEndCreditsSectionV3Type.PatreonMembers)
@@ -190,11 +190,8 @@ namespace MixItUp.Base.Model.Overlay
             {
                 foreach (var item in this.customTracking.ToList())
                 {
-                    string text = OverlayV3Service.ReplaceProperty(this.ItemTemplate, TextPropertyName, item.Item2);
-                    if (SpecialIdentifierStringBuilder.ContainsSpecialIdentifiers(text))
-                    {
-                        await SpecialIdentifierStringBuilder.ProcessSpecialIdentifiers(text, new CommandParametersModel(item.Item1));
-                    }
+                    string text = await OverlayHTMLHelper.ProcessSpecialIdentifiers(this.ItemTemplate, new CommandParametersModel(item.Item1),
+                        properties: new Dictionary<string, object> { [TextPropertyName] = item.Item2 });
                     items.Add(text);
                 }
                 return items;
@@ -202,7 +199,7 @@ namespace MixItUp.Base.Model.Overlay
 
             foreach (var item in this.itemTracking.ToList())
             {
-                string text = OverlayV3Service.ReplaceProperty(this.ItemTemplate, UsernamePropertyName, item.Key.DisplayName);
+                Dictionary<string, object> replacements = new Dictionary<string, object> { [UsernamePropertyName] = item.Key.DisplayName };
                 switch (this.Type)
                 {
                     case OverlayEndCreditsSectionV3Type.Raids:
@@ -217,15 +214,11 @@ namespace MixItUp.Base.Model.Overlay
                     case OverlayEndCreditsSectionV3Type.ChannelPoints:
                     case OverlayEndCreditsSectionV3Type.YouTubeJewels:
                     case OverlayEndCreditsSectionV3Type.Streamloots:
-                        text = OverlayV3Service.ReplaceProperty(text, AmountPropertyName, item.Value.ToNumberDisplayString());
+                        replacements[AmountPropertyName] = item.Value.ToNumberDisplayString();
                         break;
                 }
 
-                if (SpecialIdentifierStringBuilder.ContainsSpecialIdentifiers(text))
-                {
-                    text = await SpecialIdentifierStringBuilder.ProcessSpecialIdentifiers(text, new CommandParametersModel(item.Key));
-                }
-
+                string text = await OverlayHTMLHelper.ProcessSpecialIdentifiers(this.ItemTemplate, new CommandParametersModel(item.Key), properties: replacements);
                 items.Add(text);
             }
             return items.OrderBy(i => i);
@@ -260,13 +253,12 @@ namespace MixItUp.Base.Model.Overlay
                     continue;
                 }
 
-                string text = OverlayV3Service.ReplaceProperty(this.ItemTemplate, UsernamePropertyName, name);
-                text = OverlayV3Service.ReplaceProperty(text, AmountPropertyName, CurrencyHelper.ToCurrencyString(member.Amount));
-
-                if (SpecialIdentifierStringBuilder.ContainsSpecialIdentifiers(text))
-                {
-                    text = await SpecialIdentifierStringBuilder.ProcessSpecialIdentifiers(text, new CommandParametersModel());
-                }
+                string text = await OverlayHTMLHelper.ProcessSpecialIdentifiers(this.ItemTemplate, new CommandParametersModel(),
+                    properties: new Dictionary<string, object>
+                    {
+                        [UsernamePropertyName] = name,
+                        [AmountPropertyName] = CurrencyHelper.ToCurrencyString(member.Amount)
+                    });
 
                 items.Add(text);
             }

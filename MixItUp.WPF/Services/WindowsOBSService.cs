@@ -63,7 +63,12 @@ namespace MixItUp.WPF.Services
         public async Task<Result> Connect()
         {
             Interlocked.Exchange(ref this.manualDisconnectRequested, 0);
-            return await this.ConnectInternal();
+            Result result = await this.ConnectInternal();
+            if (!result.Success && this.IsEnabled)
+            {
+                this.TryStartReconnectLoop();
+            }
+            return result;
         }
 
         public async Task Disconnect()
@@ -104,6 +109,24 @@ namespace MixItUp.WPF.Services
                     sceneName = await this.OBSWebsocketV5.GetCurrentSceneName();
                 }
                 await this.OBSWebsocketV5.SetSourceRender(sourceName, visibility, sceneName);
+                return true;
+            });
+        }
+
+        public Task<bool> SetInputMute(string inputName, bool? muted)
+        {
+            return this.ExecuteOBSCommand(() => this.OBSWebsocketV5.SetInputMute(inputName, muted));
+        }
+
+        public async Task ToggleSourceVisibility(string sceneName, string sourceName)
+        {
+            await this.ExecuteOBSCommand(async () =>
+            {
+                if (string.IsNullOrEmpty(sceneName))
+                {
+                    sceneName = await this.OBSWebsocketV5.GetCurrentSceneName();
+                }
+                await this.OBSWebsocketV5.ToggleSourceVisibility(sceneName, sourceName);
                 return true;
             });
         }
@@ -320,7 +343,10 @@ namespace MixItUp.WPF.Services
             {
                 if (attemptedConnect)
                 {
-                    await this.StartReplayBuffer();
+                    if (!ChannelSession.Settings.OBSStudioDisableAutomaticReplayBuffer)
+                    {
+                        await this.StartReplayBuffer();
+                    }
                     // Seed the scene baseline so the first scene change reports what it came from
                     this.lastKnownSceneName = await this.GetCurrentScene();
                     this.Connected(this, new EventArgs());
@@ -506,6 +532,10 @@ namespace MixItUp.WPF.Services
                     while (Interlocked.CompareExchange(ref this.manualDisconnectRequested, 0, 0) == 0)
                     {
                         await Task.Delay(5000, cancellationToken);
+                        if (Interlocked.CompareExchange(ref this.manualDisconnectRequested, 0, 0) != 0)
+                        {
+                            break;
+                        }
 
                         Result result = await this.ConnectInternal();
                         if (result.Success)
@@ -817,6 +847,43 @@ namespace MixItUp.WPF.Services
         public async Task SetSourceFilterVisibility(string sourceName, string filterName, bool visibility)
         {
             await Send(new OBSMessageSetSourceFilterEnabledRequest(sourceName, filterName, visibility));
+        }
+
+        public async Task ToggleSourceVisibility(string sceneName, string sourceName)
+        {
+            SceneItem item = await this.SearchForSceneItem(sourceName, sceneName);
+            if (item == null)
+            {
+                throw new InvalidOperationException("OBS source was not found");
+            }
+            var request = new OBSMessageRequest<JObject>();
+            request.Data.RequestType = "GetSceneItemEnabled";
+            request.Data.Data = new JObject { ["sceneName"] = item.GroupName ?? sceneName, ["sceneItemId"] = item.SceneItemId };
+            string packet = await this.SendAndWait(request);
+            var response = JSONSerializerHelper.DeserializeFromString<OBSMessageResponse<JObject>>(packet);
+            if (response?.Data?.Status?.Result != true || response.Data.Data?["sceneItemEnabled"]?.Type != JTokenType.Boolean)
+            {
+                throw new InvalidOperationException("OBS source visibility could not be read");
+            }
+            await this.SetSourceRender(sourceName, !response.Data.Data.Value<bool>("sceneItemEnabled"), sceneName);
+        }
+
+        public async Task<bool> SetInputMute(string inputName, bool? muted)
+        {
+            if (string.IsNullOrWhiteSpace(inputName)) { throw new ArgumentException(nameof(inputName)); }
+            var request = new OBSMessageRequest<JObject>();
+            request.Data.RequestType = muted.HasValue ? "SetInputMute" : "ToggleInputMute";
+            request.Data.Data = new JObject { ["inputName"] = inputName };
+            if (muted.HasValue) { request.Data.Data["inputMuted"] = muted.Value; }
+            string packet = await this.SendAndWait(request);
+            if (string.IsNullOrEmpty(packet)) { throw new TimeoutException("OBS audio mute request timed out"); }
+            OBSMessageResponse response = JSONSerializerHelper.DeserializeFromString<OBSMessageResponse>(packet);
+            if (response?.Data?.Status?.Result != true)
+            {
+                Logger.Log(LogLevel.Error, "OBS audio mute request failed: " + (response?.Data?.Status?.Code.ToString() ?? "invalid response"));
+                return false;
+            }
+            return true;
         }
 
         public async Task SetSourceRender(string sourceName, bool visibility, string sceneName)

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -10663,16 +10663,16 @@ Só ative se souber o que está fazendo. Continuar?</value>
     <value>A utilização do Amazon Polly para a funcionalidade de conversão de texto em voz é um serviço pago da AWS que o Mix It Up cobre diretamente, mas existem limites para o quanto podemos cobrir financeiramente pela utilização do serviço para todos os usuários. Para equilibrar isto, limitámos a utilização de texto para voz do Amazon Polly a um pedido a cada 5 minutos. Os usuários podem ligar as suas próprias contas da AWS para remover esta limitação, mas todas as despesas de utilização do Amazon Polly serão cobradas na própria conta da AWS do usuário. Para obter informações sobre como configurar isto, visite o link abaixo:</value>
   </data>
   <data name="MicrosoftAzureSpeechInfo1" xml:space="preserve">
-    <value>A conectividade do serviço Microsoft Azure Speech permite ligar a sua própria conta Microsoft Azure para contornar a limitação de taxa da utilização padrão do Microsoft Azure Speech com a ação Text To Speech.</value>
+    <value>O Microsoft Azure Speech exige seu próprio recurso do Azure Speech, chave de assinatura e região.</value>
   </data>
   <data name="MicrosoftAzureSpeechInfo2" xml:space="preserve">
-    <value>A utilização do Microsoft Azure Speech para a funcionalidade de conversão de texto em voz é um serviço pago com o Microsoft Azure que o Mix It Up cobre diretamente, mas existem limites para o quanto podemos cobrir financeiramente pela utilização do serviço para todos os usuários. Para equilibrar isto, limitámos a utilização do texto em voz do Microsoft Azure Speech a um pedido a cada 5 minutos. Os usuários podem ligar as suas próprias contas Microsoft Azure para remover esta limitação, mas todas as despesas de utilização do Microsoft Azure Speech serão cobradas na própria conta Microsoft Azure do usuário. Para obter informações sobre como configurar isto, visite o link abaixo:</value>
+    <value>O Mix It Up não fornece acesso compartilhado ao Azure Speech. O uso é cobrado em sua conta do Azure conforme os preços da Microsoft. Siga o guia abaixo para conectar seu recurso.</value>
   </data>
   <data name="NoCustomAmazonPollyAccount" xml:space="preserve">
     <value>Nenhuma conta Amazon Polly foi ligada, pelo que a utilização será limitada a 1 ação a cada 5 minutos. Para remover este limite de taxa, visite a secção Amazon Polly na página Serviços para ligar a sua própria conta Amazon Polly.</value>
   </data>
   <data name="NoCustomMicrosoftAzureSpeechAccount" xml:space="preserve">
-    <value>Nenhuma conta Microsoft Azure Speech foi ligada, pelo que a utilização será limitada a 1 ação a cada 5 minutos. Para remover este limite de taxa, visite a secção Microsoft Azure Speech na página Serviços para ligar a sua própria conta Microsoft Azure Speech.</value>
+    <value>Conecte seu recurso em Serviços &gt; Microsoft Azure Speech antes de usar esta voz.</value>
   </data>
   <data name="TextToSpeechActionResponsiveVoicePitch" xml:space="preserve">
     <value>Passo (0% - 200%)</value>
@@ -12515,5 +12515,124 @@ Isto pode ser feito clicando em Criar recompensa de pontos de canal na página P
   </data>
   <data name="VPZoneChannelPointsGrantFailed" xml:space="preserve">
     <value>Falha ao conceder pontos do canal VPZone. É necessária uma chave de API vinculada ao canal com o escopo de concessão.</value>
+  </data>
+  <data name="NotYetRated" xml:space="preserve">
+    <value>Ainda sem avaliações</value>
+  </data>
+  <data name="OBSStudioAutoStartReplayBuffer" xml:space="preserve">
+    <value>Iniciar o buffer de replay automaticamente</value>
+  </data>
+  <data name="ToggleSourceVisibility" xml:space="preserve">
+    <value>Alternar visibilidade da fonte</value>
+  </data>
+  <data name="SearchFirstOccurrenceInFile" xml:space="preserve">
+    <value>Buscar primeira ocorrência no arquivo</value>
+  </data>
+  <data name="SearchAndLoopInFile" xml:space="preserve">
+    <value>Buscar e percorrer ocorrências no arquivo</value>
+  </data>
+  <data name="FileSearchLineNumberHint" xml:space="preserve">
+    <value>O resultado contém a linha correspondente. Acrescente linenumber ao nome do identificador especial para obter o número da linha (0 se não encontrada).</value>
+  </data>
+  <data name="ChangeChannelName" xml:space="preserve">
+    <value>Alterar nome do canal</value>
+  </data>
+  <data name="DiscordChannelNameInvalid" xml:space="preserve">
+    <value>O nome do canal deve conter de 1 a 100 caracteres.</value>
+  </data>
+  <data name="DiscordManageChannelsRequired" xml:space="preserve">
+    <value>O bot do Discord precisa da permissão Gerenciar canais. Reconecte o Discord ou conceda essa permissão ao cargo e ao canal.</value>
+  </data>
+  <data name="DiscardUnsavedCommandChanges" xml:space="preserve">
+    <value>Há alterações não salvas no comando. Descartar e fechar?</value>
+  </data>
+  <data name="HidePlatformActionsAndEvents" xml:space="preserve">
+    <value>Ocultar ações e eventos de plataformas</value>
+  </data>
+  <data name="EndPoll" xml:space="preserve">
+    <value>Encerrar enquete</value>
+  </data>
+  <data name="GetActivePoll" xml:space="preserve">
+    <value>Obter enquete ativa</value>
+  </data>
+  <data name="PollIdentifier" xml:space="preserve">
+    <value>ID da enquete</value>
+  </data>
+  <data name="AllowMultipleSelections" xml:space="preserve">
+    <value>Permitir várias seleções</value>
+  </data>
+  <data name="VeloraPollSettingsHint" xml:space="preserve">
+    <value>Insira de 2 a 6 opções, uma por linha, e uma duração de 15 a 3600 segundos. Resultados: $velorapoll e $velorapollid.</value>
+  </data>
+  <data name="CollectDiagnostics" xml:space="preserve">
+    <value>Coletar e enviar diagnósticos</value>
+  </data>
+  <data name="DiagnosticsAccessCode" xml:space="preserve">
+    <value>Digite o código de suporte de seis caracteres.</value>
+  </data>
+  <data name="DiagnosticsSuccess" xml:space="preserve">
+    <value>Diagnósticos enviados à sua solicitação de suporte.</value>
+  </data>
+  <data name="DiagnosticsFailure" xml:space="preserve">
+    <value>Os diagnósticos não foram enviados completamente. Tente enviar os mesmos arquivos preparados novamente ou contate o suporte.</value>
+  </data>
+  <data name="DiagnosticsPartialConsent" xml:space="preserve">
+    <value>Algumas verificações do Windows precisam de acesso de administrador. Enviar os diagnósticos disponíveis?</value>
+  </data>
+  <data name="DiagnosticsConsent" xml:space="preserve">
+    <value>Enviar configurações originais salvas, banco de dados, sete logs, inventário da instalação, detalhes do Windows e da rede e verificações de integrações à equipe do Mix It Up para esta solicitação? Os arquivos não são censurados e podem conter credenciais e informações pessoais.</value>
+  </data>
+  <data name="IUnderstand" xml:space="preserve">
+    <value>Entendo e concordo</value>
+  </data>
+  <data name="TwitchChannelSharedChatStarted" xml:space="preserve">
+    <value>Chat compartilhado da Twitch iniciado</value>
+  </data>
+  <data name="TwitchChannelSharedChatEnded" xml:space="preserve">
+    <value>Chat compartilhado da Twitch encerrado</value>
+  </data>
+  <data name="ReconnectServices" xml:space="preserve">
+    <value>Reconectar serviços</value>
+  </data>
+  <data name="RepeatCurrentSong" xml:space="preserve">
+    <value>Repetir música atual</value>
+  </data>
+  <data name="LaunchAtLogin" xml:space="preserve">
+    <value>Iniciar o Mix It Up ao entrar no Windows</value>
+  </data>
+  <data name="TwitchMigrationFailed" xml:space="preserve">
+    <value>A atualização da conexão com a Twitch não foi concluída. Entre novamente para continuar.</value>
+  </data>
+  <data name="TwitchMigrationAccountMismatch" xml:space="preserve">
+    <value>Este login na Twitch não corresponde à conta ou ao aplicativo esperado. Entre com a mesma conta da Twitch e tente novamente.</value>
+  </data>
+  <data name="TwitchMigrationTitle" xml:space="preserve">
+    <value>Reconectar à Twitch</value>
+  </data>
+  <data name="TwitchMigrationPrompt" xml:space="preserve">
+    <value>Entre com a mesma conta de streamer da Twitch para atualizar a conexão. O Mix It Up transferirá suas recompensas de pontos do canal e atualizará os comandos vinculados. As imagens personalizadas das recompensas precisam ser enviadas novamente na Twitch.</value>
+  </data>
+  <data name="TwitchMigrationBotOptional" xml:space="preserve">
+    <value>O login do bot é opcional. Se você pular esta etapa, seu bot ficará desconectado até que entre novamente.</value>
+  </data>
+  <data name="TwitchMigrationSignedIn" xml:space="preserve">
+    <value>Conectado</value>
+  </data>
+  <data name="MuteAudioSource" xml:space="preserve">
+    <value>Silenciar fonte de &#225;udio</value>
+  </data>
+  <data name="UnmuteAudioSource" xml:space="preserve">
+    <value>Ativar som da fonte de &#225;udio</value>
+  </data>
+  <data name="ToggleAudioMute" xml:space="preserve">
+    <value>Alternar sil&#234;ncio do &#225;udio</value>
+  </data>
+  <data name="VelumStudio" xml:space="preserve"><value>Velum Studio</value></data>
+  <data name="VelumStudioInfo" xml:space="preserve"><value>Conexões remotas exigem um token de autenticação. Conexões locais encontram o token automaticamente. Deixe o endereço em branco para detectar uma instância local.</value></data>
+  <data name="VelumStudioToken" xml:space="preserve"><value>Token de autenticação (somente remoto)</value></data>
+  <data name="VelumStudioFingerprint" xml:space="preserve"><value>Impressão digital do certificado (opcional)</value></data>
+  <data name="VelumStudioInvalidConnection" xml:space="preserve"><value>Use um endereço ws:// ou wss://. Se informada, a impressão digital do certificado deve conter 64 caracteres hexadecimais.</value></data>
+  <data name="RunHotKeyByName" xml:space="preserve">
+    <value>Acionar atalho pelo nome</value>
   </data>
 </root>

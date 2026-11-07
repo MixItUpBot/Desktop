@@ -1,4 +1,5 @@
-﻿using MixItUp.Base.Model.Actions;
+using MixItUp.Base.Model;
+using MixItUp.Base.Model.Actions;
 using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Requirements;
 using MixItUp.Base.Services;
@@ -39,6 +40,8 @@ namespace MixItUp.Base.ViewModel.Settings
         public GenericComboBoxSettingsOptionControlViewModel<GameInfoLookupOrderEnum> GameInfoLookupOrder { get; set; }
 
         public ObservableCollection<GenericToggleSettingsOptionControlViewModel> HideActionsList { get; set; } = new ObservableCollection<GenericToggleSettingsOptionControlViewModel>();
+
+        public ObservableCollection<GenericToggleSettingsOptionControlViewModel> HidePlatformsList { get; } = new ObservableCollection<GenericToggleSettingsOptionControlViewModel>();
 
         public CommandsSettingsControlViewModel()
         {
@@ -81,6 +84,16 @@ namespace MixItUp.Base.ViewModel.Settings
                 (value) => { ChannelSession.Settings.HideScriptActionChatErrors = value; });
             this.GameInfoLookupOrder = new GenericComboBoxSettingsOptionControlViewModel<GameInfoLookupOrderEnum>(MixItUp.Base.Resources.GameInfoLookupOrder, EnumHelper.GetEnumList<GameInfoLookupOrderEnum>(),
                 ChannelSession.Settings.GameInfoLookupOrder, (value) => { ChannelSession.Settings.GameInfoLookupOrder = value; });
+
+            foreach (StreamingPlatformTypeEnum platform in StreamingPlatforms.SupportedPlatforms)
+            {
+                this.HidePlatformsList.Add(new GenericToggleSettingsOptionControlViewModel(EnumLocalizationHelper.GetLocalizedName(platform),
+                    ChannelSession.Settings.PlatformsToHide.Contains(platform), value =>
+                    {
+                        if (value) { ChannelSession.Settings.PlatformsToHide.Add(platform); }
+                        else { ChannelSession.Settings.PlatformsToHide.Remove(platform); }
+                    }));
+            }
 
             List<ActionTypeEnum> actions = new List<ActionTypeEnum>(EnumHelper.GetEnumList<ActionTypeEnum>());
             actions.Remove(ActionTypeEnum.Custom);

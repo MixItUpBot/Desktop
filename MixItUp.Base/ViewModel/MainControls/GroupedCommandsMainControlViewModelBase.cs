@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Commands;
+using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Util;
 using MixItUp.Base.ViewModel.Commands;
 using System;
@@ -92,7 +92,7 @@ namespace MixItUp.Base.ViewModel.MainControls
                 if (group.HasCommand(command))
                 {
                     group.RemoveCommand(command);
-                    if (!group.HasCommands)
+                    if (group.TotalCommands == 0)
                     {
                         this.CommandGroups.Remove(group);
                     }
@@ -106,8 +106,7 @@ namespace MixItUp.Base.ViewModel.MainControls
 
         public void ClearNameFilter()
         {
-            this.nameFilter = string.Empty;
-            this.NotifyPropertyChanged(this.NameFilter);
+            this.NameFilter = string.Empty;
         }
 
         public void FullRefresh()
@@ -134,7 +133,7 @@ namespace MixItUp.Base.ViewModel.MainControls
         {
             foreach (CommandGroupControlViewModel group in this.CommandGroups)
             {
-                group.RefreshCommands(this.NameFilter.ToLower());
+                group.RefreshCommands(this.NameFilter);
             }
         }
 
@@ -146,7 +145,7 @@ namespace MixItUp.Base.ViewModel.MainControls
 
         protected override async Task OnVisibleInternal()
         {
-            if (this.GetCommands().Count() != this.CommandGroups.Sum(cg => cg.Commands.Count))
+            if (this.GetCommands().Count() != this.CommandGroups.Sum(cg => cg.TotalCommands))
             {
                 this.FullRefresh();
             }
@@ -155,6 +154,7 @@ namespace MixItUp.Base.ViewModel.MainControls
 
         private void NotifyProperties()
         {
+            this.FilterCommands();
             this.NotifyPropertyChanged("DefaultGroup");
             this.NotifyPropertyChanged("ShowList");
             this.NotifyPropertyChanged("ShowGroups");

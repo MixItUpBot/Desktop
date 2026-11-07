@@ -26,6 +26,9 @@ namespace MixItUp.Base.Model.Velora.Users
         [JsonProperty("profilePicture")]
         public string ProfilePicture { get; set; }
 
+        [JsonProperty("followerCount")]
+        public long? FollowerCount { get; set; }
+
         [JsonProperty("bio")]
         public string Bio { get; set; }
 

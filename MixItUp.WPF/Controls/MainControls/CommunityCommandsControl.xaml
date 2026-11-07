@@ -1,4 +1,4 @@
-﻿<local:MainControlBase x:Class="MixItUp.WPF.Controls.MainControls.CommunityCommandsControl"
+<local:MainControlBase x:Class="MixItUp.WPF.Controls.MainControls.CommunityCommandsControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -254,7 +254,7 @@
                                     </Grid.ColumnDefinitions>
 
                                     <Controls:MaterialSymbolIcon Grid.Column="0" IconName="star" FontSize="{DynamicResource MIU.IconSize.16}" VerticalAlignment="Center" Foreground="{DynamicResource MaterialDesign.Brush.Foreground}" />
-                                    <TextBlock Grid.Column="2" Text="{Binding CommandDetails.AverageRating}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="2" Text="{Binding CommandDetails.AverageRatingText}" VerticalAlignment="Center" />
 
                                     <Controls:MaterialSymbolIcon Grid.Column="4" IconName="download" FontSize="{DynamicResource MIU.IconSize.16}" VerticalAlignment="Center" Foreground="{DynamicResource MaterialDesign.Brush.Foreground}" />
                                     <TextBlock Grid.Column="6" Text="{Binding CommandDetails.Downloads}" VerticalAlignment="Center" />

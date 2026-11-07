@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -10817,16 +10817,16 @@ Only enable if you know what you are doing. Continue?</value>
     <value>Usage of Amazon Polly for text to speech functionality is a paid service with AWS that Mix It Up directly covers, but there are limits to how much we can financially cover for usage of the service across all users. To balance that, we limit the use of Amazon Polly text to speech to one request every 5 minutes. Users are able to connect their own AWS accounts to remove this limitation, but all expenses for Amazon Polly usage will then be billed to the user's own AWS account. For information on setting this up, please visit the link below:</value>
   </data>
   <data name="MicrosoftAzureSpeechInfo1" xml:space="preserve">
-    <value>The Microsoft Azure Speech service connectivity allows you to connect your own Microsoft Azure account to circumvent the rate limiting of the default usage of Microsoft Azure Speech with the Text To Speech Action.</value>
+    <value>Microsoft Azure Speech requires your own Azure Speech resource, subscription key, and region.</value>
   </data>
   <data name="MicrosoftAzureSpeechInfo2" xml:space="preserve">
-    <value>Usage of Microsoft Azure Speech for text to speech functionality is a paid service with Microsoft Azure that Mix It Up directly covers, but there are limits to how much we can financially cover for usage of the service across all users. To balance that, we limit the use of Microsoft Azure Speech text to speech to one request every 5 minutes. Users are able to connect their own Microsoft Azure accounts to remove this limitation, but all expenses for Microsoft Azure Speech usage will then be billed to the user's own Microsoft Azure account. For information on setting this up, please visit the link below:</value>
+    <value>Mix It Up does not provide shared Azure Speech access. Usage is billed to your Azure account under Microsoft&apos;s pricing. Follow the guide below to connect your resource.</value>
   </data>
   <data name="NoCustomAmazonPollyAccount" xml:space="preserve">
     <value>No Amazon Polly account has been connected, therefore usage will be limited to 1 action every 5 minutes. To remove this rate limit, please visit the Amazon Polly section on the Services page to connect your own Amazon Polly account.</value>
   </data>
   <data name="NoCustomMicrosoftAzureSpeechAccount" xml:space="preserve">
-    <value>No Microsoft Azure Speech account has been connected, therefore usage will be limited to 1 action every 5 minutes. To remove this rate limit, please visit the Microsoft Azure Speech section on the Services page to connect your own Microsoft Azure Speech account.</value>
+    <value>Connect your own Azure Speech resource in Services &gt; Microsoft Azure Speech before using this voice.</value>
   </data>
   <data name="TextToSpeechActionResponsiveVoicePitch" xml:space="preserve">
     <value>Pitch (0% - 200%)</value>
@@ -13006,5 +13006,124 @@ This can be done by clicking on Create Channel Point Reward on the Kick Channel 
   </data>
   <data name="VPZoneChannelPointsGrantFailed" xml:space="preserve">
     <value>Failed to grant VPZone channel points. A channel-bound API key with the grant scope is required.</value>
+  </data>
+  <data name="NotYetRated" xml:space="preserve">
+    <value>Not Yet Rated</value>
+  </data>
+  <data name="OBSStudioAutoStartReplayBuffer" xml:space="preserve">
+    <value>Start replay buffer automatically</value>
+  </data>
+  <data name="ToggleSourceVisibility" xml:space="preserve">
+    <value>Toggle Source Visibility</value>
+  </data>
+  <data name="SearchFirstOccurrenceInFile" xml:space="preserve">
+    <value>Search First Occurrence in File</value>
+  </data>
+  <data name="SearchAndLoopInFile" xml:space="preserve">
+    <value>Search and Loop in File</value>
+  </data>
+  <data name="FileSearchLineNumberHint" xml:space="preserve">
+    <value>The result contains the matching line. Append linenumber to your special identifier name for its line number (0 if not found).</value>
+  </data>
+  <data name="ChangeChannelName" xml:space="preserve">
+    <value>Change Channel Name</value>
+  </data>
+  <data name="DiscordChannelNameInvalid" xml:space="preserve">
+    <value>Channel names must contain 1 to 100 characters.</value>
+  </data>
+  <data name="DiscordManageChannelsRequired" xml:space="preserve">
+    <value>The Discord bot needs Manage Channels permission. Reconnect Discord or grant this permission to its role and channel.</value>
+  </data>
+  <data name="DiscardUnsavedCommandChanges" xml:space="preserve">
+    <value>You have unsaved command changes. Discard them and close?</value>
+  </data>
+  <data name="HidePlatformActionsAndEvents" xml:space="preserve">
+    <value>Hide platform actions and events</value>
+  </data>
+  <data name="EndPoll" xml:space="preserve">
+    <value>End Poll</value>
+  </data>
+  <data name="GetActivePoll" xml:space="preserve">
+    <value>Get Active Poll</value>
+  </data>
+  <data name="PollIdentifier" xml:space="preserve">
+    <value>Poll ID</value>
+  </data>
+  <data name="AllowMultipleSelections" xml:space="preserve">
+    <value>Allow multiple selections</value>
+  </data>
+  <data name="VeloraPollSettingsHint" xml:space="preserve">
+    <value>Enter 2–6 options, one per line, and a duration of 15–3600 seconds. Results: $velorapoll and $velorapollid.</value>
+  </data>
+  <data name="CollectDiagnostics" xml:space="preserve">
+    <value>Collect and upload diagnostics</value>
+  </data>
+  <data name="DiagnosticsAccessCode" xml:space="preserve">
+    <value>Enter the six-character support code.</value>
+  </data>
+  <data name="DiagnosticsSuccess" xml:space="preserve">
+    <value>Diagnostics uploaded to your support request.</value>
+  </data>
+  <data name="DiagnosticsFailure" xml:space="preserve">
+    <value>Diagnostics were not uploaded completely. Retry to send the same prepared files, or contact support.</value>
+  </data>
+  <data name="DiagnosticsPartialConsent" xml:space="preserve">
+    <value>Some Windows checks need administrator access. Upload the available diagnostics?</value>
+  </data>
+  <data name="DiagnosticsConsent" xml:space="preserve">
+    <value>Send original saved settings, the database, seven logs, installation inventory, Windows and network details, and integration checks to the Mix It Up team for this support request? Files are not redacted and may contain credentials and personal information.</value>
+  </data>
+  <data name="IUnderstand" xml:space="preserve">
+    <value>I understand and consent</value>
+  </data>
+  <data name="TwitchChannelSharedChatStarted" xml:space="preserve">
+    <value>Twitch Shared Chat Started</value>
+  </data>
+  <data name="TwitchChannelSharedChatEnded" xml:space="preserve">
+    <value>Twitch Shared Chat Ended</value>
+  </data>
+  <data name="ReconnectServices" xml:space="preserve">
+    <value>Reconnect services</value>
+  </data>
+  <data name="RepeatCurrentSong" xml:space="preserve">
+    <value>Repeat current song</value>
+  </data>
+  <data name="LaunchAtLogin" xml:space="preserve">
+    <value>Launch Mix It Up when I sign in to Windows</value>
+  </data>
+  <data name="TwitchMigrationFailed" xml:space="preserve">
+    <value>The Twitch connection update did not finish. Try signing in again to continue.</value>
+  </data>
+  <data name="TwitchMigrationAccountMismatch" xml:space="preserve">
+    <value>This Twitch sign-in does not match the expected account or application. Sign in with the same Twitch account and try again.</value>
+  </data>
+  <data name="TwitchMigrationTitle" xml:space="preserve">
+    <value>Reconnect to Twitch</value>
+  </data>
+  <data name="TwitchMigrationPrompt" xml:space="preserve">
+    <value>Sign in with the same Twitch streamer account to update your connection. Mix It Up will move its channel point rewards and update linked commands. Any custom reward images must be uploaded again in Twitch.</value>
+  </data>
+  <data name="TwitchMigrationBotOptional" xml:space="preserve">
+    <value>Bot sign-in is optional. If you skip it, your bot will be disconnected until you sign it in again.</value>
+  </data>
+  <data name="TwitchMigrationSignedIn" xml:space="preserve">
+    <value>Signed in</value>
+  </data>
+  <data name="MuteAudioSource" xml:space="preserve">
+    <value>Mute Audio Source</value>
+  </data>
+  <data name="UnmuteAudioSource" xml:space="preserve">
+    <value>Unmute Audio Source</value>
+  </data>
+  <data name="ToggleAudioMute" xml:space="preserve">
+    <value>Toggle Audio Mute</value>
+  </data>
+  <data name="VelumStudio" xml:space="preserve"><value>Velum Studio</value></data>
+  <data name="VelumStudioInfo" xml:space="preserve"><value>Remote connections require an authentication token. Local connections find the token automatically. Leave the address blank to discover a local instance.</value></data>
+  <data name="VelumStudioToken" xml:space="preserve"><value>Authentication token (remote only)</value></data>
+  <data name="VelumStudioFingerprint" xml:space="preserve"><value>Certificate fingerprint (optional)</value></data>
+  <data name="VelumStudioInvalidConnection" xml:space="preserve"><value>Use a ws:// or wss:// address. If provided, the certificate fingerprint must contain 64 hexadecimal characters.</value></data>
+  <data name="RunHotKeyByName" xml:space="preserve">
+    <value>Trigger Hotkey By Name</value>
   </data>
 </root>

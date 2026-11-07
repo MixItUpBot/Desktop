@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Actions;
+using MixItUp.Base.Model.Actions;
 using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Commands.Games;
 using MixItUp.Base.Model.Overlay;
@@ -325,6 +325,7 @@ namespace MixItUp.Base.Services
                     }
 
                     commandInstance.Parameters.SpecialIdentifiers[CommandModelBase.CommandNameSpecialIdentifier] = command.Name;
+                    commandInstance.Parameters.SpecialIdentifiers[CommandModelBase.CommandIDSpecialIdentifier] = command.ID.ToString();
 
                     command.TrackTelemetry();
 

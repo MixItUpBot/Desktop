@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Services;
+using MixItUp.Base.Services;
 using MixItUp.Base.Util;
 using System;
 using System.Collections.Generic;
@@ -9,6 +9,45 @@ namespace MixItUp.WPF.Services
 {
     public class WindowsProcessService : IProcessService
     {
+        private const string StartupRegistryPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
+        private const string StartupRegistryName = "MixItUp";
+        internal static string StartupCommand => "\"" + Path.Combine(AppContext.BaseDirectory, "MixItUp.exe") + "\"";
+
+        public bool LaunchAtLoginEnabled
+        {
+            get
+            {
+                try
+                {
+                    using (var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(StartupRegistryPath))
+                    {
+                        return string.Equals(key?.GetValue(StartupRegistryName) as string, StartupCommand, StringComparison.OrdinalIgnoreCase);
+                    }
+                }
+                catch (Exception ex) { Logger.Log(ex); return false; }
+            }
+        }
+
+        public Result SetLaunchAtLogin(bool enabled)
+        {
+            try
+            {
+                using (var key = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(StartupRegistryPath))
+                {
+                    if (enabled)
+                    {
+                        key.SetValue(StartupRegistryName, StartupCommand, Microsoft.Win32.RegistryValueKind.String);
+                    }
+                    else if (string.Equals(key.GetValue(StartupRegistryName) as string, StartupCommand, StringComparison.OrdinalIgnoreCase))
+                    {
+                        key.DeleteValue(StartupRegistryName, false);
+                    }
+                }
+                return new Result();
+            }
+            catch (Exception ex) { Logger.Log(ex); return new Result(ex); }
+        }
+
         public void LaunchLink(string url)
         {
             this.TryLaunchLink(url);

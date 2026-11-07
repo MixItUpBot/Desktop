@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Services;
+using MixItUp.Base.Services;
 using MixItUp.Base.Services.External;
 using MixItUp.Base.Util;
 using System;
@@ -20,6 +20,16 @@ namespace MixItUp.Base.ViewModel.Services
             }
         }
         private string ipAddress;
+
+        public bool AutoStartReplayBuffer
+        {
+            get { return !ChannelSession.Settings.OBSStudioDisableAutomaticReplayBuffer; }
+            set
+            {
+                ChannelSession.Settings.OBSStudioDisableAutomaticReplayBuffer = !value;
+                this.NotifyPropertyChanged();
+            }
+        }
 
         public ICommand ConnectCommand { get; set; }
         public ICommand DisconnectCommand { get; set; }

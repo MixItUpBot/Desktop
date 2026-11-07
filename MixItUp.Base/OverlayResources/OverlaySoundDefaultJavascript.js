@@ -11,8 +11,11 @@ function remove(data)
     removeSelf();
 }
 
-sound.addEventListener('ended', () =>
+function soundFinished()
 {
     sendParentMessage({ Type: "SoundFinished", ID: "{ID}" });
     removeSelf();
-});
+}
+
+sound.addEventListener('ended', soundFinished);
+sound.addEventListener('error', soundFinished, true);

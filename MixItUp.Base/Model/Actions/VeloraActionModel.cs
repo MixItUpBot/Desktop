@@ -4,6 +4,8 @@ using MixItUp.Base.Services.Velora.New;
 using MixItUp.Base.Util;
 using MixItUp.Base.ViewModel.User;
 using System;
+using System.Linq;
+using Newtonsoft.Json.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
@@ -27,6 +29,9 @@ namespace MixItUp.Base.Model.Actions
         Shoutout,
         GrantChannelPoints,
         DeductChannelPoints,
+        CreatePoll,
+        EndPoll,
+        GetActivePoll,
     }
 
     public enum VeloraAnnounceColor
@@ -80,6 +85,11 @@ namespace MixItUp.Base.Model.Actions
         [DataMember]
         public bool SendAsStreamer { get; set; }
 
+        [DataMember]
+        public string PollOptions { get; set; }
+        [DataMember]
+        public bool PollMultiple { get; set; }
+
         private VeloraActionModel(VeloraActionType type)
             : base(ActionTypeEnum.Velora)
         {
@@ -99,6 +109,38 @@ namespace MixItUp.Base.Model.Actions
 
             switch (this.ActionType)
             {
+                case VeloraActionType.CreatePoll:
+                    {
+                        string question = await ReplaceStringWithSpecialModifiers(this.Text, parameters);
+                        string optionsText = await ReplaceStringWithSpecialModifiers(this.PollOptions, parameters);
+                        string[] options = (optionsText ?? string.Empty).Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(o => o.Trim()).Where(o => o.Length > 0).ToArray();
+                        string durationText = await ReplaceStringWithSpecialModifiers(this.Amount, parameters);
+                        if (string.IsNullOrWhiteSpace(question) || options.Length < 2 || options.Length > 6 ||
+                            !int.TryParse(durationText, out int duration) || duration < 15 || duration > 3600)
+                        {
+                            throw new InvalidOperationException(Resources.VeloraPollSettingsHint);
+                        }
+                        parameters.SpecialIdentifiers["velorapollid"] = string.Empty;
+                        JToken poll = await session.StreamerService.CreatePoll(session.StreamerModel.Username, new JObject()
+                        {
+                            ["question"] = question, ["options"] = JArray.FromObject(options),
+                            ["durationSeconds"] = duration, ["allowMultiple"] = this.PollMultiple
+                        });
+                        if (poll == null) { throw new InvalidOperationException(Resources.FailedToUpdateChannelInformation); }
+                        SetPollIdentifiers(parameters, poll);
+                    }
+                    break;
+                case VeloraActionType.GetActivePoll:
+                    SetPollIdentifiers(parameters, await session.StreamerService.GetActivePolls(session.StreamerModel.Username));
+                    break;
+                case VeloraActionType.EndPoll:
+                    {
+                        string pollID = await ReplaceStringWithSpecialModifiers(this.Text, parameters);
+                        if (string.IsNullOrWhiteSpace(pollID)) { throw new InvalidOperationException(Resources.ValidValueMustBeSpecified); }
+                        Result result = await session.StreamerService.EndPoll(session.StreamerModel.Username, pollID);
+                        if (!result.Success) { throw new InvalidOperationException(result.Message); }
+                    }
+                    break;
                 case VeloraActionType.SetTitle:
                     {
                         string text = await ReplaceStringWithSpecialModifiers(this.Text, parameters);
@@ -155,6 +197,14 @@ namespace MixItUp.Base.Model.Actions
                     await this.PerformUserAction(session, parameters);
                     break;
             }
+        }
+
+        private static void SetPollIdentifiers(CommandParametersModel parameters, JToken result)
+        {
+            parameters.SpecialIdentifiers["velorapoll"] = result?.ToString(Newtonsoft.Json.Formatting.None) ?? string.Empty;
+            JToken poll = result is JObject obj ? obj["poll"] ?? obj["data"] ?? result : result;
+            if (poll is JArray array) { poll = array.FirstOrDefault(); }
+            parameters.SpecialIdentifiers["velorapollid"] = poll is JObject value ? (value["id"] ?? value["pollId"])?.ToString() ?? string.Empty : string.Empty;
         }
 
         private async Task PerformUserAction(VeloraSession session, CommandParametersModel parameters)

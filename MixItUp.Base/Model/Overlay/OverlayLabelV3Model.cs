@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Commands;
+using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Kick.Kicks;
 using MixItUp.Base.Model.Velora;
 using MixItUp.Base.Model.VPZone;
@@ -221,10 +221,27 @@ namespace MixItUp.Base.Model.Overlay
 
                 if (this.IsDisplayEnabled(OverlayLabelDisplayV3TypeEnum.TotalFollowers))
                 {
-                    long amount = 0;
+                    double amount = this.Displays[OverlayLabelDisplayV3TypeEnum.TotalFollowers].Amount;
                     if (ChannelSession.Settings.DefaultStreamingPlatform == StreamingPlatformTypeEnum.Twitch && ServiceManager.Get<TwitchSession>().IsConnected)
                     {
                         amount = await ServiceManager.Get<TwitchSession>().StreamerService.GetFollowerCount(ServiceManager.Get<TwitchSession>().StreamerModel);
+                    }
+                    else if (ChannelSession.Settings.DefaultStreamingPlatform == StreamingPlatformTypeEnum.YouTube && ServiceManager.Get<MixItUp.Base.Services.YouTube.New.YouTubeSession>().IsConnected)
+                    {
+                        var channel = await ServiceManager.Get<MixItUp.Base.Services.YouTube.New.YouTubeSession>().StreamerService.GetCurrentChannel();
+                        if (channel?.Statistics?.SubscriberCount != null)
+                        {
+                            amount = channel.Statistics.SubscriberCount.Value;
+                        }
+                    }
+                    else if (ChannelSession.Settings.DefaultStreamingPlatform == StreamingPlatformTypeEnum.Velora && ServiceManager.Get<MixItUp.Base.Services.Velora.New.VeloraSession>().IsConnected)
+                    {
+                        var user = await ServiceManager.Get<MixItUp.Base.Services.Velora.New.VeloraSession>().StreamerService.GetCurrentUser();
+                        if (user?.FollowerCount != null) { amount = user.FollowerCount.Value; }
+                    }
+                    else if (ChannelSession.Settings.DefaultStreamingPlatform == StreamingPlatformTypeEnum.VPZone && ServiceManager.Get<MixItUp.Base.Services.VPZone.New.VPZoneSession>().IsConnected)
+                    {
+                        amount = ServiceManager.Get<MixItUp.Base.Services.VPZone.New.VPZoneSession>().FollowerCount;
                     }
                     this.Displays[OverlayLabelDisplayV3TypeEnum.TotalFollowers].Amount = amount;
                 }
@@ -416,7 +433,7 @@ namespace MixItUp.Base.Model.Overlay
                 await this.SendUpdate(OverlayLabelDisplayV3TypeEnum.LatestFollower);
             }
 
-            if (this.IsDisplayEnabled(OverlayLabelDisplayV3TypeEnum.TotalFollowers))
+            if (this.IsDisplayEnabled(OverlayLabelDisplayV3TypeEnum.TotalFollowers) && user.Platform == ChannelSession.Settings.DefaultStreamingPlatform)
             {
                 this.Displays[OverlayLabelDisplayV3TypeEnum.TotalFollowers].Amount++;
                 await this.SendUpdate(OverlayLabelDisplayV3TypeEnum.TotalFollowers);
@@ -663,18 +680,18 @@ namespace MixItUp.Base.Model.Overlay
                 amount = display.AmountText;
             }
 
-            string result = display.Format;
+            Dictionary<string, object> replacements = new Dictionary<string, object>();
             if (user != null)
             {
-                result = OverlayV3Service.ReplaceProperty(result, OverlayLabelV3Model.UsernamePropertyName, user.DisplayName);
+                replacements[OverlayLabelV3Model.UsernamePropertyName] = user.DisplayName;
             }
             if (!string.IsNullOrEmpty(amount))
             {
-                result = OverlayV3Service.ReplaceProperty(result, OverlayLabelV3Model.AmountPropertyName, amount);
+                replacements[OverlayLabelV3Model.AmountPropertyName] = amount;
             }
-            result = OverlayV3Service.ReplaceProperty(result, OverlayLabelV3Model.TypeNamePropertyName, EnumLocalizationHelper.GetLocalizedName(display.Type));
+            replacements[OverlayLabelV3Model.TypeNamePropertyName] = EnumLocalizationHelper.GetLocalizedName(display.Type);
 
-            result = await SpecialIdentifierStringBuilder.ProcessSpecialIdentifiers(result, new CommandParametersModel(user));
+            string result = await OverlayHTMLHelper.ProcessSpecialIdentifiers(display.Format, new CommandParametersModel(user), properties: replacements);
 
             Dictionary<string, object> data = new Dictionary<string, object>();
             data[nameof(display.Type)] = display.Type.ToString();

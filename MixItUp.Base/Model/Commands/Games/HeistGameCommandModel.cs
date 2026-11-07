@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Services;
+using MixItUp.Base.Services;
 using MixItUp.Base.Util;
 using MixItUp.Base.ViewModel.User;
 using Newtonsoft.Json;
@@ -116,7 +116,7 @@ namespace MixItUp.Base.Model.Commands.Games
                     int totalPayout = 0;
                     foreach (CommandParametersModel participant in this.runUsers.Values.ToList())
                     {
-                        if (this.GenerateProbability() <= this.UserSuccessOutcome.GetRoleProbabilityPayout(parameters.User).Probability)
+                        if (this.GenerateProbability() <= await this.GetWinProbability(participant))
                         {
                             winners.Add(participant);
                             totalPayout += await this.RunOutcome(participant, this.UserSuccessOutcome);
@@ -171,6 +171,29 @@ namespace MixItUp.Base.Model.Commands.Games
                 await ServiceManager.Get<ChatService>().SendMessage(MixItUp.Base.Resources.GameCommandAlreadyUnderway, parameters);
             }
             await this.Requirements.Refund(parameters);
+        }
+
+        public async Task<int> GetWinProbability(CommandParametersModel participant)
+        {
+            RoleProbabilityPayoutModel outcome = this.UserSuccessOutcome.GetRoleProbabilityPayout(participant.User);
+            if (outcome == null)
+            {
+                return 0;
+            }
+            int probability = outcome.Probability;
+            if (!string.IsNullOrWhiteSpace(outcome.ProbabilityExpression))
+            {
+                string resolved = await SpecialIdentifierStringBuilder.ProcessSpecialIdentifiers(outcome.ProbabilityExpression, participant);
+                if (int.TryParse(resolved, out int resolvedProbability))
+                {
+                    probability = resolvedProbability;
+                }
+                else
+                {
+                    Logger.Log(LogLevel.Warning, "Heist win chance could not be resolved; using the stored numeric chance.");
+                }
+            }
+            return MathHelper.Clamp(probability, 0, 100);
         }
 
         private void ClearData()

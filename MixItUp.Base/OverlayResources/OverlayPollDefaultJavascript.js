@@ -24,8 +24,8 @@ function newpoll(data)
     }
     optionData.clear();
 
-    question.innerHTML = data.Question;
-    total.innerHTML = "0 Votes";
+    question.textContent = data.Question;
+    total.textContent = "0 Votes";
     
     totalSeconds = data.TimeLimit;
     
@@ -37,7 +37,7 @@ function newpoll(data)
         option.firstElementChild.setAttribute("id", "option" + od.ID);
         
         let name = option.firstElementChild.querySelector(".name");
-        name.innerHTML = od.Name;
+        name.textContent = od.Name;
         
         let bar = option.firstElementChild.querySelector(".bar");
         bar.style.backgroundColor = od.Color;
@@ -85,7 +85,7 @@ function timerLoop(inst)
     let days = Math.floor(totalHours / 24);
     text = text.replace("DD", hours);
 
-    time.innerHTML = text;
+    time.textContent = text;
 
     setTimeout(function () {
         if (totalSeconds > 0 && instance == inst)
@@ -98,7 +98,7 @@ function timerLoop(inst)
 
 function update(data)
 {
-    total.innerHTML = `${data.TotalVotes} Votes`;
+    total.textContent = `${data.TotalVotes} Votes`;
 
     data.Options.forEach((od) =>
     {
@@ -107,13 +107,13 @@ function update(data)
             let option = document.getElementById("option" + od.ID);
             
             let amount = option.querySelector(".amount");
-            amount.innerHTML = `${od.Amount} Votes`;
+            amount.textContent = `${od.Amount} Votes`;
             
             let percentage = option.querySelector(".percentage");
-            percentage.innerHTML = `(${od.Percentage}%)`;
+            percentage.textContent = `(${od.Percentage}%)`;
             
             let channelPointAmount = option.querySelector(".channelPointAmount");
-            channelPointAmount.innerHTML = od.ChannelPoints;
+            channelPointAmount.textContent = od.ChannelPoints;
             
             let previous = optionData.get(od.ID);
             optionData.set(od.ID, od);

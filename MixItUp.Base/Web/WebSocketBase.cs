@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Util;
+using MixItUp.Base.Util;
 using System;
 using System.Net.WebSockets;
 using System.Text;
@@ -145,8 +145,12 @@ namespace MixItUp.Base.Web
         /// Handles all receiving &amp; processing of packets.
         /// </summary>
         /// <returns>An awaitable task with the close status of the web socket connection</returns>
+        protected virtual bool NotifyOnNormalClosure => false;
+
         protected virtual async Task<WebSocketCloseStatus> Receive()
         {
+            CancellationToken receiveToken = this.ReceiveCancellationToken;
+            WebSocket receivingSocket = this.webSocket;
             string jsonBuffer = string.Empty;
             byte[] buffer = new byte[WebSocketBase.BUFFER_SIZE];
             ArraySegment<byte> arrayBuffer = new ArraySegment<byte>(buffer);
@@ -155,18 +159,18 @@ namespace MixItUp.Base.Web
 
             try
             {
-                while (this.IsOpen() && !this.ReceiveCancellationToken.IsCancellationRequested)
+                while (GetState(receivingSocket) == WebSocketState.Open && !receiveToken.IsCancellationRequested)
                 {
                     try
                     {
                         Array.Clear(buffer, 0, buffer.Length);
-                        WebSocket activeWebSocket = this.webSocket;
+                        WebSocket activeWebSocket = receivingSocket;
                         if (activeWebSocket == null)
                         {
                             break;
                         }
 
-                        WebSocketReceiveResult result = await activeWebSocket.ReceiveAsync(arrayBuffer, this.ReceiveCancellationToken);
+                        WebSocketReceiveResult result = await activeWebSocket.ReceiveAsync(arrayBuffer, receiveToken);
 
                         if (result != null)
                         {
@@ -207,7 +211,8 @@ namespace MixItUp.Base.Web
                 closeStatus = WebSocketCloseStatus.InternalServerError;
             }
 
-            if (closeStatus != WebSocketCloseStatus.NormalClosure)
+            if (!ReferenceEquals(receivingSocket, this.webSocket)) { return closeStatus; }
+            if (!receiveToken.IsCancellationRequested && (closeStatus != WebSocketCloseStatus.NormalClosure || this.NotifyOnNormalClosure))
             {
                 await this.DisconnectAndFireEvent(closeStatus);
             }

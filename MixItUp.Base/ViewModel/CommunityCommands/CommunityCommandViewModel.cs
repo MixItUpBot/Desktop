@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Commands;
+using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Store;
 using MixItUp.Base.Util;
 using MixItUp.Base.ViewModels;
@@ -36,6 +36,7 @@ namespace MixItUp.Base.ViewModel.CommunityCommands
         public string UserAvatarURL { get { return this.model.UserAvatarURL; } }
 
         public double AverageRating { get { return Math.Round(this.model.AverageRating, 2); } }
+        public string AverageRatingText { get { return this.model.AverageRating > 0 ? this.AverageRating.ToString() : Resources.NotYetRated; } }
 
         public int Downloads { get { return this.model.Downloads; } }
 
@@ -81,10 +82,7 @@ namespace MixItUp.Base.ViewModel.CommunityCommands
 
             foreach (CommunityCommandReviewModel review in this.model.Reviews.OrderByDescending(r => r.DateTime))
             {
-                if (!string.IsNullOrWhiteSpace(review.Review))
-                {
-                    this.Reviews.Add(new CommunityCommandReviewViewModel(review));
-                }
+                this.Reviews.Add(new CommunityCommandReviewViewModel(review));
             }
             this.NotifyPropertyChanged("HasNoReviews");
         }

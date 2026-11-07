@@ -1,4 +1,5 @@
 ﻿using MixItUp.Base.Model.Commands;
+using MixItUp.Base.Model.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace MixItUp.Base.Util
         Task ShowMessage(string message);
 
         Task<bool> ShowConfirmation(string message);
+
+        Task<bool> ShowTwitchAuthenticationMigration(TwitchAuthenticationMigrationDialogModel model);
 
         Task<string> ShowTextEntry(string message, string defaultValue = null, string description = null);
 
@@ -42,6 +45,8 @@ namespace MixItUp.Base.Util
         public static async Task ShowMessage(string message) { await DialogHelper.dialogShower.ShowMessage(message); }
 
         public static async Task<bool> ShowConfirmation(string message) { return await DialogHelper.dialogShower.ShowConfirmation(message); }
+
+        public static Task<bool> ShowTwitchAuthenticationMigration(TwitchAuthenticationMigrationDialogModel model) { return DialogHelper.dialogShower.ShowTwitchAuthenticationMigration(model); }
 
         public static async Task<string> ShowTextEntry(string message, string defaultValue = null, string description = null) { return await DialogHelper.dialogShower.ShowTextEntry(message, defaultValue, description); }
 

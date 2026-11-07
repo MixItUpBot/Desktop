@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Actions;
+using MixItUp.Base.Model.Actions;
 using System;
 using System.Threading.Tasks;
 
@@ -17,6 +17,7 @@ namespace MixItUp.Base.Services.External
         Task<string> GetCurrentScene();
 
         Task SetSourceVisibility(string sceneName, string sourceName, bool visibility);
+        Task ToggleSourceVisibility(string sceneName, string sourceName);
         Task SetSourceFilterVisibility(string sourceName, string filterName, bool visibility);
         Task SetImageSourceFilePath(string sceneName, string sourceName, string filePath);
         Task SetMediaSourceFilePath(string sceneName, string sourceName, string filePath);
@@ -37,5 +38,6 @@ namespace MixItUp.Base.Services.External
 
     public interface IOBSStudioService : IStreamingSoftwareService
     {
+        Task<bool> SetInputMute(string inputName, bool? muted);
     }
 }

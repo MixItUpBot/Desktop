@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Commands;
+using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Overlay;
 using MixItUp.Base.Model.Overlay.Widgets;
 using MixItUp.Base.Services.External;
@@ -137,16 +137,11 @@ namespace MixItUp.Base.Services
             string iframeHTML = endpoint.GetItemIFrameHTML();
             iframeHTML = OverlayV3Service.ReplaceProperty(iframeHTML, nameof(item.HTML), item.HTML);
             iframeHTML = OverlayV3Service.ReplaceProperty(iframeHTML, nameof(item.CSS), item.CSS);
-            iframeHTML = OverlayV3Service.ReplaceProperty(iframeHTML, nameof(item.Javascript), item.Javascript);
+            iframeHTML = OverlayV3Service.ReplaceProperty(iframeHTML, nameof(item.Javascript), item.GetJavascript());
 
             Dictionary<string, object> properties = item.GetGenerationProperties();
-            await item.ProcessGenerationProperties(properties, new CommandParametersModel());
-            foreach (var property in properties)
-            {
-                iframeHTML = OverlayV3Service.ReplaceProperty(iframeHTML, property.Key, property.Value);
-            }
-
-            return iframeHTML;
+            await item.ProcessAllGenerationProperties(properties, new CommandParametersModel());
+            return await item.ProcessHTML(iframeHTML, properties, new CommandParametersModel());
         }
 
         public string Name { get { return Resources.Overlay; } }
@@ -592,9 +587,9 @@ namespace MixItUp.Base.Services
             }
         }
 
-        public async Task<Guid> PlayAudio(string filePath, double volume)
+        public async Task<Guid> PlayAudio(string filePath, double volume, Guid? requestedID = null)
         {
-            Guid id = Guid.NewGuid();
+            Guid id = requestedID ?? Guid.NewGuid();
             OverlaySoundV3Model overlayItem = new OverlaySoundV3Model(filePath, volume)
             {
                 ID = id

@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Commands;
+using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Commands.Games;
 using MixItUp.Base.Model.Currency;
 using MixItUp.Base.ViewModel.Games;
@@ -12,7 +12,7 @@ namespace MixItUp.WPF.Windows.Commands
     /// <summary>
     /// Interaction logic for GameCommandEditorWindow.xaml
     /// </summary>
-    public partial class GameCommandEditorWindow : LoadingWindowBase
+    public partial class GameCommandEditorWindow : CommandEditorWindowBase
     {
         public CommandEditorDetailsControlBase editorDetailsControl { get; private set; }
 
@@ -209,6 +209,7 @@ namespace MixItUp.WPF.Windows.Commands
 
         private void ViewModel_CommandSaved(object sender, CommandModelBase command)
         {
+            this.AllowClose = true;
             this.CommandSaved(this, command);
             this.Close();
         }

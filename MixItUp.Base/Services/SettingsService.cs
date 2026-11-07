@@ -46,6 +46,13 @@ namespace MixItUp.Base.Services
 
         public void Initialize() { Directory.CreateDirectory(SettingsV3Model.SettingsDirectoryName); }
 
+        public static async Task WithFileSnapshot(Func<Task> snapshot)
+        {
+            await semaphore.WaitAsync();
+            try { await snapshot(); }
+            finally { semaphore.Release(); }
+        }
+
         public async Task<IEnumerable<SettingsV3Model>> GetAllSettings()
         {
             bool backupSettingsLoaded = false;
@@ -57,6 +64,7 @@ namespace MixItUp.Base.Services
                 if (filePath.EndsWith(SettingsV3Model.SettingsFileExtension))
                 {
                     SettingsV3Model setting = null;
+                    bool allowBackup = true;
                     try
                     {
                         setting = await this.LoadSettings(filePath);
@@ -65,12 +73,17 @@ namespace MixItUp.Base.Services
                             allSettings.Add(setting);
                         }
                     }
+                    catch (UnsupportedSettingsVersionException ex)
+                    {
+                        allowBackup = false;
+                        Logger.Log(ex);
+                    }
                     catch (Exception ex)
                     {
                         Logger.Log(ex);
                     }
 
-                    if (setting == null)
+                    if (setting == null && allowBackup)
                     {
                         string localBackupFilePath = string.Format($"{filePath}.{SettingsV3Model.SettingsLocalBackupFileExtension}");
                         if (File.Exists(localBackupFilePath))
@@ -180,7 +193,7 @@ namespace MixItUp.Base.Services
             await settings.BackupSettingsToDatabase();
         }
 
-        public async Task Save(SettingsV3Model settings)
+        public async Task Save(SettingsV3Model settings, bool throwOnError = false)
         {
             if (settings != null)
             {
@@ -200,6 +213,7 @@ namespace MixItUp.Base.Services
                     {
                         Logger.Log(LogLevel.Error, $"Failed to save settings file for settings ID {settings.ID}.");
                         Logger.Log(ex);
+                        if (throwOnError) { throw; }
                     }
 
                     try
@@ -210,6 +224,7 @@ namespace MixItUp.Base.Services
                     {
                         Logger.Log(LogLevel.Error, $"Failed to save settings database for settings ID {settings.ID}.");
                         Logger.Log(ex);
+                        if (throwOnError) { throw; }
                     }
                 }
                 finally
@@ -377,27 +392,9 @@ namespace MixItUp.Base.Services
     {
         public static bool OverlayV3UpgradeOccurred;
 
-        public static async Task<SettingsV3Model> UpgradeSettingsToLatest(string filePath)
+        public static Task<SettingsV3Model> UpgradeSettingsToLatest(string filePath)
         {
-            int currentVersion = await GetSettingsVersion(filePath);
-            if (currentVersion < 0)
-            {
-                // Settings file is invalid, we can't use this
-                return null;
-            }
-            else if (currentVersion > SettingsV3Model.LatestVersion)
-            {
-                // Future build, like a preview build, we can't load this
-                return null;
-            }
-            else if (currentVersion < SettingsV3Model.LatestVersion)
-            {
-                await SettingsV3Upgrader.Version7Upgrade(currentVersion, filePath);
-                await SettingsV3Upgrader.Version8Upgrade(currentVersion, filePath);
-            }
-            SettingsV3Model settings = await FileSerializerHelper.DeserializeFromFile<SettingsV3Model>(filePath, ignoreErrors: true);
-            settings.Version = SettingsV3Model.LatestVersion;
-            return settings;
+            return SettingsUpdateService.Load(filePath);
         }
 
         public static async Task Version8Upgrade(int version, string filePath)
@@ -406,8 +403,8 @@ namespace MixItUp.Base.Services
             {
                 await ReplaceOAuthTokenModelClass(filePath);
 
-                SettingsV3Model settings = await FileSerializerHelper.DeserializeFromFile<SettingsV3Model>(filePath, ignoreErrors: true);
-                await settings.Initialize();
+                SettingsV3Model settings = await FileSerializerHelper.DeserializeFromFile<SettingsV3Model>(filePath);
+                await settings.Initialize(failOnCommandErrors: true);
 
                 if (settings.TTSMonsterOAuthToken != null)
                 {
@@ -416,7 +413,7 @@ namespace MixItUp.Base.Services
 #pragma warning restore CS0612 // Type or member is obsolete
                 }
 
-                await ServiceManager.Get<SettingsService>().Save(settings);
+                await ServiceManager.Get<SettingsService>().Save(settings, throwOnError: true);
             }
         }
 
@@ -424,7 +421,7 @@ namespace MixItUp.Base.Services
         {
             string settingsFileContents = await ServiceManager.Get<IFileService>().ReadFile(filePath);
             settingsFileContents = settingsFileContents.Replace("StreamingClient.Base.Model.OAuth.OAuthTokenModel, StreamingClient.Base", "MixItUp.Base.Model.Web.OAuthTokenModel, MixItUp.Base");
-            await ServiceManager.Get<IFileService>().SaveFile(filePath, settingsFileContents);
+            await File.WriteAllTextAsync(filePath, settingsFileContents);
         }
 
         public static async Task Version7Upgrade(int version, string filePath)
@@ -433,8 +430,8 @@ namespace MixItUp.Base.Services
             {
                 await ReplaceOAuthTokenModelClass(filePath);
 
-                SettingsV3Model settings = await FileSerializerHelper.DeserializeFromFile<SettingsV3Model>(filePath, ignoreErrors: true);
-                await settings.Initialize();
+                SettingsV3Model settings = await FileSerializerHelper.DeserializeFromFile<SettingsV3Model>(filePath);
+                await settings.Initialize(failOnCommandErrors: true);
 
                 ChannelSession.SetChannelSessionSettings(settings);
 
@@ -538,7 +535,7 @@ namespace MixItUp.Base.Services
 
                 ChannelSession.SetChannelSessionSettings(null);
 
-                await ServiceManager.Get<SettingsService>().Save(settings);
+                await ServiceManager.Get<SettingsService>().Save(settings, throwOnError: true);
 
                 SettingsV3Upgrader.OverlayV3UpgradeOccurred = true;
             }

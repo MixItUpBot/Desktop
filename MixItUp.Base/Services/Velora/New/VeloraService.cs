@@ -730,7 +730,7 @@ namespace MixItUp.Base.Services.Velora.New
             });
         }
 
-        // ⚠️ VERIFY-LIVE: the poll create/vote request DTOs are undocumented; the caller supplies the body.
+        // The caller supplies the create-poll body defined by the Velora OpenAPI schema.
         public async Task<JToken> CreatePoll(string username, JObject poll)
         {
             return await AsyncRunner.RunAsync(async () =>

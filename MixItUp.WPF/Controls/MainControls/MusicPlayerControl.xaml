@@ -1,4 +1,4 @@
-﻿<local:MainControlBase
+<local:MainControlBase
     x:Class="MixItUp.WPF.Controls.MainControls.MusicPlayerControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -165,6 +165,13 @@
                         <Grid Grid.Column="10">
                             <Controls:IconButton
                                 Command="{Binding ToggleRepeatCommand}"
+                                Icon="repeat_one"
+                                ToolTip="{x:Static resx:Resources.RepeatCurrentSong}"
+                                Visibility="{Binding IsRepeatOne, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                AutomationProperties.AutomationId="MusicPlayer.RepeatOneButton"
+                                AutomationProperties.Name="{x:Static resx:Resources.RepeatCurrentSong}" />
+                            <Controls:IconButton
+                                Command="{Binding ToggleRepeatCommand}"
                                 Icon="repeat_on"
                                 ToolTip="{x:Static resx:Resources.Repeat}"
                                 Visibility="{Binding IsRepeatOn, Converter={StaticResource BooleanToVisibilityConverter}}"
@@ -252,7 +259,12 @@
             Grid.Column="2"
             Header="{x:Static resx:Resources.Queue}">
             <Grid>
-                <TextBlock
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TextBox x:Name="QueueSearchTextBox" Margin="8,0,8,12" TextChanged="QueueSearchTextBox_TextChanged" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.Search}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" AutomationProperties.AutomationId="MusicPlayer.QueueSearch" AutomationProperties.Name="{x:Static resx:Resources.Search}" />
+                <TextBlock Grid.Row="1"
                     MaxWidth="300"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
@@ -262,10 +274,10 @@
                     TextWrapping="Wrap"
                     Visibility="{Binding MusicNotLoaded, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-                <ListBox
+                <ListBox Grid.Row="1"
                     x:Name="QueueListBox"
                     HorizontalContentAlignment="Stretch"
-                    ItemsSource="{Binding Songs}"
+
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                     VirtualizingPanel.IsVirtualizing="True"
                     VirtualizingPanel.VirtualizationMode="Recycling"

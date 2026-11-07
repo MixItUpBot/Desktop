@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model;
+using MixItUp.Base.Model;
 using MixItUp.Base.Model.Twitch.Clients.Chat;
 using MixItUp.Base.Model.Twitch.Clients.PubSub.Messages;
 using MixItUp.Base.Model.Twitch.EventSub;
@@ -38,6 +38,8 @@ namespace MixItUp.Base.ViewModel.Chat.Twitch
         public UserV2ViewModel WhisperRecipient { get; set; }
 
         public string ReplyThreadID { get; set; }
+        public string SourceChannelID { get; private set; }
+        public string SourceChannelName { get; private set; }
 
         public string PlainTextMessageNoCheermotes { get; set; }
 
@@ -135,6 +137,8 @@ namespace MixItUp.Base.ViewModel.Chat.Twitch
             : base(notification.message_id, StreamingPlatformTypeEnum.Twitch, user)
         {
             this.IsInUsersChannel = string.IsNullOrEmpty(notification.source_broadcaster_user_id) || string.Equals(ServiceManager.Get<TwitchSession>().ChannelID, notification.source_broadcaster_user_id);
+            this.SourceChannelID = notification.source_broadcaster_user_id ?? notification.broadcaster_user_id;
+            this.SourceChannelName = notification.source_broadcaster_user_login ?? notification.broadcaster_user_login;
 
             this.HasBits = notification.cheer?.bits > 0;
             this.BitsAmount = notification.cheer?.bits ?? 0;
@@ -153,6 +157,8 @@ namespace MixItUp.Base.ViewModel.Chat.Twitch
             : base(notification.message_id, StreamingPlatformTypeEnum.Twitch, user)
         {
             this.IsInUsersChannel = string.IsNullOrEmpty(notification.source_broadcaster_user_id) || string.Equals(ServiceManager.Get<TwitchSession>().ChannelID, notification.source_broadcaster_user_id);
+            this.SourceChannelID = notification.source_broadcaster_user_id ?? notification.broadcaster_user_id;
+            this.SourceChannelName = notification.source_broadcaster_user_login ?? notification.broadcaster_user_login;
 
             this.IsHighlightedMessage =
                 notification.NoticeType == ChatNotificationType.announcement ||

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -10662,16 +10662,16 @@ sendParentMessage({ 型別: "ScriptComplete", ID: "{ID}", 結果: 結果 });</va
     <value>使用 Amazon Polly 實現文字轉語音功能是 AWS 的一項付費服務，Mix It Up 直接涵蓋，但我們為所有用戶使用該服務提供的財務費用是有限的。為了平衡這一點，我們將 Amazon Polly 文字轉語音的使用限制為每 5 分鐘一個請求。使用者可以連接自己的 AWS 帳戶來消除此限制，但使用 Amazon Polly 的所有費用都會計入使用者自己的 AWS 帳戶。有關設定的信息，請訪問以下連結：</value>
   </data>
   <data name="MicrosoftAzureSpeechInfo1" xml:space="preserve">
-    <value>Microsoft Azure 語音服務連線可讓您連接自己的 Microsoft Azure 帳戶，以透過文字轉語音操作來規避 Microsoft Azure 語音預設使用的速率限制。</value>
+    <value>Microsoft Azure Speech 需要您自己的 Azure Speech 資源、訂閱金鑰和區域。</value>
   </data>
   <data name="MicrosoftAzureSpeechInfo2" xml:space="preserve">
-    <value>使用 Microsoft Azure 語音實現文字轉語音功能是 Microsoft Azure 的付費服務，Mix It Up 直接涵蓋，但我們可以為所有使用者使用該服務提供的財務費用有限。為了平衡這一點，我們將 Microsoft Azure 語音文字轉語音的使用限制為每 5 分鐘一個請求。使用者可以連接自己的 Microsoft Azure 帳戶來消除此限制，但 Microsoft Azure 語音所使用的所有費用將計入使用者自己的 Microsoft Azure 帳戶。有關設定的信息，請訪問以下連結：</value>
+    <value>Mix It Up 不提供共用的 Azure Speech 存取。使用費用將依 Microsoft 定價計入您的 Azure 帳戶。請依照下方指南連接資源。</value>
   </data>
   <data name="NoCustomAmazonPollyAccount" xml:space="preserve">
     <value>尚未連接 Amazon Polly 帳戶，因此每 5 分鐘的使用量將被限制為 1 次操作。若要取消此速率限制，請造訪服務頁面上的 Amazon Polly 部分以連接您自己的 Amazon Polly 帳戶。</value>
   </data>
   <data name="NoCustomMicrosoftAzureSpeechAccount" xml:space="preserve">
-    <value>尚未連接 Microsoft Azure Speech 帳戶，因此每 5 分鐘的使用限制為 1 次操作。若要取消此速率限制，請造訪服務頁面上的 Microsoft Azure 語音部分以連接您自己的 Microsoft Azure 語音帳戶。</value>
+    <value>使用此語音前，請在「服務 &gt; Microsoft Azure Speech」連接您自己的資源。</value>
   </data>
   <data name="TextToSpeechActionResponsiveVoicePitch" xml:space="preserve">
     <value>音高（0% - 200%）</value>
@@ -12545,5 +12545,124 @@ sendParentMessage({ 型別: "ScriptComplete", ID: "{ID}", 結果: 結果 });</va
   </data>
   <data name="VPZoneChannelPointsGrantFailed" xml:space="preserve">
     <value>無法授予 VPZone 頻道點數。需要具備授予範圍且綁定頻道的 API 金鑰。</value>
+  </data>
+  <data name="NotYetRated" xml:space="preserve">
+    <value>尚無評分</value>
+  </data>
+  <data name="OBSStudioAutoStartReplayBuffer" xml:space="preserve">
+    <value>自動啟動重播緩衝區</value>
+  </data>
+  <data name="ToggleSourceVisibility" xml:space="preserve">
+    <value>切換來源可見性</value>
+  </data>
+  <data name="SearchFirstOccurrenceInFile" xml:space="preserve">
+    <value>搜尋檔案中的第一個相符項目</value>
+  </data>
+  <data name="SearchAndLoopInFile" xml:space="preserve">
+    <value>搜尋並逐一處理檔案中的相符項目</value>
+  </data>
+  <data name="FileSearchLineNumberHint" xml:space="preserve">
+    <value>結果包含相符的行。在特殊識別碼名稱後加上 linenumber 可取得行號（找不到時為 0）。</value>
+  </data>
+  <data name="ChangeChannelName" xml:space="preserve">
+    <value>變更頻道名稱</value>
+  </data>
+  <data name="DiscordChannelNameInvalid" xml:space="preserve">
+    <value>頻道名稱必須包含 1 到 100 個字元。</value>
+  </data>
+  <data name="DiscordManageChannelsRequired" xml:space="preserve">
+    <value>Discord 機器人需要「管理頻道」權限。請重新連接 Discord，或授予其身分組與頻道此權限。</value>
+  </data>
+  <data name="DiscardUnsavedCommandChanges" xml:space="preserve">
+    <value>指令有未儲存的變更。要捨棄並關閉嗎？</value>
+  </data>
+  <data name="HidePlatformActionsAndEvents" xml:space="preserve">
+    <value>隱藏平台動作與事件</value>
+  </data>
+  <data name="EndPoll" xml:space="preserve">
+    <value>結束投票</value>
+  </data>
+  <data name="GetActivePoll" xml:space="preserve">
+    <value>取得進行中的投票</value>
+  </data>
+  <data name="PollIdentifier" xml:space="preserve">
+    <value>投票 ID</value>
+  </data>
+  <data name="AllowMultipleSelections" xml:space="preserve">
+    <value>允許複選</value>
+  </data>
+  <data name="VeloraPollSettingsHint" xml:space="preserve">
+    <value>輸入 2～6 個選項，每行一個，並設定 15～3600 秒的時長。結果：$velorapoll 與 $velorapollid。</value>
+  </data>
+  <data name="CollectDiagnostics" xml:space="preserve">
+    <value>收集並上傳診斷資料</value>
+  </data>
+  <data name="DiagnosticsAccessCode" xml:space="preserve">
+    <value>請輸入六位支援代碼。</value>
+  </data>
+  <data name="DiagnosticsSuccess" xml:space="preserve">
+    <value>診斷資料已上傳至您的支援請求。</value>
+  </data>
+  <data name="DiagnosticsFailure" xml:space="preserve">
+    <value>診斷資料尚未完整上傳。請重試傳送相同的已準備檔案，或聯絡支援團隊。</value>
+  </data>
+  <data name="DiagnosticsPartialConsent" xml:space="preserve">
+    <value>部分 Windows 檢查需要系統管理員權限。要上傳可用的診斷資料嗎？</value>
+  </data>
+  <data name="DiagnosticsConsent" xml:space="preserve">
+    <value>要為此支援請求，將原始儲存設定、資料庫、七份記錄、安裝清單、Windows 與網路詳細資訊以及整合檢查傳送給 Mix It Up 團隊嗎？檔案不會遮蔽內容，可能包含登入憑證及個人資訊。</value>
+  </data>
+  <data name="IUnderstand" xml:space="preserve">
+    <value>我瞭解並同意</value>
+  </data>
+  <data name="TwitchChannelSharedChatStarted" xml:space="preserve">
+    <value>Twitch 共享聊天已開始</value>
+  </data>
+  <data name="TwitchChannelSharedChatEnded" xml:space="preserve">
+    <value>Twitch 共享聊天已結束</value>
+  </data>
+  <data name="ReconnectServices" xml:space="preserve">
+    <value>重新連線服務</value>
+  </data>
+  <data name="RepeatCurrentSong" xml:space="preserve">
+    <value>重複播放目前歌曲</value>
+  </data>
+  <data name="LaunchAtLogin" xml:space="preserve">
+    <value>登入 Windows 時啟動 Mix It Up</value>
+  </data>
+  <data name="TwitchMigrationFailed" xml:space="preserve">
+    <value>Twitch 連線更新尚未完成。請重新登入以繼續。</value>
+  </data>
+  <data name="TwitchMigrationAccountMismatch" xml:space="preserve">
+    <value>此 Twitch 登入與預期的帳戶或應用程式不符。請使用相同的 Twitch 帳戶登入後再試一次。</value>
+  </data>
+  <data name="TwitchMigrationTitle" xml:space="preserve">
+    <value>重新連線至 Twitch</value>
+  </data>
+  <data name="TwitchMigrationPrompt" xml:space="preserve">
+    <value>請使用相同的 Twitch 實況主帳戶登入以更新連線。Mix It Up 將移轉其管理的頻道點數獎勵，並更新相關指令。獎勵的自訂圖片必須在 Twitch 重新上傳。</value>
+  </data>
+  <data name="TwitchMigrationBotOptional" xml:space="preserve">
+    <value>機器人登入為選用步驟。若略過此步驟，您的機器人將中斷連線，直到您再次登入。</value>
+  </data>
+  <data name="TwitchMigrationSignedIn" xml:space="preserve">
+    <value>已登入</value>
+  </data>
+  <data name="MuteAudioSource" xml:space="preserve">
+    <value>將音訊來源靜音</value>
+  </data>
+  <data name="UnmuteAudioSource" xml:space="preserve">
+    <value>取消音訊來源靜音</value>
+  </data>
+  <data name="ToggleAudioMute" xml:space="preserve">
+    <value>切換音訊靜音</value>
+  </data>
+  <data name="VelumStudio" xml:space="preserve"><value>Velum Studio</value></data>
+  <data name="VelumStudioInfo" xml:space="preserve"><value>遠端連線需要驗證權杖。本機連線會自動取得權杖。保留空白位址可探索本機執行個體。</value></data>
+  <data name="VelumStudioToken" xml:space="preserve"><value>驗證權杖（僅限遠端連線）</value></data>
+  <data name="VelumStudioFingerprint" xml:space="preserve"><value>憑證指紋（選填）</value></data>
+  <data name="VelumStudioInvalidConnection" xml:space="preserve"><value>請使用 ws:// 或 wss:// 位址。若提供憑證指紋，必須包含 64 個十六進位字元。</value></data>
+  <data name="RunHotKeyByName" xml:space="preserve">
+    <value>依名稱觸發快捷鍵</value>
   </data>
 </root>

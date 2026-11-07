@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Overlay;
+using MixItUp.Base.Model.Overlay;
 using MixItUp.Base.Util;
 using MixItUp.Base.ViewModels;
 using System;
@@ -61,12 +61,26 @@ namespace MixItUp.Base.ViewModel.Overlay
         public bool IsBottomMiddleSimplePosition { get { return this.XPosition == 50 && this.YPosition == 75; } }
         public bool IsBottomRightSimplePosition { get { return this.XPosition == 75 && this.YPosition == 75; } }
 
+        private string xPositionExpression;
+        public string XPositionText
+        {
+            get { return this.xPositionExpression ?? this.XPosition.ToString(); }
+            set
+            {
+                if (int.TryParse(value, out int number)) { this.XPosition = number; }
+                else { this.xPositionExpression = value; }
+                this.NotifyPropertyChanged();
+            }
+        }
+
         public int XPosition
         {
             get { return this.xPosition; }
             set
             {
                 this.xPosition = value;
+                this.xPositionExpression = null;
+                this.NotifyPropertyChanged(nameof(XPositionText));
                 this.NotifyPropertyChanged();
 
                 if (this.SelectedPositionType == OverlayPositionV3Type.Simple)
@@ -77,12 +91,26 @@ namespace MixItUp.Base.ViewModel.Overlay
         }
         private int xPosition;
 
+        private string yPositionExpression;
+        public string YPositionText
+        {
+            get { return this.yPositionExpression ?? this.YPosition.ToString(); }
+            set
+            {
+                if (int.TryParse(value, out int number)) { this.YPosition = number; }
+                else { this.yPositionExpression = value; }
+                this.NotifyPropertyChanged();
+            }
+        }
+
         public int YPosition
         {
             get { return this.yPosition; }
             set
             {
                 this.yPosition = value;
+                this.yPositionExpression = null;
+                this.NotifyPropertyChanged(nameof(YPositionText));
                 this.NotifyPropertyChanged();
 
                 if (this.SelectedPositionType == OverlayPositionV3Type.Simple)
@@ -93,16 +121,42 @@ namespace MixItUp.Base.ViewModel.Overlay
         }
         private int yPosition;
 
+        private string xMaximumExpression;
+        public string XMaximumPositionText
+        {
+            get { return this.xMaximumExpression ?? this.XMaximumPosition.ToString(); }
+            set
+            {
+                if (int.TryParse(value, out int number)) { this.XMaximumPosition = number; }
+                else { this.xMaximumExpression = value; }
+                this.NotifyPropertyChanged();
+            }
+        }
+
         public int XMaximumPosition
         {
             get { return this.xMaximumPosition; }
             set
             {
                 this.xMaximumPosition = value;
+                this.xMaximumExpression = null;
+                this.NotifyPropertyChanged(nameof(XMaximumPositionText));
                 this.NotifyPropertyChanged();
             }
         }
         private int xMaximumPosition = 1920;
+
+        private string yMaximumExpression;
+        public string YMaximumPositionText
+        {
+            get { return this.yMaximumExpression ?? this.YMaximumPosition.ToString(); }
+            set
+            {
+                if (int.TryParse(value, out int number)) { this.YMaximumPosition = number; }
+                else { this.yMaximumExpression = value; }
+                this.NotifyPropertyChanged();
+            }
+        }
 
         public int YMaximumPosition
         {
@@ -110,6 +164,8 @@ namespace MixItUp.Base.ViewModel.Overlay
             set
             {
                 this.yMaximumPosition = value;
+                this.yMaximumExpression = null;
+                this.NotifyPropertyChanged(nameof(YMaximumPositionText));
                 this.NotifyPropertyChanged();
             }
         }
@@ -160,6 +216,10 @@ namespace MixItUp.Base.ViewModel.Overlay
                 this.XPosition = item.XPosition;
                 this.YPosition = item.YPosition;
             }
+            this.xPositionExpression = item.XPositionExpression;
+            this.yPositionExpression = item.YPositionExpression;
+            this.xMaximumExpression = item.XMaximumExpression;
+            this.yMaximumExpression = item.YMaximumExpression;
             this.Layer = item.Layer;
 
             this.Initialize();
@@ -171,6 +231,10 @@ namespace MixItUp.Base.ViewModel.Overlay
             item.XPosition = this.XPosition;
             item.YPosition = this.YPosition;
             item.Layer = this.Layer;
+            item.XPositionExpression = this.xPositionExpression;
+            item.YPositionExpression = this.yPositionExpression;
+            item.XMaximumExpression = this.xMaximumExpression;
+            item.YMaximumExpression = this.yMaximumExpression;
             if (this.SelectedPositionType == OverlayPositionV3Type.Random)
             {
                 item.XMaximum = this.XMaximumPosition;
@@ -180,16 +244,22 @@ namespace MixItUp.Base.ViewModel.Overlay
 
         public Result Validate()
         {
+            bool ValidText(string value) => int.TryParse(value, out _) || SpecialIdentifierStringBuilder.ContainsSpecialIdentifiers(value);
+            if (!this.IsSimplePosition && (!ValidText(this.XPositionText) || !ValidText(this.YPositionText) ||
+                (this.IsRandomPosition && (!ValidText(this.XMaximumPositionText) || !ValidText(this.YMaximumPositionText)))))
+            {
+                return new Result(Resources.InvalidPosition);
+            }
             if (this.IsPercentagePosition)
             {
-                if (this.XPosition < 0 || this.XPosition > 100 || this.YPosition < 0 || this.YPosition > 100)
+                if ((this.xPositionExpression == null && (this.XPosition < 0 || this.XPosition > 100)) || (this.yPositionExpression == null && (this.YPosition < 0 || this.YPosition > 100)))
                 {
                     return new Result(Resources.OverlayPositionPercentageBetween0And100);
                 }
             }
             else if (this.IsRandomPosition)
             {
-                if (this.XPosition > this.XMaximumPosition || this.YPosition > this.YMaximumPosition)
+                if ((this.xPositionExpression == null && this.xMaximumExpression == null && this.XPosition > this.XMaximumPosition) || (this.yPositionExpression == null && this.yMaximumExpression == null && this.YPosition > this.YMaximumPosition))
                 {
                     return new Result(Resources.OverlayPositionRandomMinimumsCantBeGreaterThanMaximums);
                 }

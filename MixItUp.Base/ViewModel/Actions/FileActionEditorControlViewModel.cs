@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Actions;
+using MixItUp.Base.Model.Actions;
 using MixItUp.Base.Util;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -24,6 +24,7 @@ namespace MixItUp.Base.ViewModel.Actions
                 this.NotifyPropertyChanged(nameof(this.ShowLineToRead));
                 this.NotifyPropertyChanged(nameof(this.ShowTextToRemoveGrid));
                 this.NotifyPropertyChanged(nameof(this.ShowSubActions));
+                this.NotifyPropertyChanged(nameof(this.ShowSearch));
             }
         }
         private FileActionTypeEnum selectedActionType;
@@ -44,7 +45,7 @@ namespace MixItUp.Base.ViewModel.Actions
                 return this.SelectedActionType == FileActionTypeEnum.ReadFromFile || this.SelectedActionType == FileActionTypeEnum.ReadSpecificLineFromFile ||
                     this.SelectedActionType == FileActionTypeEnum.ReadRandomLineFromFile || this.SelectedActionType == FileActionTypeEnum.RemoveSpecificLineFromFile ||
                     this.SelectedActionType == FileActionTypeEnum.RemoveRandomLineFromFile || this.SelectedActionType == FileActionTypeEnum.CountLinesInFile ||
-                    this.SelectedActionType == FileActionTypeEnum.ReadEachLineFromFile;
+                    this.SelectedActionType == FileActionTypeEnum.ReadEachLineFromFile || this.ShowSearch;
             }
         }
 
@@ -54,7 +55,16 @@ namespace MixItUp.Base.ViewModel.Actions
 
         public bool ShowLineToRead { get { return this.SelectedActionType == FileActionTypeEnum.ReadSpecificLineFromFile || this.SelectedActionType == FileActionTypeEnum.RemoveSpecificLineFromFile; } }
 
-        public bool ShowSubActions { get { return this.SelectedActionType == FileActionTypeEnum.ReadEachLineFromFile; } }
+        public bool ShowSubActions { get { return this.SelectedActionType == FileActionTypeEnum.ReadEachLineFromFile || this.SelectedActionType == FileActionTypeEnum.SearchAndLoopInFile; } }
+
+        public bool ShowSearch => this.SelectedActionType == FileActionTypeEnum.SearchFirstOccurrenceInFile || this.SelectedActionType == FileActionTypeEnum.SearchAndLoopInFile;
+
+        public string SearchText
+        {
+            get { return this.searchText; }
+            set { this.searchText = value; this.NotifyPropertyChanged(); }
+        }
+        private string searchText;
 
         public string FilePath
         {
@@ -105,6 +115,8 @@ namespace MixItUp.Base.ViewModel.Actions
         {
             this.SelectedActionType = action.ActionType;
             this.FilePath = action.FilePath;
+            this.SearchText = action.SearchText;
+            this.CaseSensitive = action.CaseSensitive;
             if (this.ShowSaveToFileGrid)
             {
                 this.TransferText = action.TransferText;
@@ -170,6 +182,10 @@ namespace MixItUp.Base.ViewModel.Actions
                 }
             }
 
+            if (this.ShowSearch && string.IsNullOrEmpty(this.SearchText))
+            {
+                return new Result(Resources.FileActionInvalidSpecialIdentifier);
+            }
             if (this.ShowSubActions)
             {
                 return await base.Validate();
@@ -182,11 +198,11 @@ namespace MixItUp.Base.ViewModel.Actions
         {
             if (this.ShowSubActions)
             {
-                return new FileActionModel(this.SelectedActionType, this.FilePath, this.TransferText, await this.ActionEditorList.GetActions(), this.LineIndex, this.CaseSensitive);
+                return new FileActionModel(this.SelectedActionType, this.FilePath, this.TransferText, await this.ActionEditorList.GetActions(), this.LineIndex, this.CaseSensitive) { SearchText = this.SearchText };
             }
             else
             {
-                return new FileActionModel(this.SelectedActionType, this.FilePath, this.TransferText, this.LineIndex, this.CaseSensitive);
+                return new FileActionModel(this.SelectedActionType, this.FilePath, this.TransferText, this.LineIndex, this.CaseSensitive) { SearchText = this.SearchText };
             }
         }
     }

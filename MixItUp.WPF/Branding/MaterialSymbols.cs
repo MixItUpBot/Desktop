@@ -206,6 +206,7 @@ namespace MixItUp.WPF.Branding
             { "reorder", "\uE8FE" },
             { "repeat", "\uE040" },
             { "repeat_on", "\uE9D6" },
+            { "repeat_one", "\uE041" },
             { "replay", "\uE042" },
             { "satellite_alt", "\uEB3A" },
             { "save", "\uE161" },

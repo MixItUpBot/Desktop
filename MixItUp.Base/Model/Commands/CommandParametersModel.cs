@@ -1,6 +1,7 @@
-﻿using MixItUp.Base.Services;
+using MixItUp.Base.Services;
 using MixItUp.Base.Util;
 using MixItUp.Base.ViewModel.Chat;
+using MixItUp.Base.ViewModel.Chat.Twitch;
 using MixItUp.Base.ViewModel.User;
 using System;
 using System.Collections.Generic;
@@ -84,9 +85,18 @@ namespace MixItUp.Base.Model.Commands
             : this(message.User, message.Platform, (arguments != null) ? arguments : message.ToArguments())
         {
             this.SpecialIdentifiers["messageemotecount"] = message.EmotesOnlyContents.Count().ToString();
+            this.SpecialIdentifiers["messageemotes"] = string.Join(",", message.EmotesOnlyContents.Select(e => e.Name));
+            this.SpecialIdentifiers["messageemoteurls"] = string.Join(",", message.EmotesOnlyContents.Select(e => e.OverlayAnimatedOrStaticImageURL));
             this.SpecialIdentifiers["messagenoemotes"] = message.TextOnlyMessageContents;
             this.SpecialIdentifiers["message"] = message.PlainTextMessage;
 
+            this.SpecialIdentifiers["messageinmychannel"] = message.IsInUsersChannel.ToString().ToLowerInvariant();
+            this.SpecialIdentifiers["messageissharedchat"] = (!message.IsInUsersChannel).ToString().ToLowerInvariant();
+            if (message is TwitchChatMessageViewModel twitchMessage)
+            {
+                this.SpecialIdentifiers["messagesourcechannel"] = twitchMessage.SourceChannelName ?? string.Empty;
+                this.SpecialIdentifiers["messagesourcechannelid"] = twitchMessage.SourceChannelID ?? string.Empty;
+            }
             this.TriggeringChatMessageID = message.ID;
         }
 

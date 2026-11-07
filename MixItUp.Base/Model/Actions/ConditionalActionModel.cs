@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Commands;
+using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Util;
 using System;
 using System.Collections.Generic;
@@ -188,6 +188,10 @@ namespace MixItUp.Base.Model.Actions
                 int compareResult = 0;
                 if (double.TryParse(v1, out double v1num) && double.TryParse(v2, out double v2num))
                 {
+                    if (double.IsNaN(v1num) || double.IsNaN(v2num))
+                    {
+                        return clause.ComparisionType == ConditionalComparisionTypeEnum.NotEquals;
+                    }
                     if (v1num < v2num)
                     {
                         compareResult = -1;

@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Commands;
+using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Services;
 using MixItUp.Base.Services.External;
 using MixItUp.Base.Util;
@@ -16,12 +16,15 @@ namespace MixItUp.Base.Model.Actions
         MuteSelf,
         DeafenSelf,
         SendEmbed,
+        ChangeChannelName,
     }
 
     [DataContract]
     public class DiscordActionModel : ActionModelBase
     {
         public static DiscordActionModel CreateForChatMessage(DiscordChannel channel, string message, string filePath) { return new DiscordActionModel(DiscordActionTypeEnum.SendMessage) { ChannelID = channel.ID, MessageText = message, FilePath = filePath }; }
+
+        public static DiscordActionModel CreateForChannelName(DiscordChannel channel, string name) { return new DiscordActionModel(DiscordActionTypeEnum.ChangeChannelName) { ChannelID = channel.ID, MessageText = name }; }
 
         public static DiscordActionModel CreateForMuteSelf(bool mute) { return new DiscordActionModel(DiscordActionTypeEnum.MuteSelf) { ShouldMuteDeafen = mute }; }
 
@@ -104,7 +107,13 @@ namespace MixItUp.Base.Model.Actions
 
         protected override async Task PerformInternal(CommandParametersModel parameters)
         {
-            if (this.ActionType == DiscordActionTypeEnum.SendMessage)
+            if (this.ActionType == DiscordActionTypeEnum.ChangeChannelName)
+            {
+                string name = await ReplaceStringWithSpecialModifiers(this.MessageText, parameters);
+                Result result = await ServiceManager.Get<DiscordService>().ChangeChannelName(this.ChannelID, name);
+                if (!result.Success) { throw new InvalidOperationException(result.Message); }
+            }
+            else if (this.ActionType == DiscordActionTypeEnum.SendMessage)
             {
                 if (this.channel == null)
                 {

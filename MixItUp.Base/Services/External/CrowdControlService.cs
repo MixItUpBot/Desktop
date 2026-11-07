@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model;
+using MixItUp.Base.Model;
 using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Services.Kick.New;
 using MixItUp.Base.Services.Velora.New;
@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MixItUp.Base.Services.External
@@ -140,6 +141,8 @@ namespace MixItUp.Base.Services.External
 
     public class CrowdControlWebSocket : ClientWebSocketBase
     {
+        protected override bool NotifyOnNormalClosure => true;
+
         public string SubscriptionTopic { get; private set; }
         public bool Subscribed { get; private set; }
         public List<string> ConnectionFailures { get; private set; } = new List<string>();
@@ -262,6 +265,9 @@ namespace MixItUp.Base.Services.External
         private CrowdControlWebSocket socket;
 
         private string id;
+        private CancellationTokenSource reconnectCancellation;
+        private int reconnecting;
+        private readonly SemaphoreSlim subscriptionLock = new SemaphoreSlim(1, 1);
 
         private IEnumerable<CrowdControlGame> gamesCache = new List<CrowdControlGame>();
 
@@ -279,6 +285,7 @@ namespace MixItUp.Base.Services.External
                 this.id = null;
                 this.IsConnected = false;
                 await this.Disconnect();
+                this.reconnectCancellation = new CancellationTokenSource();
 
                 if (ServiceManager.Get<TwitchSession>().IsConnected)
                 {
@@ -320,28 +327,12 @@ namespace MixItUp.Base.Services.External
                     this.socket.OnSentOccurred += Socket_OnSentOccurred;
                     this.socket.OnTextReceivedOccurred += Socket_OnTextReceivedOccurred;
                 }
-                this.socket.OnDisconnectOccurred += Socket_OnDisconnectOccurred;
-                await this.socket.Connect(CrowdControlService.WebsocketURL);
-
-                await this.socket.SendPublicConnect(this.id);
-
-                for (int i = 0; i < 5; i++)
+                Result result = await this.Subscribe(this.reconnectCancellation.Token);
+                if (result.Success)
                 {
-                    await Task.Delay(1000);
-                    if (this.socket.Subscribed)
-                    {
-                        this.IsConnected = true;
-
-                        ServiceManager.Get<ITelemetryService>().TrackService("CrowdControl");
-
-                        return new Result();
-                    }
-                    else if (this.socket.ConnectionFailures.Count > 0)
-                    {
-                        await this.Disconnect();
-                        return new Result(string.Join(" - ", this.socket.ConnectionFailures));
-                    }
+                    ServiceManager.Get<ITelemetryService>().TrackService("CrowdControl");
                 }
+                return result;
             }
             catch (Exception ex)
             {
@@ -352,6 +343,7 @@ namespace MixItUp.Base.Services.External
 
         public async Task Disconnect()
         {
+            this.reconnectCancellation?.Cancel();
             this.IsConnected = false;
             if (ChannelSession.IsDebug())
             {
@@ -359,7 +351,9 @@ namespace MixItUp.Base.Services.External
                 this.socket.OnTextReceivedOccurred -= Socket_OnTextReceivedOccurred;
             }
             this.socket.OnDisconnectOccurred -= Socket_OnDisconnectOccurred;
-            await this.socket.Disconnect();
+            await this.subscriptionLock.WaitAsync();
+            try { await this.socket.Disconnect(); }
+            finally { this.subscriptionLock.Release(); }
         }
 
         public IEnumerable<CrowdControlGame> GetGames() { return this.gamesCache; }
@@ -414,9 +408,76 @@ namespace MixItUp.Base.Services.External
             return null;
         }
 
+        private async Task<Result> Subscribe(CancellationToken cancellationToken)
+        {
+            await this.subscriptionLock.WaitAsync(cancellationToken);
+            bool subscribed = false;
+            try
+            {
+                this.socket.OnDisconnectOccurred -= Socket_OnDisconnectOccurred;
+                await this.socket.Disconnect();
+                cancellationToken.ThrowIfCancellationRequested();
+                await this.socket.Connect(WebsocketURL);
+                cancellationToken.ThrowIfCancellationRequested();
+                await this.socket.SendPublicConnect(this.id);
+                for (int i = 0; i < 5; i++)
+                {
+                    await Task.Delay(1000, cancellationToken);
+                    if (this.socket.Subscribed && this.socket.IsOpen())
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        this.IsConnected = true;
+                        this.socket.OnDisconnectOccurred += Socket_OnDisconnectOccurred;
+                        subscribed = true;
+                        return new Result();
+                    }
+                    if (this.socket.ConnectionFailures.Count > 0)
+                    {
+                        return new Result(string.Join(" - ", this.socket.ConnectionFailures));
+                    }
+                }
+                return new Result(Resources.CrowdControlFailedToConnectToService);
+            }
+            finally
+            {
+                try { if (!subscribed) { await this.socket.Disconnect(); } }
+                finally { this.subscriptionLock.Release(); }
+            }
+        }
+
         private async void Socket_OnDisconnectOccurred(object sender, WebSocketCloseStatus e)
         {
-            await this.Disconnect();
+            if (Interlocked.Exchange(ref this.reconnecting, 1) != 0)
+            {
+                return;
+            }
+            CancellationToken cancellationToken = this.reconnectCancellation?.Token ?? new CancellationToken(true);
+            try
+            {
+                if (cancellationToken.IsCancellationRequested) { return; }
+                this.IsConnected = false;
+                ChannelSession.DisconnectionOccurred(this.Name);
+                while (!cancellationToken.IsCancellationRequested)
+                {
+                    await Task.Delay(5000, cancellationToken);
+                    try
+                    {
+                        Result result = await this.Subscribe(cancellationToken);
+                        if (result.Success)
+                        {
+                            ChannelSession.ReconnectionOccurred(this.Name);
+                            return;
+                        }
+                    }
+                    catch (OperationCanceledException) { throw; }
+                    catch (Exception ex) { Logger.Log(ex); }
+                }
+            }
+            catch (OperationCanceledException) { }
+            finally
+            {
+                Interlocked.Exchange(ref this.reconnecting, 0);
+            }
         }
 
         private void Socket_OnSentOccurred(object sender, string e)

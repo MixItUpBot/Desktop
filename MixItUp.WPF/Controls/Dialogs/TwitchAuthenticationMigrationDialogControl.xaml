@@ -1,0 +1,49 @@
+<UserControl x:Class="MixItUp.WPF.Controls.Dialogs.TwitchAuthenticationMigrationDialogControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:resx="clr-namespace:MixItUp.Base;assembly=MixItUp.Base"
+             xmlns:materialDesign="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime">
+    <StackPanel Width="480" Margin="24">
+        <TextBlock Text="{x:Static resx:Resources.TwitchMigrationTitle}" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,16" />
+        <TextBlock Text="{x:Static resx:Resources.TwitchMigrationPrompt}" TextWrapping="Wrap" Margin="0,0,0,20" />
+        <Grid Margin="0,0,0,16">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="{x:Static resx:Resources.StreamerAccount}" FontWeight="SemiBold" />
+                <TextBlock x:Name="StreamerNameTextBlock" Margin="0,4,12,0" />
+                <TextBlock x:Name="StreamerStatusTextBlock" Margin="0,4,12,0" />
+            </StackPanel>
+            <Button Grid.Column="1" x:Name="StreamerLoginButton" Content="{x:Static resx:Resources.Login}"
+                    Click="StreamerLoginButton_Click" VerticalAlignment="Center"
+                    AutomationProperties.AutomationId="TwitchMigration.StreamerLoginButton"
+                    AutomationProperties.Name="{x:Static resx:Resources.StreamerAccount}" />
+        </Grid>
+        <StackPanel x:Name="BotAccountPanel" Margin="0,0,0,16">
+            <Grid>
+                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="{x:Static resx:Resources.BotAccount}" FontWeight="SemiBold" />
+                    <TextBlock x:Name="BotNameTextBlock" Margin="0,4,12,0" />
+                    <TextBlock x:Name="BotStatusTextBlock" Margin="0,4,12,0" />
+                </StackPanel>
+                <Button Grid.Column="1" x:Name="BotLoginButton" Content="{x:Static resx:Resources.Login}"
+                        Click="BotLoginButton_Click" VerticalAlignment="Center"
+                        AutomationProperties.AutomationId="TwitchMigration.BotLoginButton"
+                        AutomationProperties.Name="{x:Static resx:Resources.BotAccount}" />
+            </Grid>
+            <TextBlock Text="{x:Static resx:Resources.TwitchMigrationBotOptional}" TextWrapping="Wrap" Margin="0,12,0,0" />
+        </StackPanel>
+        <ProgressBar x:Name="LoginProgressBar" IsIndeterminate="True" Height="4" Margin="0,0,0,12" Visibility="Collapsed" />
+        <TextBlock x:Name="ErrorTextBlock" TextWrapping="Wrap" Margin="0,0,0,12" Visibility="Collapsed" />
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="{x:Static resx:Resources.Cancel}" Click="CancelButton_Click" Margin="0,0,12,0"
+                    Style="{DynamicResource MaterialDesignFlatButton}" AutomationProperties.AutomationId="TwitchMigration.CancelButton" />
+            <Button x:Name="ContinueButton" Content="{x:Static resx:Resources.Next}"
+                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                    AutomationProperties.AutomationId="TwitchMigration.ContinueButton">
+                <Button.CommandParameter><system:Boolean>True</system:Boolean></Button.CommandParameter>
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

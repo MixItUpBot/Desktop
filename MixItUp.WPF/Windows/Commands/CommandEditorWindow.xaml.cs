@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Actions;
+using MixItUp.Base.Model.Actions;
 using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Webhooks;
 using MixItUp.Base.Services;
@@ -15,7 +15,7 @@ namespace MixItUp.WPF.Windows.Commands
     /// <summary>
     /// Interaction logic for CommandEditorWindow.xaml
     /// </summary>
-    public partial class CommandEditorWindow : LoadingWindowBase
+    public partial class CommandEditorWindow : CommandEditorWindowBase
     {
         private static Dictionary<Guid, CommandEditorWindow> OpenWindows = new Dictionary<Guid, CommandEditorWindow>();
         public static CommandEditorWindow GetCommandEditorWindow(CommandModelBase existingCommand, IEnumerable<ActionModelBase> actions = null)
@@ -259,6 +259,7 @@ namespace MixItUp.WPF.Windows.Commands
 
         private void ViewModel_CommandSaved(object sender, CommandModelBase command)
         {
+            this.AllowClose = true;
             this.CommandSaved(this, command);
             this.Close();
         }

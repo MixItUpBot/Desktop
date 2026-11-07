@@ -1,4 +1,4 @@
-﻿<local:ActionEditorControlBase x:Class="MixItUp.WPF.Controls.Actions.VTubeStudioActionEditorControl"
+<local:ActionEditorControlBase x:Class="MixItUp.WPF.Controls.Actions.VTubeStudioActionEditorControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -114,5 +114,6 @@
 
             <ComboBox Grid.Row="2" ItemsSource="{Binding HotKeys}" SelectedItem="{Binding SelectedHotKey}" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.VTubeStudioHotKey}" Style="{StaticResource MaterialDesignFloatingHintComboBox}" DisplayMemberPath="DisplayName" AutomationProperties.AutomationId="VTubeStudioActionEditor.VTubeStudioHotKeyComboBox" AutomationProperties.Name="{x:Static resx:Resources.VTubeStudioHotKey}" />
         </Grid>
+        <TextBox Grid.Row="3" Visibility="{Binding ShowRunHotKeyByNameGrid, Converter={StaticResource BooleanToVisibilityConverter}}" Text="{Binding HotKeyName, UpdateSourceTrigger=PropertyChanged}" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.VTubeStudioHotKey}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" AutomationProperties.AutomationId="VTubeStudioActionEditor.HotKeyName" AutomationProperties.Name="{x:Static resx:Resources.VTubeStudioHotKey}" />
     </Grid>
 </local:ActionEditorControlBase>

@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Commands;
+using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Util;
 using System;
 using System.Collections.Generic;
@@ -15,6 +15,7 @@ namespace MixItUp.Base.ViewModel.Commands
         public string DisplayName { get { return (!string.IsNullOrEmpty(this.GroupName)) ? this.GroupName : MixItUp.Base.Resources.Ungrouped; } }
 
         public bool HasCommands { get { return this.Commands.Count > 0; } }
+        public int TotalCommands { get { return this.commandLookup.Count; } }
 
         public bool IsMinimized
         {

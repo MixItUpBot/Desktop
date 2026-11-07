@@ -8,7 +8,7 @@ const goalMaxAmount = document.getElementById("goalMaxAmount");
 
 function update(data)
 {
-    goalAmount.innerHTML = data.GoalAmount;
+    goalAmount.textContent = data.GoalAmount;
     adjustProgress(data);
     performAnimation("{ProgressOccurredAnimationFramework}", "{ProgressOccurredAnimationName}", main).then((result) =>
     {
@@ -19,7 +19,7 @@ function update(data)
 function complete(data)
 {
     update({
-        "GoalAmount": goalMaxAmount.innerHTML,
+        "GoalAmount": goalMaxAmount.textContent,
         "GoalBarCompletionPercentage": 100,
     })
     
@@ -28,10 +28,10 @@ function complete(data)
 
 function reset(data)
 {
-    goalName.innerHTML = data.GoalName;
-    goalEnd.innerHTML = data.GoalEnd;
-    goalAmount.innerHTML = data.GoalAmount;
-    goalMaxAmount.innerHTML = data.GoalMaxAmount;
+    goalName.textContent = data.GoalName;
+    goalEnd.textContent = data.GoalEnd;
+    goalAmount.textContent = data.GoalAmount;
+    goalMaxAmount.textContent = data.GoalMaxAmount;
     adjustProgress(data);
     performAnimation("{SegmentCompletedAnimationFramework}", "{SegmentCompletedAnimationName}", main).then((result) =>
     {

@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Commands;
+using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Settings;
 using MixItUp.Base.Services;
 using MixItUp.Base.Services.Twitch;
@@ -318,12 +318,20 @@ namespace MixItUp.Base.Model.Overlay
                     }
                     else if (amount < 0)
                     {
-                        this.TotalAmount = Math.Max(this.TotalAmount + amount, this.PreviousGoalAmount);
+                        this.TotalAmount = Math.Max(this.TotalAmount + amount, this.SegmentType == OverlayGoalSegmentV3Type.Cumulative ? 0 : this.PreviousGoalAmount);
                     }
                 }
                 else if (this.GoalType == OverlayGoalV3Type.Counter && this.Counter != null)
                 {
                     previousAmount = this.CounterPreviousCurrentAmount;
+                }
+
+                if (this.SegmentType == OverlayGoalSegmentV3Type.Cumulative && this.TotalAmount < previousAmount)
+                {
+                    this.CurrentSegment = this.Segments.FirstOrDefault(s => this.TotalAmount < s.Amount) ?? this.Segments.Last();
+                    int segmentIndex = this.Segments.IndexOf(this.CurrentSegment);
+                    this.PreviousGoalAmount = segmentIndex > 0 ? this.Segments[segmentIndex - 1].Amount : 0;
+                    previousSegment = this.CurrentSegment;
                 }
 
                 Logger.Log(LogLevel.Debug, $"New amounts - {this.CurrentAmount} / {this.GoalAmount} ({this.TotalAmount})");

@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Actions;
+using MixItUp.Base.Model.Actions;
 using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Commands.Games;
 using MixItUp.Base.Model.Currency;
@@ -68,6 +68,9 @@ namespace MixItUp.Base.Model.Settings
             }
         }
 
+        [JsonExtensionData]
+        private IDictionary<string, Newtonsoft.Json.Linq.JToken> AdditionalSettings { get; set; }
+
         [DataMember]
         public int Version { get; set; } = SettingsV3Model.LatestVersion;
 
@@ -92,6 +95,9 @@ namespace MixItUp.Base.Model.Settings
 
         [DataMember]
         public Dictionary<StreamingPlatformTypeEnum, StreamingPlatformAuthenticationSettingsModel> StreamingPlatformAuthentications { get; set; } = new Dictionary<StreamingPlatformTypeEnum, StreamingPlatformAuthenticationSettingsModel>();
+
+        [DataMember]
+        public TwitchAuthenticationMigrationModel TwitchAuthenticationMigration { get; set; }
 
         [DataMember]
         public OAuthTokenModel StreamlabsOAuthToken { get; set; }
@@ -288,6 +294,9 @@ namespace MixItUp.Base.Model.Settings
 
         [DataMember]
         public HashSet<ActionTypeEnum> ActionsToHide { get; set; } = new HashSet<ActionTypeEnum>();
+
+        [DataMember]
+        public HashSet<StreamingPlatformTypeEnum> PlatformsToHide { get; set; } = new HashSet<StreamingPlatformTypeEnum>();
 
         [DataMember]
         public Dictionary<string, CommandGroupSettingsModel> CommandGroups { get; set; } = new Dictionary<string, CommandGroupSettingsModel>();
@@ -582,6 +591,8 @@ namespace MixItUp.Base.Model.Settings
         public string OBSStudioServerIP { get; set; }
         [DataMember]
         public string OBSStudioServerPassword { get; set; }
+        [DataMember]
+        public bool OBSStudioDisableAutomaticReplayBuffer { get; set; }
 
         [DataMember]
         public bool EnableStreamlabsOBSConnection { get; set; }
@@ -699,6 +710,15 @@ namespace MixItUp.Base.Model.Settings
         public string MeldStudioWebSocketAddress { get; set; }
 
         [DataMember]
+        public bool VelumStudioEnabled { get; set; }
+        [DataMember]
+        public string VelumStudioWebSocketAddress { get; set; }
+        [DataMember]
+        public string VelumStudioToken { get; set; }
+        [DataMember]
+        public string VelumStudioCertificateFingerprint { get; set; }
+
+        [DataMember]
         public string GoogleCloudTTSCustomKey { get; set; }
 
         [DataMember]
@@ -735,6 +755,8 @@ namespace MixItUp.Base.Model.Settings
         public bool MusicPlayerShuffle { get; set; } = false;
         [DataMember]
         public bool MusicPlayerRepeat { get; set; } = false;
+        [DataMember]
+        public bool MusicPlayerRepeatOne { get; set; } = false;
 
         #endregion
 
@@ -840,7 +862,7 @@ namespace MixItUp.Base.Model.Settings
             this.InitializeMissingData();
         }
 
-        public async Task Initialize()
+        public async Task Initialize(bool failOnCommandErrors = false)
         {
             if (!ServiceManager.Get<IFileService>().FileExists(this.DatabaseFilePath))
             {
@@ -900,6 +922,7 @@ namespace MixItUp.Base.Model.Settings
                             else
                             {
                                 Logger.Log(ex);
+                                if (failOnCommandErrors) { throw; }
                             }
                         }
                     }
@@ -970,6 +993,7 @@ namespace MixItUp.Base.Model.Settings
                 catch (Exception ex)
                 {
                     Logger.Log(ex);
+                    if (failOnCommandErrors) { throw; }
                 }
             });
             this.Commands.ClearTracking();

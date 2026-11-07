@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Commands;
+using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Currency;
 using MixItUp.Base.Util;
 using Newtonsoft.Json;
@@ -105,8 +105,7 @@ namespace MixItUp.Base.Model.Requirements
                 }
                 else if (this.MatchType == RankRequirementMatchTypeEnum.LessThanOrEqualTo)
                 {
-                    RankModel nextRank = rankSystem.GetNextRank(parameters.User);
-                    if (nextRank != CurrencyModel.NoRank && rankSystem.HasAmount(parameters.User, nextRank.Amount))
+                    if (currentRank.Amount > rank.Amount)
                     {
                         return Task.FromResult(new Result(string.Format(MixItUp.Base.Resources.RankRequirementNotLessThan, rank.Name, rank.Amount, rankSystem.Name) + " " + string.Format(MixItUp.Base.Resources.RequirementCurrentAmount, currentRank)));
                     }

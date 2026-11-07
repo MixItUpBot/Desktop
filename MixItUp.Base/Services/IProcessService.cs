@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace MixItUp.Base.Services
 {
     public interface IProcessService
     {
+        bool LaunchAtLoginEnabled { get; }
+
+        MixItUp.Base.Util.Result SetLaunchAtLogin(bool enabled);
+
         void LaunchLink(string url);
 
         /// <summary>Opens the URL in the user's default browser, reporting whether the launch actually

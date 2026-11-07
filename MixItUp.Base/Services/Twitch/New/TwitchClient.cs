@@ -811,6 +811,17 @@ namespace MixItUp.Base.Services.Twitch.New
             }
         }
 
+        private static Dictionary<string, string> GetHypeTrainIdentifiers(JObject payload)
+        {
+            string type = payload["type"]?.ToString() ?? ((bool?)payload["is_golden_kappa_train"] == true ? "golden_kappa" : "regular");
+            return new Dictionary<string, string>
+            {
+                ["hypetraintype"] = type,
+                ["hypetrainisgoldenkappa"] = (type == "golden_kappa").ToString().ToLowerInvariant(),
+                ["hypetrainistreasure"] = (type == "treasure").ToString().ToLowerInvariant(),
+                ["hypetrainisshared"] = ((bool?)payload["is_shared_train"] == true).ToString().ToLowerInvariant(),
+            };
+        }
         private async Task HandleHypeTrainBegin(JObject payload)
         {
             int totalPoints = payload["total"].Value<int>();
@@ -820,7 +831,7 @@ namespace MixItUp.Base.Services.Twitch.New
 
             this.lastHypeTrainLevel = level;
 
-            Dictionary<string, string> eventCommandSpecialIdentifiers = new Dictionary<string, string>();
+            Dictionary<string, string> eventCommandSpecialIdentifiers = GetHypeTrainIdentifiers(payload);
             eventCommandSpecialIdentifiers["hypetraintotalpoints"] = totalPoints.ToString();
             eventCommandSpecialIdentifiers["hypetrainlevelpoints"] = levelPoints.ToString();
             eventCommandSpecialIdentifiers["hypetrainlevelgoal"] = levelGoal.ToString();
@@ -837,7 +848,7 @@ namespace MixItUp.Base.Services.Twitch.New
             int levelPoints = payload["progress"].Value<int>();
             int levelGoal = payload["goal"].Value<int>();
 
-            Dictionary<string, string> eventCommandSpecialIdentifiers = new Dictionary<string, string>();
+            Dictionary<string, string> eventCommandSpecialIdentifiers = GetHypeTrainIdentifiers(payload);
             eventCommandSpecialIdentifiers["hypetraintotalpoints"] = totalPoints.ToString();
             eventCommandSpecialIdentifiers["hypetrainlevelpoints"] = levelPoints.ToString();
             eventCommandSpecialIdentifiers["hypetrainlevelgoal"] = levelGoal.ToString();
@@ -848,7 +859,7 @@ namespace MixItUp.Base.Services.Twitch.New
             {
                 this.lastHypeTrainLevel = level;
 
-                eventCommandSpecialIdentifiers = new Dictionary<string, string>();
+                eventCommandSpecialIdentifiers = GetHypeTrainIdentifiers(payload);
                 eventCommandSpecialIdentifiers["hypetraintotalpoints"] = totalPoints.ToString();
                 eventCommandSpecialIdentifiers["hypetrainlevelpoints"] = levelPoints.ToString();
                 eventCommandSpecialIdentifiers["hypetrainlevelgoal"] = levelGoal.ToString();
@@ -864,7 +875,7 @@ namespace MixItUp.Base.Services.Twitch.New
             int level = payload["level"].Value<int>();
             int totalPoints = payload["total"].Value<int>();
 
-            Dictionary<string, string> eventCommandSpecialIdentifiers = new Dictionary<string, string>();
+            Dictionary<string, string> eventCommandSpecialIdentifiers = GetHypeTrainIdentifiers(payload);
             eventCommandSpecialIdentifiers["hypetraintotallevel"] = level.ToString();
             eventCommandSpecialIdentifiers["hypetraintotalpoints"] = totalPoints.ToString();
             await ServiceManager.Get<EventService>().PerformEvent(EventTypeEnum.TwitchChannelHypeTrainEnd, new CommandParametersModel(ChannelSession.User, StreamingPlatformTypeEnum.Twitch, eventCommandSpecialIdentifiers));
@@ -1373,11 +1384,7 @@ namespace MixItUp.Base.Services.Twitch.New
             }
         }
 
-        private Task HandleSharedChatBegin(JObject payload)
-        {
-            Logger.Log(LogLevel.Debug, "Packet Received: " + JSONSerializerHelper.SerializeToString(payload));
-            return Task.CompletedTask;
-        }
+        private Task HandleSharedChatBegin(JObject payload) => HandleSharedChatEvent(payload, EventTypeEnum.TwitchChannelSharedChatStarted);
 
         private Task HandleSharedChatUpdate(JObject payload)
         {
@@ -1385,10 +1392,18 @@ namespace MixItUp.Base.Services.Twitch.New
             return Task.CompletedTask;
         }
 
-        private Task HandleSharedChatEnd(JObject payload)
+        private Task HandleSharedChatEnd(JObject payload) => HandleSharedChatEvent(payload, EventTypeEnum.TwitchChannelSharedChatEnded);
+
+        private Task HandleSharedChatEvent(JObject payload, EventTypeEnum eventType)
         {
-            Logger.Log(LogLevel.Debug, "Packet Received: " + JSONSerializerHelper.SerializeToString(payload));
-            return Task.CompletedTask;
+            if (payload["broadcaster_user_id"]?.ToString() != ServiceManager.Get<TwitchSession>().StreamerID) { return Task.CompletedTask; }
+            var identifiers = new Dictionary<string, string>
+            {
+                ["sharedchatsessionid"] = payload["session_id"]?.ToString() ?? string.Empty,
+                ["sharedchathostid"] = payload["host_broadcaster_user_id"]?.ToString() ?? string.Empty,
+                ["sharedchathost"] = payload["host_broadcaster_user_login"]?.ToString() ?? string.Empty,
+            };
+            return ServiceManager.Get<EventService>().PerformEvent(eventType, new CommandParametersModel(ChannelSession.User, StreamingPlatformTypeEnum.Twitch, identifiers));
         }
 
         private async Task HandleModeration(JObject payload)
@@ -1412,6 +1427,7 @@ namespace MixItUp.Base.Services.Twitch.New
                 CommandParametersModel parameters = new CommandParametersModel(StreamingPlatformTypeEnum.Twitch);
                 parameters.Arguments.Add("@" + user.Username);
                 parameters.TargetUser = user;
+                parameters.SpecialIdentifiers["banreason"] = moderation.ban.reason ?? string.Empty;
                 await ServiceManager.Get<EventService>().PerformEvent(EventTypeEnum.ChatUserBan, parameters);
 
                 await ServiceManager.Get<AlertsService>().AddAlert(new AlertChatMessageViewModel(user, string.Format(MixItUp.Base.Resources.AlertBanned, user.FullDisplayName), ChannelSession.Settings.AlertModerationColor));

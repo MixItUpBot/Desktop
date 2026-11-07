@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Actions;
+using MixItUp.Base.Model.Actions;
 using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Commands.Games;
 using MixItUp.Base.Model.Currency;
@@ -40,6 +40,26 @@ namespace MixItUp.Base.ViewModel.Games
         }
         private int probability;
 
+        public string ProbabilityExpression { get; set; }
+
+        public string ProbabilityText
+        {
+            get { return this.ProbabilityExpression ?? this.Probability.ToString(); }
+            set
+            {
+                if (int.TryParse(value, out int probability))
+                {
+                    this.Probability = probability;
+                    this.ProbabilityExpression = null;
+                }
+                else
+                {
+                    this.ProbabilityExpression = value;
+                }
+                this.NotifyPropertyChanged();
+            }
+        }
+
         public double Payout
         {
             get { return this.payout; }
@@ -58,9 +78,9 @@ namespace MixItUp.Base.ViewModel.Games
             this.Payout = payout;
         }
 
-        public RoleProbabilityPayoutViewModel(RoleProbabilityPayoutModel model) : this(model.UserRole, model.Probability, model.Payout * 100) { }
+        public RoleProbabilityPayoutViewModel(RoleProbabilityPayoutModel model) : this(model.UserRole, model.Probability, model.Payout * 100) { this.ProbabilityExpression = model.ProbabilityExpression; }
 
-        public RoleProbabilityPayoutModel GetModel() { return new RoleProbabilityPayoutModel(this.Role, this.Probability, ((double)this.Payout) / 100.0); }
+        public RoleProbabilityPayoutModel GetModel() { return new RoleProbabilityPayoutModel(this.Role, this.Probability, ((double)this.Payout) / 100.0) { ProbabilityExpression = this.ProbabilityExpression }; }
     }
 
     public class GameOutcomeViewModel : NotifyPropertyChangedBase
@@ -77,6 +97,24 @@ namespace MixItUp.Base.ViewModel.Games
         private string name;
 
         public ObservableCollection<RoleProbabilityPayoutViewModel> RoleProbabilityPayouts { get; set; } = new ObservableCollection<RoleProbabilityPayoutViewModel>();
+
+        public string UserChanceText
+        {
+            get { return this.userRoleProbabilityPayout.ProbabilityText; }
+            set { this.userRoleProbabilityPayout.ProbabilityText = value; this.NotifyPropertyChanged(); }
+        }
+
+        public string SubChanceText
+        {
+            get { return this.subRoleProbabilityPayout.ProbabilityText; }
+            set { this.subRoleProbabilityPayout.ProbabilityText = value; this.NotifyPropertyChanged(); }
+        }
+
+        public string ModChanceText
+        {
+            get { return this.modRoleProbabilityPayout.ProbabilityText; }
+            set { this.modRoleProbabilityPayout.ProbabilityText = value; this.NotifyPropertyChanged(); }
+        }
 
         public int UserChance
         {

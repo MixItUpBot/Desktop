@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Web;
+using MixItUp.Base.Model.Web;
 using MixItUp.Base.Util;
 using MixItUp.Base.Web;
 using Newtonsoft.Json.Linq;
@@ -424,6 +424,7 @@ namespace MixItUp.Base.Services.External
         {
             try
             {
+                if (this.token == null) { return new Result(MixItUp.Base.Resources.VTubeStudioConnectionFailed); }
                 if (!this.websocket.IsOpen())
                 {
                     if (!await this.ConnectWebSocket())
@@ -438,7 +439,7 @@ namespace MixItUp.Base.Services.External
                 data["authenticationToken"] = this.token?.accessToken;
 
                 VTubeStudioWebSocketResponsePacket response = await this.websocket.SendAndReceive(new VTubeStudioWebSocketRequestPacket("AuthenticationRequest", data));
-                if (response != null && response.data != null && response.data.TryGetValue("authenticated", out JToken authenticated) && authenticated.Value<bool>() == true)
+                if (this.token != null && response != null && response.data != null && response.data.TryGetValue("authenticated", out JToken authenticated) && authenticated.Value<bool>() == true)
                 {
                     this.WebSocketConnected = true;
                     this.websocket.OnDisconnectOccurred += Websocket_OnDisconnectOccurred;
@@ -478,9 +479,16 @@ namespace MixItUp.Base.Services.External
             Result result = new Result();
             do
             {
-                await this.Disconnect();
+                this.ClearCaches();
+                this.WebSocketConnected = false;
+                this.websocket.OnDisconnectOccurred -= Websocket_OnDisconnectOccurred;
+                await this.websocket.Disconnect();
 
                 await Task.Delay(5000);
+                if (this.token == null)
+                {
+                    return;
+                }
 
                 result = await this.InitializeInternal();
             }

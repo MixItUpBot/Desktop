@@ -1,7 +1,8 @@
-﻿using MixItUp.API.V2.Models;
+using MixItUp.API.V2.Models;
 using MixItUp.Base;
 using MixItUp.Base.Model;
 using MixItUp.Base.Model.Commands;
+using MixItUp.Base.Model.Requirements;
 using MixItUp.Base.Services;
 using System;
 using System.Collections.Generic;
@@ -154,6 +155,17 @@ namespace MixItUp.WPF.Services.DeveloperAPI.V2
                 IsEnabled = command.IsEnabled,
                 Unlocked = command.Unlocked,
                 GroupName = command.GroupName,
+                Triggers = command is ChatCommandModel chat ? (chat.Wildcards ? chat.Triggers : chat.GetFullTriggers()).ToArray() : Array.Empty<string>(),
+                UsesWildcardTriggers = command is ChatCommandModel wildcardChat && wildcardChat.Wildcards,
+                RoleRequirements = command.Requirements?.Requirements?.OfType<RoleRequirementModel>().Select(role => new CommandRoleRequirement
+                {
+                    Platform = role.StreamingPlatform.ToString(),
+                    Role = role.UserRole.ToString(),
+                    Roles = role.UserRoleList?.Select(r => r.ToString()).OrderBy(r => r).ToArray() ?? Array.Empty<string>(),
+                    SubscriberTier = role.SubscriberTier,
+                    YouTubeMembershipLevelID = role.YouTubeMembershipLevelID,
+                    PatreonBenefitID = role.PatreonBenefitID,
+                }).ToArray() ?? Array.Empty<CommandRoleRequirement>(),
             };
         }
     }

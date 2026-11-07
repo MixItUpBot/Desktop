@@ -177,7 +177,7 @@ namespace MixItUp.Base.Model.Overlay
         {
             string text = await SpecialIdentifierStringBuilder.ProcessSpecialIdentifiers(this.EmoteText, parameters);
             IEnumerable<string> emoteURLs = OverlayEmoteEffectV3Model.GetEmoteURLs(text, parameters, this.AllowURLs, this.AllowEmoji);
-            properties[EmotesPropertyName] = $"\"{string.Join("\", \"", emoteURLs)}\"";
+            properties[EmotesPropertyName] = string.Join(", ", emoteURLs.Select(OverlayHTMLHelper.SerializeJavascriptData));
         }
     }
 }

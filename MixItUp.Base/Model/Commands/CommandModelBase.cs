@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Actions;
+using MixItUp.Base.Model.Actions;
 using MixItUp.Base.Model.Requirements;
 using MixItUp.Base.Services;
 using MixItUp.Base.Util;
@@ -59,6 +59,7 @@ namespace MixItUp.Base.Model.Commands
     public abstract class CommandModelBase : IEquatable<CommandModelBase>, IComparable<CommandModelBase>
     {
         public const string CommandNameSpecialIdentifier = "commandname";
+        public const string CommandIDSpecialIdentifier = "commandid";
 
         public static IEnumerable<CommandTypeEnum> GetSelectableCommandTypes()
         {

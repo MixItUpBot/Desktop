@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.User;
+using MixItUp.Base.Model.User;
 using MixItUp.Base.Services;
 using MixItUp.Base.Util;
 using System;
@@ -142,27 +142,49 @@ namespace MixItUp.Base.Model.Commands
                     specialIdentifiers["adisautomatic"] = "true";
                     break;
                 case EventTypeEnum.TwitchChannelHypeTrainBegin:
+                    specialIdentifiers["hypetraintype"] = "regular";
+                    specialIdentifiers["hypetrainisgoldenkappa"] = "false";
+                    specialIdentifiers["hypetrainistreasure"] = "false";
+                    specialIdentifiers["hypetrainisshared"] = "false";
                     specialIdentifiers["hypetraintotalpoints"] = "1";
                     specialIdentifiers["hypetrainlevelpoints"] = "123";
                     specialIdentifiers["hypetrainlevelgoal"] = "500";
                     break;
                 case EventTypeEnum.TwitchChannelHypeTrainProgress:
+                    specialIdentifiers["hypetraintype"] = "regular";
+                    specialIdentifiers["hypetrainisgoldenkappa"] = "false";
+                    specialIdentifiers["hypetrainistreasure"] = "false";
+                    specialIdentifiers["hypetrainisshared"] = "false";
                     specialIdentifiers["hypetraintotalpoints"] = "1";
                     specialIdentifiers["hypetrainlevelpoints"] = "123";
                     specialIdentifiers["hypetrainlevelgoal"] = "500";
                     specialIdentifiers["hypetrainlevel"] = "2";
                     break;
                 case EventTypeEnum.TwitchChannelHypeTrainLevelUp:
+                    specialIdentifiers["hypetraintype"] = "regular";
+                    specialIdentifiers["hypetrainisgoldenkappa"] = "false";
+                    specialIdentifiers["hypetrainistreasure"] = "false";
+                    specialIdentifiers["hypetrainisshared"] = "false";
                     specialIdentifiers["hypetraintotalpoints"] = "1";
                     specialIdentifiers["hypetrainlevelpoints"] = "123";
                     specialIdentifiers["hypetrainlevelgoal"] = "500";
                     specialIdentifiers["hypetrainlevel"] = "2";
                     break;
                 case EventTypeEnum.TwitchChannelHypeTrainEnd:
+                    specialIdentifiers["hypetraintype"] = "regular";
+                    specialIdentifiers["hypetrainisgoldenkappa"] = "false";
+                    specialIdentifiers["hypetrainistreasure"] = "false";
+                    specialIdentifiers["hypetrainisshared"] = "false";
                     specialIdentifiers["hypetraintotallevel"] = "5";
                     specialIdentifiers["hypetraintotalpoints"] = "1234";
                     break;
 
+                case EventTypeEnum.TwitchChannelSharedChatStarted:
+                case EventTypeEnum.TwitchChannelSharedChatEnded:
+                    specialIdentifiers["sharedchatsessionid"] = Guid.NewGuid().ToString();
+                    specialIdentifiers["sharedchathostid"] = "12345";
+                    specialIdentifiers["sharedchathost"] = "examplehost";
+                    break;
                 case EventTypeEnum.TwitchChannelUserWarned:
                     specialIdentifiers["warnreason"] = "Be nice in chat";
                     break;
@@ -376,6 +398,9 @@ namespace MixItUp.Base.Model.Commands
                     break;
 
                 // Chat
+                case EventTypeEnum.ChatUserBan:
+                    specialIdentifiers["banreason"] = "Be nice in chat";
+                    break;
                 case EventTypeEnum.ChatUserTimeout:
                     specialIdentifiers["timeoutlength"] = "300";
                     break;

@@ -1,5 +1,6 @@
 ﻿using MaterialDesignThemes.Wpf;
 using MixItUp.Base.Model.Commands;
+using MixItUp.Base.Model.Settings;
 using MixItUp.Base.Util;
 using MixItUp.WPF.Controls.Dialogs;
 using MixItUp.WPF.Windows;
@@ -33,6 +34,11 @@ namespace MixItUp.WPF.Util
         public async Task<bool> ShowConfirmation(string message)
         {
             return bool.Equals(await this.ShowDialogWrapper(new ConfirmationDialogControl(message)), true);
+        }
+
+        public async Task<bool> ShowTwitchAuthenticationMigration(TwitchAuthenticationMigrationDialogModel model)
+        {
+            return bool.Equals(await this.ShowDialogWrapper(new TwitchAuthenticationMigrationDialogControl(model)), true);
         }
 
         public async Task<string> ShowDropDown(IEnumerable<string> options, string description = null)

@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Actions;
+using MixItUp.Base.Model.Actions;
 using MixItUp.Base.Util;
 using Newtonsoft.Json.Linq;
 using System;
@@ -137,6 +137,16 @@ namespace MixItUp.Base.Services.External
         public async Task SetSourceVisibility(string sceneName, string sourceName, bool visibility)
         {
             await this.Send(JSONSerializerHelper.SerializeToString(new XSplitPacket("sourceUpdate", JObject.FromObject(new XSplitSource() { sceneName = sceneName, sourceName = sourceName, sourceVisible = visibility }))));
+        }
+
+        public async Task ToggleSourceVisibility(string sceneName, string sourceName)
+        {
+            await this.Send(JSONSerializerHelper.SerializeToString(new XSplitPacket("sourceUpdate", new JObject
+            {
+                ["sceneName"] = sceneName,
+                ["sourceName"] = sourceName,
+                ["toggleVisibility"] = true,
+            })));
         }
 
         public Task SetSourceFilterVisibility(string sourceName, string filterName, bool visibility) { return Task.CompletedTask; }

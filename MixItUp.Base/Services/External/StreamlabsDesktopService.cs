@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Actions;
+using MixItUp.Base.Model.Actions;
 using MixItUp.Base.Util;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -230,6 +230,17 @@ namespace MixItUp.Base.Services.External
             {
                 StreamlabsOBSRequest request = new StreamlabsOBSRequest("setVisibility", sceneItem.ResourceID);
                 request.Arguments.Add(visibility);
+                await this.SendAndReceive(request);
+            }
+        }
+
+        public async Task ToggleSourceVisibility(string sceneName, string sourceName)
+        {
+            IEnumerable<StreamlabsOBSSceneItem> sceneItems = await this.GetSceneItems(sceneName, sourceName);
+            foreach (StreamlabsOBSSceneItem sceneItem in sceneItems)
+            {
+                StreamlabsOBSRequest request = new StreamlabsOBSRequest("setVisibility", sceneItem.ResourceID);
+                request.Arguments.Add(!sceneItem.Visible);
                 await this.SendAndReceive(request);
             }
         }

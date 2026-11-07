@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Commands;
+using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Services;
 using MixItUp.Base.Util;
 using System;
@@ -23,6 +23,8 @@ namespace MixItUp.Base.Model.Actions
         RemoveLineWithSpecificTextFromFile,
         CountLinesInFile,
         ReadEachLineFromFile,
+        SearchFirstOccurrenceInFile,
+        SearchAndLoopInFile,
     }
 
     [DataContract]
@@ -42,6 +44,9 @@ namespace MixItUp.Base.Model.Actions
 
         [DataMember]
         public bool CaseSensitive { get; set; }
+
+        [DataMember]
+        public string SearchText { get; set; }
 
         public FileActionModel(FileActionTypeEnum actionType, string filePath, string transferText, string lineIndex = null, bool caseSensitive = false)
             : base(ActionTypeEnum.File)
@@ -70,6 +75,27 @@ namespace MixItUp.Base.Model.Actions
         {
             string filePath = await ReplaceStringWithSpecialModifiers(this.FilePath, parameters);
             filePath = filePath.ToFilePathString();
+
+            if (this.ActionType == FileActionTypeEnum.SearchFirstOccurrenceInFile || this.ActionType == FileActionTypeEnum.SearchAndLoopInFile)
+            {
+                string searchText = await ReplaceStringWithSpecialModifiers(this.SearchText, parameters);
+                parameters.SpecialIdentifiers[this.TransferText] = string.Empty;
+                parameters.SpecialIdentifiers[this.TransferText + "linenumber"] = "0";
+                if (string.IsNullOrEmpty(searchText)) { return; }
+                string contents = await ServiceManager.Get<IFileService>().ReadFile(filePath);
+                string[] searchLines = (contents ?? string.Empty).Split(new string[] { Environment.NewLine, "\n" }, StringSplitOptions.None);
+                for (int index = 0; index < searchLines.Length; index++)
+                {
+                    if (searchLines[index].Contains(searchText, this.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
+                    {
+                        parameters.SpecialIdentifiers[this.TransferText] = searchLines[index];
+                        parameters.SpecialIdentifiers[this.TransferText + "linenumber"] = (index + 1).ToString();
+                        if (this.ActionType == FileActionTypeEnum.SearchFirstOccurrenceInFile) { break; }
+                        await this.RunSubActions(parameters);
+                    }
+                }
+                return;
+            }
 
             if (this.ActionType == FileActionTypeEnum.ReadFromFile ||
                 this.ActionType == FileActionTypeEnum.ReadSpecificLineFromFile || this.ActionType == FileActionTypeEnum.ReadRandomLineFromFile ||
@@ -137,9 +163,10 @@ namespace MixItUp.Base.Model.Actions
                 }
                 else if (this.ActionType == FileActionTypeEnum.ReadEachLineFromFile)
                 {
-                    foreach (string line in lines)
+                    for (int index = 0; index < lines.Count; index++)
                     {
-                        parameters.SpecialIdentifiers[this.TransferText] = line;
+                        parameters.SpecialIdentifiers[this.TransferText] = lines[index];
+                        parameters.SpecialIdentifiers[this.TransferText + "linenumber"] = (index + 1).ToString();
                         await this.RunSubActions(parameters);
                     }
                 }

@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Services;
+using MixItUp.Base.Services;
 using MixItUp.Base.Util;
 using System;
 using System.Collections.Generic;
@@ -12,6 +12,24 @@ namespace MixItUp.WPF.Services
     public class WindowsDatabaseService : IDatabaseService
     {
         private const int MaxBulkInsertRows = 10000;
+        private readonly System.Threading.SemaphoreSlim databaseAccess = new System.Threading.SemaphoreSlim(1, 1);
+        private readonly object queryStateLock = new object();
+        private int activeQueries;
+        private TaskCompletionSource<bool> queriesDrained;
+
+        public async Task WithFileSnapshot(Func<Task> snapshot)
+        {
+            await this.databaseAccess.WaitAsync();
+            try
+            {
+                Task drain;
+                lock (this.queryStateLock) { drain = this.activeQueries == 0 ? Task.CompletedTask : this.queriesDrained.Task; }
+                await drain;
+                this.ClearAllPools();
+                await snapshot();
+            }
+            finally { this.databaseAccess.Release(); }
+        }
 
         public async Task Read(string databaseFilePath, string commandString, Action<Dictionary<string, object>> processRow) { await this.Read(databaseFilePath, commandString, null, processRow); }
 
@@ -52,7 +70,7 @@ namespace MixItUp.WPF.Services
                                 }
                                 processRow(values);
                             }
-                            catch (Exception ex) { Logger.Log(ex); }
+                            catch (Exception ex) { Logger.Log(ex); if (SettingsUpdateService.IsMigrating) { throw; } }
                         }
                         values.Clear();
                     }
@@ -107,7 +125,7 @@ namespace MixItUp.WPF.Services
                                     await command.ExecuteNonQueryAsync();
                                     command.Parameters.Clear();
                                 }
-                                catch (Exception ex) { Logger.Log(ex); }
+                                catch (Exception ex) { Logger.Log(ex); if (SettingsUpdateService.IsMigrating) { throw; } }
                             }
                         }
                         transaction.Commit();
@@ -129,12 +147,24 @@ namespace MixItUp.WPF.Services
             }
             catch (Exception ex)
             {
-                Logger.Log(ex);
+                Logger.Log(ex); if (SettingsUpdateService.IsMigrating) { throw; }
             }
         }
 
         private async Task EstablishConnection(string databaseFilePath, Func<SqliteConnection, Task> databaseQuery)
         {
+            await this.databaseAccess.WaitAsync();
+            try
+            {
+                lock (this.queryStateLock)
+                {
+                    if (this.activeQueries++ == 0)
+                    {
+                        this.queriesDrained = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                    }
+                }
+            }
+            finally { this.databaseAccess.Release(); }
             try
             {
                 if (File.Exists(databaseFilePath))
@@ -151,18 +181,26 @@ namespace MixItUp.WPF.Services
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log(ex);
+                            Logger.Log(ex); if (SettingsUpdateService.IsMigrating) { throw; }
                         }
                     });
                 }
                 else
                 {
                     Logger.Log(LogLevel.Error, "Database file does not exist: " + databaseFilePath);
+                    if (SettingsUpdateService.IsMigrating) { throw new FileNotFoundException("Database file does not exist", databaseFilePath); }
                 }
             }
             catch (Exception ex)
             {
-                Logger.Log(ex);
+                Logger.Log(ex); if (SettingsUpdateService.IsMigrating) { throw; }
+            }
+            finally
+            {
+                lock (this.queryStateLock)
+                {
+                    if (--this.activeQueries == 0) { this.queriesDrained.TrySetResult(true); }
+                }
             }
         }
     }

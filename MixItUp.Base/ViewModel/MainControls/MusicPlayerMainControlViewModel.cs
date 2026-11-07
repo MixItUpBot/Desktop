@@ -39,9 +39,11 @@ namespace MixItUp.Base.ViewModel.MainControls
 
         public bool IsShuffleOff { get { return !this.IsShuffleOn; } }
 
-        public bool IsRepeatOn { get { return ServiceManager.Get<IMusicPlayerService>().Repeat; } }
+        public bool IsRepeatOn { get { return ServiceManager.Get<IMusicPlayerService>().Repeat && !this.IsRepeatOne; } }
 
-        public bool IsRepeatOff { get { return !this.IsRepeatOn; } }
+        public bool IsRepeatOne { get { return ServiceManager.Get<IMusicPlayerService>().RepeatOne; } }
+
+        public bool IsRepeatOff { get { return !ServiceManager.Get<IMusicPlayerService>().Repeat; } }
 
         public int TrackDuration { get { return Math.Max((int)ServiceManager.Get<IMusicPlayerService>().CurrentDuration.TotalSeconds, 0); } }
 
@@ -178,9 +180,22 @@ namespace MixItUp.Base.ViewModel.MainControls
 
             this.ToggleRepeatCommand = this.CreateCommand(async () =>
             {
-                await ServiceManager.Get<IMusicPlayerService>().SetRepeat(!ServiceManager.Get<IMusicPlayerService>().Repeat);
+                IMusicPlayerService player = ServiceManager.Get<IMusicPlayerService>();
+                if (player.RepeatOne)
+                {
+                    await player.SetRepeat(false);
+                }
+                else if (player.Repeat)
+                {
+                    await player.SetRepeatOne(true);
+                }
+                else
+                {
+                    await player.SetRepeat(true);
+                }
                 this.NotifyPropertyChanged(nameof(this.IsRepeatOn));
                 this.NotifyPropertyChanged(nameof(this.IsRepeatOff));
+                this.NotifyPropertyChanged(nameof(this.IsRepeatOne));
             });
 
             this.AddFileToQueueCommand = this.CreateCommand(async () =>

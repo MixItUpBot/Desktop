@@ -96,7 +96,7 @@
 
                 <TextBox Grid.Row="0" Text="{Binding SourceText}" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.Text}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" AutomationProperties.AutomationId="StreamingSoftwareActionEditor.TextTextBox" AutomationProperties.Name="{x:Static resx:Resources.Text}" />
 
-                <Grid Grid.Row="2">
+                <Grid Grid.Row="2" Visibility="{Binding ShowTextSourceFilePath, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="20" />

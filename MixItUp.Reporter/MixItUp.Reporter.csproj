@@ -8,6 +8,9 @@
     <OutputType>WinExe</OutputType>
     <AssemblyName>MixItUp.Reporter</AssemblyName>
     <RootNamespace>MixItUp.Reporter</RootNamespace>
+    <AssemblyVersion>1.8.210.0</AssemblyVersion>
+    <FileVersion>1.8.210.0</FileVersion>
+    <Version>1.8.210</Version>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>..\MixItUp.WPF\Logo.ico</ApplicationIcon>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>

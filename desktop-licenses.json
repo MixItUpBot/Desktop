@@ -1,5 +1,16 @@
 [
   {
+    "PackageId": "AngleSharp",
+    "PackageVersion": "1.10.0",
+    "PackageProjectUrl": "https://anglesharp.github.io/",
+    "Copyright": "Copyright 2013-2026, AngleSharp.",
+    "Authors": "AngleSharp",
+    "Description": "HTML, CSS, and XML parser",
+    "License": "MIT",
+    "LicenseUrl": "https://licenses.nuget.org/MIT",
+    "LicenseInformationOrigin": 0
+  },
+  {
     "PackageId": "AnimatedImage",
     "PackageVersion": "2.1.4",
     "PackageProjectUrl": "https://github.com/whistyun/AnimatedImage",

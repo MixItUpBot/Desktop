@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Actions;
+using MixItUp.Base.Model.Actions;
 using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Requirements;
 using MixItUp.Base.Services;
@@ -307,6 +307,33 @@ namespace MixItUp.Base.ViewModel.Commands
             {
                 await this.AddActions(this.existingCommand.Actions);
             }
+        }
+
+        public async Task<string> GetEditorSnapshot()
+        {
+            CommandModelBase command = this.existingCommand != null ? JSONSerializerHelper.Clone<CommandModelBase>(this.existingCommand) : await this.CreateNewCommand();
+            if (command == null) { return null; }
+            await this.UpdateExistingCommand(command);
+            command.Unlocked = this.Unlocked;
+            command.GroupName = this.SelectedCommandGroup;
+            if (this.AddRequirementsToCommand) { command.Requirements = this.Requirements.GetRequirements(); }
+            IEnumerable<ActionModelBase> actions = await this.GetActions();
+            if (actions == null) { return null; }
+            command.Actions = actions.ToList();
+            var editorValues = this.GetType().GetProperties().Where(p => p.SetMethod?.IsPublic == true &&
+                (p.PropertyType.IsValueType || p.PropertyType == typeof(string)) &&
+                p.Name != nameof(this.SelectedActionType) && p.Name != nameof(this.WindowTitle) && p.Name != nameof(this.IsLoading))
+                .ToDictionary(p => p.Name, p => p.GetValue(this));
+            var token = Newtonsoft.Json.Linq.JToken.Parse(JSONSerializerHelper.SerializeToString(new { Command = command, EditorValues = editorValues }));
+            foreach (var obj in ((Newtonsoft.Json.Linq.JContainer)token).DescendantsAndSelf().OfType<Newtonsoft.Json.Linq.JObject>())
+            {
+                string typeName = obj["$type"]?.ToString();
+                if (typeName != null && (typeName.Contains(".Model.Actions.") || typeName.Contains(".Model.Commands.") || typeName.Contains(".Model.Overlay.")))
+                {
+                    obj.Remove("ID");
+                }
+            }
+            return token.ToString(Newtonsoft.Json.Formatting.None);
         }
 
         public async Task<CommandModelBase> ValidateAndBuildCommand()

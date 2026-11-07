@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Actions;
+using MixItUp.Base.Model.Actions;
 using MixItUp.Base.Services;
 using MixItUp.Base.Services.External;
 using MixItUp.Base.Util;
@@ -29,6 +29,7 @@ namespace MixItUp.Base.ViewModel.Actions
                 this.NotifyPropertyChanged("ShowLoadModelGrid");
                 this.NotifyPropertyChanged("ShowMoveModelGrid");
                 this.NotifyPropertyChanged("ShowRunHotKeyGrid");
+                this.NotifyPropertyChanged("ShowRunHotKeyByNameGrid");
             }
         }
         private VTubeStudioActionTypeEnum selectedActionType;
@@ -144,6 +145,15 @@ namespace MixItUp.Base.ViewModel.Actions
         }
         private VTubeStudioHotKey selectedHotKey;
 
+        public bool ShowRunHotKeyByNameGrid { get { return this.SelectedActionType == VTubeStudioActionTypeEnum.RunHotKeyByName; } }
+
+        public string HotKeyName
+        {
+            get { return this.hotKeyName; }
+            set { this.hotKeyName = value; this.NotifyPropertyChanged(); }
+        }
+        private string hotKeyName;
+
         private string modelID;
         private string hotKeyID;
 
@@ -151,6 +161,7 @@ namespace MixItUp.Base.ViewModel.Actions
             : base(action)
         {
             this.SelectedActionType = action.ActionType;
+            this.HotKeyName = action.HotKeyName;
             if (this.ShowLoadModelGrid)
             {
                 this.modelID = action.ModelID;
@@ -175,6 +186,10 @@ namespace MixItUp.Base.ViewModel.Actions
 
         public override Task<Result> Validate()
         {
+            if (this.ShowRunHotKeyByNameGrid && string.IsNullOrWhiteSpace(this.HotKeyName))
+            {
+                return Task.FromResult(new Result(MixItUp.Base.Resources.VTubeStudioActionMissingHotKey));
+            }
             if (this.ShowLoadModelGrid)
             {
                 if (this.SelectedModel == null)
@@ -214,6 +229,10 @@ namespace MixItUp.Base.ViewModel.Actions
 
         protected override Task<ActionModelBase> GetActionInternal()
         {
+            if (this.ShowRunHotKeyByNameGrid)
+            {
+                return Task.FromResult<ActionModelBase>(new VTubeStudioActionModel(VTubeStudioActionTypeEnum.RunHotKeyByName) { HotKeyName = this.HotKeyName });
+            }
             if (this.ShowLoadModelGrid)
             {
                 return Task.FromResult<ActionModelBase>(VTubeStudioActionModel.CreateForModelLoad(this.SelectedModel?.modelID ?? this.modelID));

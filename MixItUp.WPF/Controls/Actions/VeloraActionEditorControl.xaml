@@ -33,6 +33,11 @@
 
         <ComboBox ItemsSource="{Binding AnnounceColors}" SelectedItem="{Binding SelectedAnnounceColor}" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.Color}" Style="{StaticResource MaterialDesignFloatingHintComboBox}" Visibility="{Binding ShowColor, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,0,0,10" AutomationProperties.AutomationId="VeloraActionEditor.ColorComboBox" AutomationProperties.Name="{x:Static resx:Resources.Color}" />
 
+        <StackPanel Visibility="{Binding ShowPoll, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,0,0,10">
+            <TextBox Text="{Binding PollOptions}" AcceptsReturn="True" MinHeight="80" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.Options}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" AutomationProperties.AutomationId="VeloraActionEditor.PollOptions" />
+            <CheckBox IsChecked="{Binding PollMultiple}" Content="{x:Static resx:Resources.AllowMultipleSelections}" Margin="0,10,0,0" AutomationProperties.AutomationId="VeloraActionEditor.PollMultiple" />
+            <TextBlock Text="{x:Static resx:Resources.VeloraPollSettingsHint}" TextWrapping="Wrap" Margin="0,5,0,0" />
+        </StackPanel>
         <Grid Visibility="{Binding ShowSendAsStreamer, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,0,0,10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />

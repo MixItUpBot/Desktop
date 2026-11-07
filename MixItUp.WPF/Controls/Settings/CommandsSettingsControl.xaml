@@ -1,4 +1,4 @@
-﻿<local:SettingsControlBase x:Class="MixItUp.WPF.Controls.Settings.CommandsSettingsControl"
+<local:SettingsControlBase x:Class="MixItUp.WPF.Controls.Settings.CommandsSettingsControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -45,6 +45,14 @@
 
             <Separator Margin="10" />
             
+            <TextBlock Margin="20,10" Text="{x:Static resx:Resources.HidePlatformActionsAndEvents}" />
+            <ItemsControl Margin="60,0,60,0" ItemsSource="{Binding HidePlatformsList}" AutomationProperties.AutomationId="CommandsSettings.HidePlatformsList">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <GenericSettingsControls:GenericToggleSettingsOptionControl />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
             <TextBlock Margin="20,10" Text="{Binding Source={x:Static resx:Resources.HideActionsFromCommandEditor}, StringFormat={x:Static resx:Resources.ColumnHeaderFormat}}" />
             <ItemsControl Margin="60,0,60,0" ItemsSource="{Binding HideActionsList}" AutomationProperties.AutomationId="CommandsSettings.HideActionsFromCommandList" AutomationProperties.Name="{x:Static resx:Resources.HideActionsFromCommandEditor}">
                 <ItemsControl.ItemTemplate>

@@ -161,7 +161,7 @@ namespace MixItUp.Base.Model.Overlay
 
             properties[nameof(this.NameDisplay)] = this.NameDisplay.ToString();
 
-            properties[nameof(this.Users)] = JSONSerializerHelper.SerializeToString(this.Users);
+            properties[nameof(this.Users)] = OverlayHTMLHelper.SerializeJavascriptData(this.Users);
 
             this.ActiveAnimation.AddAnimationProperties(properties, nameof(this.ActiveAnimation));
             this.InactiveAnimation.AddAnimationProperties(properties, nameof(this.InactiveAnimation));

@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Commands;
+using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Overlay.Widgets;
 using MixItUp.Base.Services;
 using MixItUp.Base.Util;
@@ -159,6 +159,15 @@ namespace MixItUp.Base.Model.Overlay
         public int YMaximum { get; set; }
 
         [DataMember]
+        public string XPositionExpression { get; set; }
+        [DataMember]
+        public string YPositionExpression { get; set; }
+        [DataMember]
+        public string XMaximumExpression { get; set; }
+        [DataMember]
+        public string YMaximumExpression { get; set; }
+
+        [DataMember]
         public int Layer { get; set; }
 
         [Obsolete]
@@ -208,7 +217,13 @@ namespace MixItUp.Base.Model.Overlay
 
         public OverlayItemV3ModelBase(OverlayItemV3Type type) { this.Type = type; }
 
-        public virtual Task Initialize() { return Task.CompletedTask; }
+        public virtual Task Initialize()
+        {
+            this.Javascript = this.GetJavascript();
+            return Task.CompletedTask;
+        }
+
+        public string GetJavascript() { return OverlayHTMLHelper.UpdateDefaultJavascript(this.Type, this.Javascript); }
 
         public virtual Task Uninitialize() { return Task.CompletedTask; }
 
@@ -226,7 +241,7 @@ namespace MixItUp.Base.Model.Overlay
             properties[nameof(this.Width)] = (this.Width > 0) ? $"{this.Width}px" : "max-content";
             properties[nameof(this.Height)] = (this.Height > 0) ? $"{this.Height}px" : "max-content";
 
-            if (this.PositionType == OverlayPositionV3Type.Random)
+            if (this.PositionType == OverlayPositionV3Type.Random && !this.HasPositionExpressions)
             {
                 int x = RandomHelper.GenerateRandomNumber(this.XPosition, this.XMaximum);
                 int y = RandomHelper.GenerateRandomNumber(this.YPosition, this.YMaximum);
@@ -252,7 +267,71 @@ namespace MixItUp.Base.Model.Overlay
             return properties;
         }
 
+        [JsonIgnore]
+        private bool HasPositionExpressions => this.XPositionExpression != null || this.YPositionExpression != null ||
+            this.XMaximumExpression != null || this.YMaximumExpression != null;
+
+        public async Task ProcessAllGenerationProperties(Dictionary<string, object> properties, CommandParametersModel parameters)
+        {
+            if (this.PositionType != OverlayPositionV3Type.Simple && this.HasPositionExpressions)
+            {
+                async Task<int> Resolve(string expression, int fallback)
+                {
+                    if (expression == null) { return fallback; }
+                    string text = await SpecialIdentifierStringBuilder.ProcessSpecialIdentifiers(expression, parameters);
+                    if (int.TryParse(text, out int value)) { return value; }
+                    if (this.IsLivePreview) { return fallback; }
+                    throw new FormatException(Resources.InvalidPosition);
+                }
+
+                int x = await Resolve(this.XPositionExpression, this.XPosition);
+                int y = await Resolve(this.YPositionExpression, this.YPosition);
+                if (this.PositionType == OverlayPositionV3Type.Random)
+                {
+                    int xMax = await Resolve(this.XMaximumExpression, this.XMaximum);
+                    int yMax = await Resolve(this.YMaximumExpression, this.YMaximum);
+                    if (x > xMax || y > yMax) { throw new FormatException(Resources.OverlayPositionRandomMinimumsCantBeGreaterThanMaximums); }
+                    x = RandomHelper.GenerateRandomNumber(x, xMax);
+                    y = RandomHelper.GenerateRandomNumber(y, yMax);
+                }
+                else if (this.PositionType == OverlayPositionV3Type.Percentage && (x < 0 || x > 100 || y < 0 || y > 100))
+                {
+                    throw new FormatException(Resources.OverlayPositionPercentageBetween0And100);
+                }
+                properties[nameof(this.XPosition)] = x;
+                properties[nameof(this.YPosition)] = y;
+            }
+            await this.ProcessGenerationProperties(properties, parameters);
+            if ((this is OverlayTimerV3Model || this is OverlayPersistentTimerV3Model) && properties.TryGetValue("DisplayFormat", out object format))
+            {
+                properties["DisplayFormat"] = await OverlayHTMLHelper.ProcessSpecialIdentifiers(format?.ToString(), parameters);
+            }
+        }
+
         public virtual Task ProcessGenerationProperties(Dictionary<string, object> properties, CommandParametersModel parameters) { return Task.CompletedTask; }
+
+        public Task<string> ProcessHTML(string html, Dictionary<string, object> properties, CommandParametersModel parameters)
+        {
+            Dictionary<string, object> values = new Dictionary<string, object>(properties);
+            if (this is OverlayCustomV3Model custom)
+            {
+                foreach (var property in custom.Properties)
+                {
+                    html = OverlayV3Service.ReplaceProperty(html, property.Key, property.Value);
+                    values.Remove(property.Key);
+                }
+            }
+            // Only authored markup and built-in script literals are part of the template.
+            foreach (string name in new[] { nameof(this.JQuery), "Text", "HeaderText", "Sections", "Emotes", "Users", "OutcomeNames", "OutcomeColors", "OutcomeProbability" })
+            {
+                if (values.TryGetValue(name, out object value))
+                {
+                    html = OverlayV3Service.ReplaceProperty(html, name, value);
+                    values.Remove(name);
+                }
+            }
+            return OverlayHTMLHelper.ProcessSpecialIdentifiers(html, parameters, document: true, properties: values);
+        }
 
         public OverlayEndpointV3Service GetOverlayEndpointService()
         {

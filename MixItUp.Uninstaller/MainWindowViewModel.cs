@@ -287,6 +287,19 @@ namespace MixItUp.Uninstaller
 
         private void DeleteRegistryEntries()
         {
+            try
+            {
+                using (var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", writable: true))
+                {
+                    string startupCommand = "\"" + Path.Combine(this.installDirectory, "MixItUp.exe") + "\"";
+                    if (string.Equals(key?.GetValue("MixItUp") as string, startupCommand, StringComparison.OrdinalIgnoreCase))
+                    {
+                        key.DeleteValue("MixItUp", false);
+                    }
+                }
+            }
+            catch (Exception ex) { WriteLog("Failed to remove startup registration: " + ex.Message); }
+
             DeleteRegistryKey(SoftwareClassesRegistryPath, URIProtocolActivationHeader);
             DeleteRegistryKey(SoftwareClassesRegistryPath, MixItUpCommandFileExtension);
             DeleteRegistryKey(SoftwareClassesRegistryPath, FileAssociationProgramID);

@@ -21,6 +21,8 @@ Versions shown are the set observed across projects; all are covered by the list
 License short names follow SPDX where applicable. Canonical pages are NuGet, upstream GitHub, or vendor sites.
 
 Core libraries
+AngleSharp - 1.10.0 - MIT - Copyright 2013-2026 AngleSharp - <https://anglesharp.github.io/>
+NuGet: <https://www.nuget.org/packages/AngleSharp/>. Bundled license: ThirdPartyNotices/AngleSharp.txt.
 Newtonsoft.Json - 13.0.2 / 13.0.3 / 13.0.4 - MIT - © James Newton-King - <https://www.newtonsoft.com/json>
 NuGet: <https://www.nuget.org/packages/Newtonsoft.Json/>
 SixLabors.ImageSharp - 2.1.0 - Apache-2.0 - © Six Labors - <https://sixlabors.com/>

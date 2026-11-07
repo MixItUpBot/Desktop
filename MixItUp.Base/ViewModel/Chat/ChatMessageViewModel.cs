@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model;
+using MixItUp.Base.Model;
 using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Services;
 using MixItUp.Base.ViewModel.User;
@@ -217,7 +217,7 @@ namespace MixItUp.Base.ViewModel.Chat
 
                     ServiceManager.Get<ChatService>().HandleDeletion(this);
 
-                    if (this.User != null && !string.IsNullOrEmpty(this.PlainTextMessage))
+                    if (triggerEventCommand && this.User != null && !string.IsNullOrEmpty(this.PlainTextMessage))
                     {
                         CommandParametersModel parameters = new CommandParametersModel(moderator ?? this.User);
                         parameters.Arguments.Add(this.User.Username);

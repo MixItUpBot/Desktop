@@ -1,4 +1,4 @@
-﻿<local:SettingsControlBase x:Class="MixItUp.WPF.Controls.Settings.AdvancedSettingsControl"
+<local:SettingsControlBase x:Class="MixItUp.WPF.Controls.Settings.AdvancedSettingsControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -47,6 +47,7 @@
 
             <GenericSettingsControls:GenericButtonSettingsOptionControl DataContext="{Binding InstallationFolder}" />
             <GenericSettingsControls:GenericToggleSettingsOptionControl DataContext="{Binding DiagnosticLogging}" />
+            <Button Content="{x:Static resx:Resources.CollectDiagnostics}" Click="Diagnostics_Click" HorizontalAlignment="Left" Margin="20,10" />
             <GenericSettingsControls:GenericToggleSettingsOptionControl DataContext="{Binding DisableHardwareAcceleration}" />
             <GenericSettingsControls:GenericButtonSettingsOptionControl DataContext="{Binding RunNewUserWizard}" />
             <GenericSettingsControls:GenericButtonSettingsOptionControl DataContext="{Binding DeleteSettings}" />

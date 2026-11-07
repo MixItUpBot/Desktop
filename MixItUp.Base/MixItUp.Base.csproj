@@ -3,8 +3,9 @@
   	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<AssemblyTitle>MixItUp.Base</AssemblyTitle>
-    <AssemblyVersion>1.8.203.0</AssemblyVersion>
-    <FileVersion>1.8.203.0</FileVersion>
+    <AssemblyVersion>1.8.210.0</AssemblyVersion>
+    <FileVersion>1.8.210.0</FileVersion>
+    <Version>1.8.210</Version>
 		<Company>Blazing Cacti LLC</Company>
 		<Copyright>Copyright © 2026 Blazing Cacti LLC, All Rights Reserved. </Copyright>
 		<Configurations>Debug;Dev;Public;Preview</Configurations>
@@ -32,6 +33,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="AngleSharp" Version="1.10.0" />
 		<PackageReference Include="ExcelDataReader" Version="3.8.0" />
 		<PackageReference Include="ExcelDataReader.DataSet" Version="3.8.0" />
 		<PackageReference Include="Google.Apis.YouTube.v3" Version="1.74.0.4137" />
@@ -53,6 +55,10 @@
 
 	<ItemGroup>
 		<None Update="LICENSE.txt">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+
+		<None Update="ThirdPartyNotices\AngleSharp.txt">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<None Update="SettingsTemplateDatabase.db">

@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Util;
+using MixItUp.Base.Util;
 using MixItUp.WPF.Branding;
 using MixItUp.WPF.Controls.Services;
 using System.Collections.Generic;
@@ -38,6 +38,7 @@ namespace MixItUp.WPF.Controls.MainControls
             services.Add(new ServiceContainerControl(this.Window, new LumiaStreamServiceControl()));
             services.Add(new ServiceContainerControl(this.Window, new MCPServiceControl()));
             services.Add(new ServiceContainerControl(this.Window, new MeldStudioServiceControl()));
+            services.Add(new ServiceContainerControl(this.Window, new VelumStudioServiceControl()));
             services.Add(new ServiceContainerControl(this.Window, new MtionStudioServiceControl()));
             services.Add(new ServiceContainerControl(this.Window, new OBSStudioServiceControl()));
             services.Add(new ServiceContainerControl(this.Window, new OverlayServiceControl()));
@@ -80,6 +81,27 @@ namespace MixItUp.WPF.Controls.MainControls
             this.services.ClearAndAddRange(services);
 
             await base.InitializeInternal();
+        }
+
+        private async void ReconnectServicesButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            this.ReconnectServicesButton.IsEnabled = false;
+            try
+            {
+                await this.Window.RunAsyncOperation(async () =>
+                {
+                    IReadOnlyList<string> failures = await MixItUp.Base.ChannelSession.ReconnectServices();
+                    if (failures.Count > 0)
+                    {
+                        await DialogHelper.ShowMessage(string.Format(MixItUp.Base.Resources.ConnectedServicesFailed, string.Join(System.Environment.NewLine, failures)));
+                    }
+                    await this.InitializeInternal();
+                });
+            }
+            finally
+            {
+                this.ReconnectServicesButton.IsEnabled = true;
+            }
         }
 
         protected override async Task OnVisibilityChanged()

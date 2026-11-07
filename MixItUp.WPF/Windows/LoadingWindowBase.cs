@@ -1,4 +1,4 @@
-﻿using MixItUp.Base;
+using MixItUp.Base;
 using MixItUp.Base.Services;
 using MixItUp.Base.ViewModels;
 using MixItUp.WPF.Controls;
@@ -122,6 +122,8 @@ namespace MixItUp.WPF.Windows
         protected virtual Task OnLoaded() { return Task.CompletedTask; }
 
         protected virtual Task OnClosing() { return Task.CompletedTask; }
+        protected virtual bool CanClose() { return true; }
+        protected virtual Task OnCloseBlocked() { return Task.CompletedTask; }
 
         private async void LoadingWindowBase_Loaded(object sender, RoutedEventArgs e)
         {
@@ -133,6 +135,12 @@ namespace MixItUp.WPF.Windows
 
         private async void LoadingWindowBase_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            if (!this.CanClose())
+            {
+                e.Cancel = true;
+                await this.OnCloseBlocked();
+                return;
+            }
             await this.RunAsyncOperation(async () =>
             {
                 await this.OnClosing();

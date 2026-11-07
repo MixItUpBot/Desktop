@@ -812,7 +812,7 @@ namespace MixItUp.Base.Services.YouTube.New
                             List<SubscriptionDetailsModel> subscriptions = new List<SubscriptionDetailsModel>();
                             for (int i = 0; i < membershipsGifted.Amount; i++)
                             {
-                                subscriptions.Add(new SubscriptionDetailsModel(StreamingPlatformTypeEnum.YouTube, user, youTubeMembershipTier: membershipsGifted.Tier));
+                                subscriptions.Add(new SubscriptionDetailsModel(StreamingPlatformTypeEnum.YouTube, user, membershipsGifted.Gifter, youTubeMembershipTier: membershipsGifted.Tier));
                             }
                             EventService.MassSubscriptionsGiftedOccurred(subscriptions);
                         }

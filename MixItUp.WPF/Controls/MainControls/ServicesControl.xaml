@@ -1,4 +1,4 @@
-﻿<local:MainControlBase x:Class="MixItUp.WPF.Controls.MainControls.ServicesControl"
+<local:MainControlBase x:Class="MixItUp.WPF.Controls.MainControls.ServicesControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:resx="clr-namespace:MixItUp.Base;assembly=MixItUp.Base"
@@ -16,6 +16,11 @@
              d:DesignHeight="500" d:DesignWidth="600">
 
     <Grid Margin="20">
-        <ListView x:Name="ServicesListView" ItemContainerStyle="{StaticResource BorderedListViewItem}" HorizontalContentAlignment="Stretch" AutomationProperties.AutomationId="Services.ServicesList" AutomationProperties.Name="{x:Static resx:Resources.Services}" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Button x:Name="ReconnectServicesButton" Content="{x:Static resx:Resources.ReconnectServices}" HorizontalAlignment="Right" Margin="0,0,0,16" Click="ReconnectServicesButton_Click" AutomationProperties.AutomationId="Services.Reconnect" />
+        <ListView Grid.Row="1" x:Name="ServicesListView" ItemContainerStyle="{StaticResource BorderedListViewItem}" HorizontalContentAlignment="Stretch" AutomationProperties.AutomationId="Services.ServicesList" AutomationProperties.Name="{x:Static resx:Resources.Services}" />
     </Grid>
 </local:MainControlBase>

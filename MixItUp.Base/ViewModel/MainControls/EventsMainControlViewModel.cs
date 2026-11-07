@@ -1,9 +1,11 @@
-﻿using MixItUp.Base.Model;
+using MixItUp.Base.Model;
 using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Services;
 using MixItUp.Base.Util;
 using MixItUp.Base.ViewModels;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 
 namespace MixItUp.Base.ViewModel.MainControls
@@ -169,12 +171,32 @@ namespace MixItUp.Base.ViewModel.MainControls
 
         public Dictionary<EventTypeEnum, EventCommandItemViewModel> EventTypeItems { get; set; } = new Dictionary<EventTypeEnum, EventCommandItemViewModel>();
 
+        private readonly List<EventCommandGroupViewModel> allCommandGroups = new List<EventCommandGroupViewModel>();
+
+        protected override async Task OnVisibleInternal()
+        {
+            this.RefreshVisibleGroups();
+            await base.OnVisibleInternal();
+        }
+
+        private void RefreshVisibleGroups()
+        {
+            this.EventCommandGroups.Clear();
+            foreach (EventCommandGroupViewModel group in this.allCommandGroups)
+            {
+                if (!Enum.TryParse(group.BrandId, true, out StreamingPlatformTypeEnum platform) || !ChannelSession.Settings.PlatformsToHide.Contains(platform))
+                {
+                    this.EventCommandGroups.Add(group);
+                }
+            }
+        }
+
         public EventsMainControlViewModel(MainWindowViewModel windowViewModel)
             : base(windowViewModel)
         {
             this.EventCommandGroups.Clear();
 
-            List<EventCommandGroupViewModel> commandGroups = new List<EventCommandGroupViewModel>();
+            List<EventCommandGroupViewModel> commandGroups = this.allCommandGroups;
 
             EventCommandGroupViewModel genericCommands = new EventCommandGroupViewModel(Resources.Generic, iconName: "flash_on");
             genericCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.ApplicationLaunch));
@@ -223,6 +245,8 @@ namespace MixItUp.Base.ViewModel.MainControls
             twitchCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.TwitchChannelHypeTrainProgress));
             twitchCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.TwitchChannelHypeTrainLevelUp));
             twitchCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.TwitchChannelHypeTrainEnd));
+            twitchCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.TwitchChannelSharedChatStarted));
+            twitchCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.TwitchChannelSharedChatEnded));
             twitchCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.TwitchChannelUserWarned));
             twitchCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.TwitchChannelShoutoutReceived));
             twitchCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.TwitchChannelSuspiciousUserMessage));
@@ -388,9 +412,9 @@ namespace MixItUp.Base.ViewModel.MainControls
             obsStudioCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.OBSStudioFilterVisibilityChanged));
             commandGroups.Add(obsStudioCommands);
 
-            this.EventCommandGroups.AddRange(commandGroups);
+            this.RefreshVisibleGroups();
 
-            foreach (EventCommandGroupViewModel group in this.EventCommandGroups)
+            foreach (EventCommandGroupViewModel group in this.allCommandGroups)
             {
                 foreach (EventCommandItemViewModel item in group.Commands)
                 {

@@ -1,4 +1,4 @@
-﻿<Windows:LoadingWindowBase
+<local:CommandEditorWindowBase
     x:Class="MixItUp.WPF.Windows.Commands.GameCommandEditorWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -20,9 +20,9 @@
     TextElement.FontSize="{DynamicResource MIU.FontSize.BodyMedium}"
     TextElement.FontWeight="Medium"
     mc:Ignorable="d">
-    <Windows:LoadingWindowBase.Resources>
+    <local:CommandEditorWindowBase.Resources>
         <Util:LocalizationConverter x:Key="LocalizationConverter" />
-    </Windows:LoadingWindowBase.Resources>
+    </local:CommandEditorWindowBase.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -62,4 +62,4 @@
 
         <Controls:LoadingStatusBar x:Name="StatusBar" Grid.Row="1" />
     </Grid>
-</Windows:LoadingWindowBase>
+</local:CommandEditorWindowBase>

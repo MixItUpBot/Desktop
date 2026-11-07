@@ -187,6 +187,7 @@ namespace MixItUp.WPF.Branding
         public static readonly Brand OBSStudio = new Brand("obs", "OBS Studio", "https://obsproject.com", "#302E31", "#1F1E1F", "#000000");
         public static readonly Brand Streamlabs = new Brand("streamlabs", "Streamlabs", "https://streamlabs.com", "#80F5D2", "#31C9B0", "#0F2A3F");
         public static readonly Brand MeldStudio = new Brand("meld-studio", "Meld Studio", "https://meldstudio.co", "#FF6B35", "#E55A2B", "#1C1C1C");
+        public static readonly Brand VelumStudio = new Brand("velum", "Velum Studio", "https://velumstudio.dev");
         public static readonly Brand XSplit = new Brand("xsplit", "XSplit", "https://www.xsplit.com", "#0095FF", "#0073C7", "#1C1C1C");
 
         // Donations & charity

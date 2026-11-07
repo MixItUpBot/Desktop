@@ -16,6 +16,7 @@ namespace MixItUp.WPF.Controls.MainControls
     public partial class MusicPlayerControl : MainControlBase
     {
         private MusicPlayerMainControlViewModel viewModel;
+        private System.Windows.Data.ListCollectionView queueView;
 
         public MusicPlayerControl()
         {
@@ -25,6 +26,9 @@ namespace MixItUp.WPF.Controls.MainControls
         protected override async Task InitializeInternal()
         {
             this.DataContext = this.viewModel = new MusicPlayerMainControlViewModel((MainWindowViewModel)this.Window.ViewModel);
+            this.queueView = new System.Windows.Data.ListCollectionView(this.viewModel.Songs);
+            this.queueView.Filter = item => MatchesQueueSearch(item as MusicPlayerSong, this.QueueSearchTextBox.Text);
+            this.QueueListBox.ItemsSource = this.queueView;
 
             GongSolutions.Wpf.DragDrop.DragDrop.SetIsDragSource(this.QueueListBox, true);
             GongSolutions.Wpf.DragDrop.DragDrop.SetIsDropTarget(this.QueueListBox, true);
@@ -42,6 +46,26 @@ namespace MixItUp.WPF.Controls.MainControls
         protected override async Task OnVisibilityChanged()
         {
             await this.viewModel.OnVisible();
+        }
+
+        internal static bool MatchesQueueSearch(MusicPlayerSong song, string search)
+        {
+            string query = search?.Trim() ?? string.Empty;
+            return song != null && (query.Length == 0
+                || (song.Title?.Contains(query, System.StringComparison.OrdinalIgnoreCase) ?? false)
+                || (song.Artist?.Contains(query, System.StringComparison.OrdinalIgnoreCase) ?? false)
+                || (System.IO.Path.GetFileName(song.FilePath)?.Contains(query, System.StringComparison.OrdinalIgnoreCase) ?? false));
+        }
+
+        private void QueueSearchTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            if (this.queueView != null)
+            {
+                this.queueView.Refresh();
+                bool canReorder = string.IsNullOrWhiteSpace(this.QueueSearchTextBox.Text);
+                GongSolutions.Wpf.DragDrop.DragDrop.SetIsDragSource(this.QueueListBox, canReorder);
+                GongSolutions.Wpf.DragDrop.DragDrop.SetIsDropTarget(this.QueueListBox, canReorder);
+            }
         }
 
         private void OnSongChangedCommand_EditClicked(object sender, RoutedEventArgs e)

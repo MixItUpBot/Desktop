@@ -1,4 +1,4 @@
-﻿using Google.Apis.YouTube.v3.Data;
+using Google.Apis.YouTube.v3.Data;
 using MixItUp.Base.Model;
 using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Currency;
@@ -131,6 +131,15 @@ namespace MixItUp.Base.Util
             return siString.ToString();
         }
 
+        internal static async Task<string> ProcessSpecialIdentifiers(string str, CommandParametersModel parameters, Func<string, string> encodeReplacement)
+        {
+            SpecialIdentifierStringBuilder siString = new SpecialIdentifierStringBuilder(str);
+            siString.encodeReplacement = encodeReplacement;
+            siString.replacementCharacters = Enumerable.Repeat(false, siString.text.Length).ToList();
+            await siString.ReplaceCommonSpecialModifiers(parameters);
+            return siString.ToString();
+        }
+
         public static void AddGlobalSpecialIdentifier(string specialIdentifier, string replacement)
         {
             SpecialIdentifierStringBuilder.GlobalSpecialIdentifiers[specialIdentifier] = replacement;
@@ -211,6 +220,8 @@ namespace MixItUp.Base.Util
 
         private string text;
         private bool encode;
+        private Func<string, string> encodeReplacement;
+        private List<bool> replacementCharacters;
 
         public SpecialIdentifierStringBuilder(string text, bool encode = false)
         {
@@ -732,6 +743,12 @@ namespace MixItUp.Base.Util
                 this.ReplaceSpecialIdentifier(MusicPlayerSpecialIdentifierHeader + "state", ServiceManager.Get<IMusicPlayerService>().State.ToString());
 
                 MusicPlayerSong song = ServiceManager.Get<IMusicPlayerService>().CurrentSong;
+                if (this.ContainsSpecialIdentifier(MusicPlayerSpecialIdentifierHeader + "albumart") || this.ContainsSpecialIdentifier(MusicPlayerSpecialIdentifierHeader + "albumcover"))
+                {
+                    string albumArt = await ServiceManager.Get<IMusicPlayerService>().GetAlbumArt(song);
+                    this.ReplaceSpecialIdentifier(MusicPlayerSpecialIdentifierHeader + "albumart", albumArt);
+                    this.ReplaceSpecialIdentifier(MusicPlayerSpecialIdentifierHeader + "albumcover", albumArt);
+                }
                 if (song != null)
                 {
                     this.ReplaceSpecialIdentifier(MusicPlayerSpecialIdentifierHeader + "title", song.Title);
@@ -1178,7 +1195,22 @@ namespace MixItUp.Base.Util
                 return;
             }
 
-            this.text = this.text.Replace(search, replacement, StringComparison.OrdinalIgnoreCase);
+            if (this.encodeReplacement == null)
+            {
+                this.text = this.text.Replace(search, replacement, StringComparison.OrdinalIgnoreCase);
+            }
+            else
+            {
+                // Resolve nested identifiers before encoding, without treating their output as template code.
+                int index = 0;
+                while ((index = this.text.IndexOf(search, index, StringComparison.OrdinalIgnoreCase)) >= 0)
+                {
+                    this.text = this.text.Remove(index, search.Length).Insert(index, replacement);
+                    this.replacementCharacters.RemoveRange(index, search.Length);
+                    this.replacementCharacters.InsertRange(index, Enumerable.Repeat(true, replacement.Length));
+                    index += replacement.Length;
+                }
+            }
         }
 
         public bool ContainsSpecialIdentifier(string identifier)
@@ -1229,7 +1261,21 @@ namespace MixItUp.Base.Util
             }
         }
 
-        public override string ToString() { return this.text; }
+        public override string ToString()
+        {
+            if (this.encodeReplacement == null) { return this.text; }
+            System.Text.StringBuilder result = new System.Text.StringBuilder();
+            for (int start = 0; start < this.text.Length;)
+            {
+                bool replacement = this.replacementCharacters[start];
+                int end = start + 1;
+                while (end < this.text.Length && this.replacementCharacters[end] == replacement) { end++; }
+                string part = this.text.Substring(start, end - start);
+                result.Append(replacement ? this.encodeReplacement(part) : part);
+                start = end;
+            }
+            return result.ToString();
+        }
 
         private async Task HandleUserSpecialIdentifiers(UserV2ViewModel user, string identifierHeader)
         {

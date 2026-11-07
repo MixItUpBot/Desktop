@@ -1,4 +1,4 @@
-﻿using MixItUp.Base.Model.Actions;
+using MixItUp.Base.Model.Actions;
 using MixItUp.Base.Services;
 using MixItUp.Base.Services.External;
 using MixItUp.Base.Util;
@@ -26,6 +26,8 @@ namespace MixItUp.Base.ViewModel.Actions
                 this.NotifyPropertyChanged("XSplitNotEnabled");
                 this.NotifyPropertyChanged("StreamlabsOBSNotEnabled");
                 this.NotifyPropertyChanged("CanSpecifySceneName");
+                this.NotifyPropertyChanged("ShowNotSupported");
+                this.NotifyPropertyChanged("ShowTextSourceFilePath");
             }
         }
         private StreamingSoftwareTypeEnum selectedStreamingSoftwareType;
@@ -52,6 +54,7 @@ namespace MixItUp.Base.ViewModel.Actions
                 this.NotifyPropertyChanged("ShowSourceFilterGrid");
                 this.NotifyPropertyChanged("ShowSaveSourceScreenshotGrid");
                 this.NotifyPropertyChanged("ShowSourceVisibilityToggle");
+                this.NotifyPropertyChanged("IsAudioAction");
             }
         }
         private StreamingSoftwareActionTypeEnum selectedActionType;
@@ -67,6 +70,17 @@ namespace MixItUp.Base.ViewModel.Actions
             get
             {
                 StreamingSoftwareTypeEnum streamingSoftware = this.GetCurrentlySelectedStreamingSoftwareType();
+                if (streamingSoftware == StreamingSoftwareTypeEnum.VelumStudio) { return !VelumStudioService.SupportsAction(this.SelectedActionType); }
+                if (this.IsAudioAction) { return streamingSoftware != StreamingSoftwareTypeEnum.OBSStudio; }
+                if (streamingSoftware == StreamingSoftwareTypeEnum.MeldStudio)
+                {
+                    return this.SelectedActionType != StreamingSoftwareActionTypeEnum.Scene
+                        && this.SelectedActionType != StreamingSoftwareActionTypeEnum.SourceVisibility
+                        && this.SelectedActionType != StreamingSoftwareActionTypeEnum.ToggleSourceVisibility
+                        && this.SelectedActionType != StreamingSoftwareActionTypeEnum.StartStopStream
+                        && this.SelectedActionType != StreamingSoftwareActionTypeEnum.StartStopRecording
+                        && this.SelectedActionType != StreamingSoftwareActionTypeEnum.SaveReplayBuffer;
+                }
                 if (this.SelectedActionType == StreamingSoftwareActionTypeEnum.StartStopStream)
                 {
                     if (streamingSoftware == StreamingSoftwareTypeEnum.XSplit)
@@ -164,7 +178,7 @@ namespace MixItUp.Base.ViewModel.Actions
         {
             get
             {
-                return this.SelectedActionType != StreamingSoftwareActionTypeEnum.SaveSourceScreenshot;
+                return !this.IsAudioAction && this.SelectedActionType != StreamingSoftwareActionTypeEnum.SaveSourceScreenshot && this.SelectedActionType != StreamingSoftwareActionTypeEnum.ToggleSourceVisibility;
             }
         }
 
@@ -172,7 +186,7 @@ namespace MixItUp.Base.ViewModel.Actions
         {
             get
             {
-                return this.SelectedActionType == StreamingSoftwareActionTypeEnum.SourceVisibility || this.ShowTextSourceGrid || this.ShowImageSourceGrid ||
+                return this.IsAudioAction || this.SelectedActionType == StreamingSoftwareActionTypeEnum.SourceVisibility || this.SelectedActionType == StreamingSoftwareActionTypeEnum.ToggleSourceVisibility || this.ShowTextSourceGrid || this.ShowImageSourceGrid ||
                     this.ShowMediaSourceGrid || this.ShowWebBrowserSourceGrid || this.ShowSourceDimensionsGrid || this.ShowSaveSourceScreenshotGrid;
             }
         }
@@ -181,6 +195,7 @@ namespace MixItUp.Base.ViewModel.Actions
         {
             get
             {
+                if (this.IsAudioAction) { return false; }
                 StreamingSoftwareTypeEnum streamingSoftware = this.GetCurrentlySelectedStreamingSoftwareType();
                 if (streamingSoftware == StreamingSoftwareTypeEnum.OBSStudio && this.ShowWebBrowserSourceGrid)
                 {
@@ -202,6 +217,10 @@ namespace MixItUp.Base.ViewModel.Actions
         }
         private string sourceName;
 
+        public bool IsAudioAction => this.SelectedActionType == StreamingSoftwareActionTypeEnum.MuteAudioSource ||
+            this.SelectedActionType == StreamingSoftwareActionTypeEnum.UnmuteAudioSource ||
+            this.SelectedActionType == StreamingSoftwareActionTypeEnum.ToggleAudioMute;
+
         public bool SourceVisible
         {
             get { return this.sourceVisible; }
@@ -214,6 +233,8 @@ namespace MixItUp.Base.ViewModel.Actions
         private bool sourceVisible;
 
         public bool ShowTextSourceGrid { get { return this.SelectedActionType == StreamingSoftwareActionTypeEnum.TextSource; } }
+
+        public bool ShowTextSourceFilePath => this.GetCurrentlySelectedStreamingSoftwareType() != StreamingSoftwareTypeEnum.VelumStudio;
 
         public string SourceText
         {
@@ -504,14 +525,14 @@ namespace MixItUp.Base.ViewModel.Actions
             }
             else if (this.ShowSourceGrid)
             {
-                if (string.IsNullOrEmpty(this.SourceName))
+                if (string.IsNullOrWhiteSpace(this.SourceName))
                 {
                     return Task.FromResult(new Result(MixItUp.Base.Resources.StreamingSoftwareActionMissingSource));
                 }
 
                 if (this.ShowTextSourceGrid)
                 {
-                    if (string.IsNullOrEmpty(this.SourceTextFilePath))
+                    if (this.ShowTextSourceFilePath && string.IsNullOrEmpty(this.SourceTextFilePath))
                     {
                         return Task.FromResult(new Result(MixItUp.Base.Resources.StreamingSoftwareActionMissingTextSourceFilePath));
                     }
@@ -607,7 +628,9 @@ namespace MixItUp.Base.ViewModel.Actions
                 }
                 else
                 {
-                    return Task.FromResult<ActionModelBase>(StreamingSoftwareActionModel.CreateSourceVisibilityAction(this.SelectedStreamingSoftwareType, this.SceneName, this.SourceName, this.SourceVisible));
+                    StreamingSoftwareActionModel action = StreamingSoftwareActionModel.CreateSourceVisibilityAction(this.SelectedStreamingSoftwareType, this.SceneName, this.SourceName, this.SourceVisible);
+                    action.ActionType = this.SelectedActionType;
+                    return Task.FromResult<ActionModelBase>(action);
                 }
             }
             else if (this.ShowSourceFilterGrid)
