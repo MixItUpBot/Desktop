@@ -219,3 +219,7 @@ Util/SignTool/*
 /ResXManager.config.xml
 
 .DS_Store
+
+# Vendored Velum Studio SDK sources are required to compile.
+!/MixItUp.Base/Services/External/VelumStudioSDK/Generated/
+!/MixItUp.Base/Services/External/VelumStudioSDK/Generated/*.g.cs
