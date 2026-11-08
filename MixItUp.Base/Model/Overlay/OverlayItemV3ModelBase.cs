@@ -313,6 +313,19 @@ namespace MixItUp.Base.Model.Overlay
         public Task<string> ProcessHTML(string html, Dictionary<string, object> properties, CommandParametersModel parameters)
         {
             Dictionary<string, object> values = new Dictionary<string, object>(properties);
+            // Saved media templates use typed controls in handlers and boolean attributes.
+            if (this is OverlayVideoV3Model video)
+            {
+                html = OverlayV3Service.ReplaceProperty(html, nameof(video.Volume), video.Volume.ToInvariantNumberString());
+                html = OverlayV3Service.ReplaceProperty(html, nameof(video.Loop), video.Loop ? "loop" : string.Empty);
+                values.Remove(nameof(video.Volume));
+                values.Remove(nameof(video.Loop));
+            }
+            else if (this is OverlaySoundV3Model sound)
+            {
+                html = OverlayV3Service.ReplaceProperty(html, nameof(sound.Volume), sound.Volume.ToInvariantNumberString());
+                values.Remove(nameof(sound.Volume));
+            }
             if (this is OverlayCustomV3Model custom)
             {
                 foreach (var property in custom.Properties)
