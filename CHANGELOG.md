@@ -1,5 +1,67 @@
 # Mix It Up Desktop Changelog
 
+## 1.8.210
+
+Release Date: 2026-11-06
+
+### FEATURES
+
+- Add native Velum Studio (beta) support:
+  - Add scene switching, show/hide/toggle layer visibility, text updates, and effect visibility to the Streaming Software action.
+  - Add audio mute/unmute/toggle, scene collection switching, recording toggle, replay saving, and streaming toggle.
+  - Reconnect automatically when Velum Studio restarts.
+- Migration of Twitch connection to new client ID with a required streamer sign-in and automatic migration of Mix It Up owned channel point rewards and linked commands. (Bot sign-in is optional, and skipping it disconnects the bot until it is signed in again.)
+- Add Velora Create Poll, End Poll, and Get Active Poll actions, with results available through $velorapoll and $velorapollid.
+- Add Change Channel Name to the Discord action, requiring the bot's Manage Channels permission.
+- Add Trigger Hotkey By Name to the VTube Studio action, with special identifiers and lookup against the model loaded when the action runs.
+- Add Meld Studio to the Streaming Software action.
+- Add Toggle Source Visibility to the Streaming Software action.
+- Add OBS Studio Mute Audio Source, Unmute Audio Source, and Toggle Audio Mute actions, including global Desktop Audio and Mic/Aux inputs.
+- Add an OBS Studio setting for automatically starting the replay buffer, enabled by default for existing setups.
+- Add a Reconnect Services button for retrying enabled services that are disconnected.
+- Add a setting to hide actions and events for platforms you do not use.
+- Add a Windows launch-at-login setting and a --profile argument for opening a saved profile by its ID.
+- Add search to the Music Player library and queue, and a repeat-current-song mode.
+- Add $musicplayeralbumart and $musicplayeralbumcover for the current song's embedded album cover.
+- Add Search First Occurrence and Search and Loop to the File action, with a linenumber suffix for each result's line number.
+- Add special identifiers to Heist win-chance fields, evaluated separately for each participant.
+- Add special identifiers to overlay position fields.
+- Add $commandid for the running command's ID and $banreason for Twitch ban events.
+- Add $messageemotes and $messageemoteurls for comma-separated emote names and image URLs in the triggering chat message.
+- Add Shared Chat message identifiers: $messageinmychannel, $messageissharedchat, $messagesourcechannel, and $messagesourcechannelid.
+- Add Twitch Shared Chat Started and Ended events with $sharedchatsessionid, $sharedchathostid, and $sharedchathost.
+- Add Hype Train identifiers: $hypetraintype, $hypetrainisgoldenkappa, $hypetrainistreasure, and $hypetrainisshared.
+- Expose all chat triggers and command role requirements through Developer API v2.
+- Add support-code diagnostics collection and upload, with consent before sending original settings, the database, logs, and machine details.
+
+### FIXES
+
+- Fixed viewer-controlled identifiers processing in overlays (Thanks Faith V.)
+  - Authored markup remains supported, but identifiers cannot supply executable attributes, script sources, or embedded-page origins.
+- Fixed the blank repeat-current-song button icon.
+- Fixed command editors closing without a warning when an existing command, action, or requirement has unsaved changes.
+- Fixed command searches losing their filter after a command is saved.
+- Fixed unrated Community Commands displaying a misleading rating and ratings without written reviews being hidden.
+- Fixed Total Followers overlay labels using Twitch totals for other default platforms. YouTube, Velora, and VPZone now use their available totals, and follows from other platforms are ignored.
+- Fixed VTube Studio reconnects clearing the saved authentication token.
+- Fixed Twitch bans triggering the Chat Messages Deleted event repeatedly.
+- Fixed YouTube mass gifted membership events losing the gifter.
+- Fixed OBS Studio failing to reconnect after its initial connection attempt fails.
+- Fixed Crowd Control losing its connection after the socket closes.
+- Fixed long audio playback ending its Wait For Finish period after the default timeout.
+- Fixed Script actions hanging or losing JavaScript exceptions and rejected promises.
+- Fixed rank requirements checking the current rank's threshold instead of the next rank's threshold.
+- Fixed NaN input matching numeric equality conditions.
+- Fixed negative goal updates being applied incorrectly across cumulative segments.
+- Fixed Web Request actions rejecting a complete URL supplied through a special identifier.
+- Fixed AvalonEdit link colors failing to follow theme changes.
+
+### PERFORMANCE & GENERAL IMPROVEMENTS
+
+- Add settings migration snapshots and rollback on failed upgrades, while preserving the guard against settings from newer model versions.
+- Clarify that Microsoft Azure Speech requires your own Azure resource, subscription key, and region.
+- Update third-party notices for the overlay HTML parser.
+
 ## 1.8.203 (HOTFIX)
 
 Release Date: 2026-10-23

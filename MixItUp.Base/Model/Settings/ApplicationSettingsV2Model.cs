@@ -64,7 +64,10 @@ namespace MixItUp.Base.Model.Settings
             bool canSaveSettings = settings != null || !settingsFileExists;
             if (settings == null)
             {
-                settings = new ApplicationSettingsV2Model();
+                settings = new ApplicationSettingsV2Model()
+                {
+                    PreviewProgram = !settingsFileExists && BuildChannelHelper.GetReleaseChannel() == "preview"
+                };
             }
             bool settingsChanged = false;
             if (settings.ForceResetPreviewProgram)
