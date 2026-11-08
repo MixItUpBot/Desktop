@@ -1,5 +1,13 @@
 # Mix It Up Desktop Changelog
 
+## 1.8.211 (HOTFIX)
+
+Release Date: 2026-11-07
+
+### FIXES
+
+- Fixed videos and sounds not playing in the overlay.
+
 ## 1.8.210
 
 Release Date: 2026-11-06
