@@ -73,7 +73,7 @@ namespace MixItUp.Base.Services.Twitch.New
         {
             this.IsConnected = false;
             if (string.IsNullOrWhiteSpace(token?.accessToken)) { return null; }
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = HttpConnectionFactory.CreateClient())
             {
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("OAuth", token.accessToken);
                 using (HttpResponseMessage response = await client.GetAsync("https://id.twitch.tv/oauth2/validate"))
@@ -1106,7 +1106,7 @@ namespace MixItUp.Base.Services.Twitch.New
         private static async Task<OAuthTokenModel> RequestToken(FormUrlEncodedContent content)
         {
             // OAuth credentials and token responses must not go through REST body logging.
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = HttpConnectionFactory.CreateClient())
             using (HttpResponseMessage response = await client.PostAsync("https://id.twitch.tv/oauth2/token", content))
             {
                 response.EnsureSuccessStatusCode();

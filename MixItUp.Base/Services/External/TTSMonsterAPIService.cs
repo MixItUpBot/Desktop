@@ -171,7 +171,7 @@ namespace MixItUp.Base.Services.External
                     {
                         string filename = response.url.Split(new char[] { '?' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
                         filename = filename.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
-                        using (HttpClient httpClient = new HttpClient())
+                        using (HttpClient httpClient = HttpConnectionFactory.CreateClient())
                         {
                             string filePath = Path.Combine(ServiceManager.Get<IFileService>().GetTempFolder(), filename);
                             byte[] fileBytes = await httpClient.GetByteArrayAsync(response.url);

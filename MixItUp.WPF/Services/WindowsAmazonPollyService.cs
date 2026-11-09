@@ -355,7 +355,11 @@ namespace MixItUp.WPF.Services
                 credentials = new BasicAWSCredentials(ChannelSession.Settings.AmazonPollyCustomAccessKey, ChannelSession.Settings.AmazonPollyCustomSecretKey);
                 region = RegionEndpoint.GetBySystemName(ChannelSession.Settings.AmazonPollyCustomRegionSystemName);
             }
-            return new AmazonPollyClient(credentials, region);
+            return new AmazonPollyClient(credentials, new AmazonPollyConfig
+            {
+                RegionEndpoint = region,
+                HttpClientFactory = new AmazonHttpConnectionFactory(),
+            });
         }
 
         private async Task GenerateVoicesList()

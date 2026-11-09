@@ -82,6 +82,8 @@ namespace MixItUp.Base.Services.Velora.New
                     ReconnectionDelayMax = 15000,
                 });
 
+                newSocket.ClientWebSocketProvider = () => new MixItUp.Base.Web.SocketIOWebSocket(newSocket.Options.RemoteCertificateValidationCallback);
+
                 this.connectedSignal = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
                 newSocket.OnConnected += this.Socket_OnConnected;

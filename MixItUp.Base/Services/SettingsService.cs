@@ -118,6 +118,12 @@ namespace MixItUp.Base.Services
                 {
                     Logger.Log(LogLevel.Debug, "Restored settings file detected, starting restore process");
 
+                    // Seed recovery for pre-hotfix profiles before a backup replaces their migration journal.
+                    foreach (SettingsV3Model existing in allSettings)
+                    {
+                        await Twitch.New.TwitchRewardMigrationRecovery.Save(existing, onlyIfMissing: true);
+                    }
+
                     if (ChannelSession.AppSettings.SettingsToReplaceDuringRestore != Guid.Empty)
                     {
                         SettingsV3Model settings = allSettings.FirstOrDefault(s => s.ID.Equals(ChannelSession.AppSettings.SettingsToReplaceDuringRestore));

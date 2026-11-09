@@ -33959,6 +33959,15 @@ namespace MixItUp.Base {
         public static string TwitchMigrationAccountMismatch {
             get { return ResourceManager.GetString("TwitchMigrationAccountMismatch", resourceCulture); }
         }
+        public static string TwitchMigrationRewardPromptRejected {
+            get { return ResourceManager.GetString("TwitchMigrationRewardPromptRejected", resourceCulture); }
+        }
+        public static string TwitchMigrationRewardPaused {
+            get { return ResourceManager.GetString("TwitchMigrationRewardPaused", resourceCulture); }
+        }
+        public static string TwitchMigrationRewardFailed {
+            get { return ResourceManager.GetString("TwitchMigrationRewardFailed", resourceCulture); }
+        }
         public static string TwitchMigrationTitle {
             get { return ResourceManager.GetString("TwitchMigrationTitle", resourceCulture); }
         }

@@ -46,6 +46,14 @@ namespace MixItUp.Base.Util
             "href", "src", "action", "formaction", "poster", "background", "data", "xlink:href"
         };
 
+        private static readonly Regex LineBreak = new Regex(@"<br(?:/| /)?>", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+        private static readonly HashSet<string> LiteralTextElements = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "script", "style", "iframe", "xmp", "noembed", "noframes", "noscript", "plaintext",
+            "textarea", "title", "select", "option", "optgroup"
+        };
+
         public static async Task<string> ProcessSpecialIdentifiers(string html, CommandParametersModel parameters, bool document = false,
             IReadOnlyDictionary<string, object> properties = null)
         {
@@ -137,6 +145,24 @@ namespace MixItUp.Base.Util
                 else if (parent == "style")
                 {
                     text.Data = await resolve(text.Data, EncodeCSSData);
+                }
+                else if (text.ParentElement?.NamespaceUri == "http://www.w3.org/1999/xhtml" && !LiteralTextElements.Contains(parent))
+                {
+                    // Mark only replacement values, so authored &lt;br&gt; remains literal text.
+                    // Never parse replacement markup: the only element we create is an empty HTML br.
+                    string marker = "miulinebreak" + Guid.NewGuid().ToString("N");
+                    string value = await resolve(text.Data, replacement => LineBreak.Replace(replacement, marker));
+                    string[] parts = value.Split(new[] { marker }, StringSplitOptions.None);
+                    if (parts.Length == 1) { text.Data = value; }
+                    else
+                    {
+                        for (int i = 0; i < parts.Length; i++)
+                        {
+                            if (i > 0) { text.Parent.InsertBefore(text.Owner.CreateElement("br"), text); }
+                            text.Parent.InsertBefore(text.Owner.CreateTextNode(parts[i]), text);
+                        }
+                        text.Parent.RemoveChild(text);
+                    }
                 }
                 else
                 {

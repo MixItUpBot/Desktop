@@ -445,7 +445,7 @@ public sealed partial class VelumStudioClient : IAsyncDisposable
         connectTimeout.CancelAfter(_options.ConnectTimeout);
         try
         {
-            await socket.ConnectAsync(endpoint.Url, connectTimeout.Token).ConfigureAwait(false);
+            await MixItUp.Base.Web.WebSocketConnectionFactory.ConnectAsync(socket, endpoint.Url, connectTimeout.Token).ConfigureAwait(false);
         }
         catch (Exception e) when (e is WebSocketException or IOException or OperationCanceledException && !cancellationToken.IsCancellationRequested)
         {

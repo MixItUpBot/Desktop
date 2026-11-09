@@ -42,5 +42,8 @@ namespace MixItUp.Base.Model.Settings
         public bool CreateStarted { get; set; }
         [DataMember]
         public Guid NewRewardID { get; set; }
+        // Null preserves the original prompt; an empty string is an approved removal.
+        [DataMember]
+        public string ReplacementPrompt { get; set; }
     }
 }

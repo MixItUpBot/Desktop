@@ -2,6 +2,7 @@
 using MixItUp.Base.Model.API.Files.V2;
 using MixItUp.Base.Services;
 using MixItUp.Base.Util;
+using MixItUp.Base.Web;
 using MixItUp.WPF.Util;
 using MixItUp.WPF.Windows;
 using System;
@@ -68,7 +69,7 @@ namespace MixItUp.WPF
 
             try
             {
-                using (HttpClient client = new HttpClient())
+                using (HttpClient client = HttpConnectionFactory.CreateClient())
                 {
                     string changelogUrl = manifest.GetChangelogUrl(BuildChannelHelper.API_FILES_UPDATE_ROOT, this.channel);
                     HttpResponseMessage response = await client.GetAsync(changelogUrl);
@@ -120,7 +121,7 @@ namespace MixItUp.WPF
 
             try
             {
-                using (HttpClient client = new HttpClient())
+                using (HttpClient client = HttpConnectionFactory.CreateClient())
                 using (HttpResponseMessage response = await client.GetAsync(manifest.installer, HttpCompletionOption.ResponseHeadersRead))
                 {
                     if (!response.IsSuccessStatusCode)

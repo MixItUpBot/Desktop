@@ -142,7 +142,7 @@ namespace MixItUp.Base.Web
         /// Creates a new instance of the JSONHttpClient.
         /// </summary>
         public AdvancedHttpClient()
-            : base()
+            : base(HttpConnectionFactory.CreateHandler())
         {
             this.Timeout = DefaultRequestTimeout;
 

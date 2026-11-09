@@ -3,6 +3,7 @@ using MixItUp.Base;
 using MixItUp.Base.Model.Settings;
 using MixItUp.Base.Services;
 using MixItUp.Base.Util;
+using MixItUp.Base.Web;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,7 +18,7 @@ namespace MixItUp.WPF.Services.Diagnostics;
 
 public sealed class DesktopDiagnosticsSession : IDisposable
 {
-    private readonly HttpClient http = new(new HttpClientHandler { AllowAutoRedirect = false }) { Timeout = TimeSpan.FromMinutes(3) };
+    private readonly HttpClient http = new(HttpConnectionFactory.CreateHandler(allowAutoRedirect: false)) { Timeout = TimeSpan.FromMinutes(3) };
     private string? root, boundCode;
     private List<PreparedFile>? files;
     private bool needsElevation;

@@ -72,6 +72,7 @@ namespace MixItUp.Base.Web
         /// <returns>Whether the connection was successful</returns>
         public virtual async Task<bool> Connect(string endpoint, CancellationToken cancellationToken)
         {
+            ClientWebSocket socket = null;
             await this.connectionSemaphore.WaitAsync(cancellationToken);
             try
             {
@@ -79,22 +80,26 @@ namespace MixItUp.Base.Web
 
                 await this.DisconnectInternal(WebSocketCloseStatus.NormalClosure, waitForReceiveTask: true);
 
-                ClientWebSocket socket = new ClientWebSocket();
+                socket = new ClientWebSocket();
 
-                await socket.ConnectAsync(new Uri(endpoint), cancellationToken);
+                await WebSocketConnectionFactory.ConnectAsync(socket, new Uri(endpoint), cancellationToken);
 
                 CancellationTokenSource cts = new CancellationTokenSource();
                 lock (this.webSocketStateLock)
                 {
                     this.webSocket = socket;
                     this.receiveCancellationTokenSource = cts;
-                    this.receiveTask = Task.Run(() => this.Receive(socket, cts.Token));
+                    ClientWebSocket connectedSocket = socket;
+                    this.receiveTask = Task.Run(() => this.Receive(connectedSocket, cts.Token));
                 }
 
-                return socket.State == WebSocketState.Open;
+                bool connected = socket.State == WebSocketState.Open;
+                socket = null;
+                return connected;
             }
             catch (Exception ex)
             {
+                socket?.Dispose();
                 this.LastConnectHttpStatusCode = this.ExtractHttpStatusCode(ex);
 
                 await this.DisconnectInternal(WebSocketCloseStatus.NormalClosure, waitForReceiveTask: true);

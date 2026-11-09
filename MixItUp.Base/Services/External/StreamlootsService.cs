@@ -1,6 +1,7 @@
 ﻿using MixItUp.Base.Model;
 using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Util;
+using MixItUp.Base.Web;
 using MixItUp.Base.ViewModel.Chat;
 using MixItUp.Base.ViewModel.User;
 using Newtonsoft.Json.Linq;
@@ -154,7 +155,7 @@ namespace MixItUp.Base.Services.External
         protected override Task<Result> InitializeInternal()
         {
             cancellationTokenSource = new CancellationTokenSource();
-            httpClient = new HttpClient
+            httpClient = new HttpClient(HttpConnectionFactory.CreateHandler())
             {
                 Timeout = Timeout.InfiniteTimeSpan
             };

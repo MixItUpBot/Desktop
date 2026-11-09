@@ -214,7 +214,8 @@ namespace MixItUp.Base.Services.Twitch.API
 
             // Create a new socket and start listening
             ClientWebSocket newSocket = this.CreateWebSocket();
-            await newSocket.ConnectAsync(new Uri(message.Payload.Session.ReconnectUrl), CancellationToken.None);
+            try { await WebSocketConnectionFactory.ConnectAsync(newSocket, new Uri(message.Payload.Session.ReconnectUrl), CancellationToken.None); }
+            catch { newSocket.Dispose(); throw; }
             this.SetWebSocket(this.webSocket);
             this.Receive(newSocket).Wait(1);
 

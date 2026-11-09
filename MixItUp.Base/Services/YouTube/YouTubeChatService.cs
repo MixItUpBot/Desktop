@@ -7,6 +7,7 @@ using MixItUp.Base.Model.User.Platform;
 using MixItUp.Base.Model.YouTube;
 using MixItUp.Base.Services.External;
 using MixItUp.Base.Util;
+using MixItUp.Base.Web;
 using MixItUp.Base.ViewModel.Chat;
 using MixItUp.Base.ViewModel.Chat.YouTube;
 using MixItUp.Base.ViewModel.User;
@@ -291,7 +292,7 @@ namespace MixItUp.Base.Services.YouTube
         {
             try
             {
-                using (HttpClient client = new HttpClient())
+                using (HttpClient client = HttpConnectionFactory.CreateClient())
                 {
                     HttpResponseMessage response = await client.GetAsync("https://www.gstatic.com/youtube/img/emojis/emojis-svg-8.json");
                     if (response.IsSuccessStatusCode)

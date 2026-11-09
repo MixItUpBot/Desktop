@@ -1,6 +1,7 @@
 using Microsoft.Win32;
 using MixItUp.Base.Services;
 using MixItUp.Base.Util;
+using MixItUp.Base.Web;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -22,7 +23,7 @@ namespace MixItUp.WPF.Services
         private static readonly List<string> webPathPrefixes = new List<string>() { "http://", "https://", "www." };
 
         private static SemaphoreSlim fileLock = new SemaphoreSlim(1);
-        private static readonly HttpClient httpClient = new HttpClient();
+        private static readonly HttpClient httpClient = HttpConnectionFactory.CreateClient();
 
         public static async Task WithFileSnapshot(Func<Task> snapshot)
         {

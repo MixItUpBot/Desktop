@@ -33,22 +33,27 @@ namespace MixItUp.Base.Services.Twitch.New
             TwitchService newService = new TwitchService(TwitchSession.StreamerScopes);
             TwitchService botService = new TwitchService(TwitchSession.BotScopes, isBotService: true);
             string phase = "authorization";
+            TwitchRewardMigrationModel activeReward = null;
             try
             {
                 if (string.IsNullOrWhiteSpace(newService.ClientID) || string.IsNullOrWhiteSpace(newService.ClientSecret))
                 {
                     throw new InvalidOperationException("Updated Twitch application credentials are missing");
                 }
+                await TwitchRewardMigrationRecovery.Restore(settings, authentication.UserID);
                 var state = settings.TwitchAuthenticationMigration;
                 bool migrateStreamer = IsLegacy(authentication.UserOAuthToken);
                 bool migrateBot = authentication.BotOAuthToken != null && IsLegacy(authentication.BotOAuthToken);
                 bool rewardsAlreadyMigrated = state?.Completed == true;
-                if (rewardsAlreadyMigrated && !migrateBot)
+                if (rewardsAlreadyMigrated && !migrateStreamer && !migrateBot)
                 {
                     if (authentication.UserOAuthToken.clientID != newService.ClientID)
                     {
                         throw new InvalidOperationException(Resources.TwitchMigrationAccountMismatch);
                     }
+                    phase = "command mapping";
+                    await RemapCommands(settings, state.Rewards.ToDictionary(r => r.Original.id, r => r.NewRewardID));
+                    phase = "credential cleanup";
                     await ClearStoredCredentials(settings);
                     return new Result();
                 }
@@ -73,7 +78,7 @@ namespace MixItUp.Base.Services.Twitch.New
                 if (rewardsAlreadyMigrated && migrateBot) { state.AuthenticationConfirmed = false; }
 
                 string streamerName = null;
-                if (migrateStreamer)
+                if (migrateStreamer && !rewardsAlreadyMigrated)
                 {
                     JObject validation = await Authorize(oldService, authentication.UserOAuthToken, TwitchSession.StreamerScopes, state.UserID);
                     streamerName = (string)validation["login"];
@@ -91,11 +96,17 @@ namespace MixItUp.Base.Services.Twitch.New
                         TwitchSession.BotScopes, authentication.BotID);
                 }
 
+                string botName = (string)botValidation?["login"];
+                if (hasBot && botName == null && ((migrateStreamer && !rewardsAlreadyMigrated) || userValidation != null))
+                {
+                    botName = (await (migrateStreamer && !rewardsAlreadyMigrated ? oldService : newService)
+                        .GetNewAPIUserByID(authentication.BotID))?.login;
+                }
                 var prompt = new TwitchAuthenticationMigrationDialogModel
                 {
                     StreamerName = streamerName ?? (string)userValidation?["login"] ?? Resources.StreamerAccount,
                     HasBot = hasBot,
-                    BotName = hasBot ? (await (migrateStreamer ? oldService : newService).GetNewAPIUserByID(authentication.BotID))?.login ?? Resources.BotAccount : null,
+                    BotName = hasBot ? botName ?? Resources.BotAccount : null,
                     StreamerAuthenticated = userValidation != null,
                     BotAuthenticated = botValidation != null,
                 };
@@ -145,8 +156,10 @@ namespace MixItUp.Base.Services.Twitch.New
 
                     foreach (TwitchRewardMigrationModel reward in state.Rewards)
                     {
+                        activeReward = reward;
                         phase = "reward recreation";
-                        List<CustomChannelPointRewardModel> oldRewards = await oldService.GetMigrationRewards(state.UserID);
+                        List<CustomChannelPointRewardModel> oldRewards = migrateStreamer
+                            ? await oldService.GetMigrationRewards(state.UserID) : new List<CustomChannelPointRewardModel>();
                         CustomChannelPointRewardModel original = oldRewards.FirstOrDefault(r => r.id == reward.Original.id);
                         if (original != null)
                         {
@@ -171,7 +184,7 @@ namespace MixItUp.Base.Services.Twitch.New
                             if (replacement != null)
                             {
                                 // A timed-out create can have succeeded on Twitch. Adopt only a matching result from this run.
-                                if (!reward.CreateStarted || state.ExistingNewRewardIDs.Contains(replacement.id) || !SameDefinition(replacement, reward.Original))
+                                if (!reward.CreateStarted || state.ExistingNewRewardIDs.Contains(replacement.id) || !SameDefinition(replacement, TwitchRewardMigrationRecovery.ReplacementDefinition(reward)))
                                 {
                                     throw new InvalidOperationException("An unrelated replacement reward already exists");
                                 }
@@ -180,18 +193,23 @@ namespace MixItUp.Base.Services.Twitch.New
                             {
                                 reward.CreateStarted = true;
                                 await SaveProgress(settings);
-                                JObject fields = RewardFields(reward.Original);
-                                fields["is_enabled"] = false;
-                                replacement = await newService.CreateMigrationReward(state.UserID, fields);
+                                replacement = await TwitchRewardMigrationRecovery.CreateReplacement(reward,
+                                    fields => newService.CreateMigrationReward(state.UserID, fields),
+                                    prompt => DialogHelper.ShowTextEntry(Resources.Description, prompt,
+                                        string.Format(Resources.TwitchMigrationRewardPromptRejected, reward.Original.title)),
+                                    () => SaveProgress(settings));
                             }
                             reward.NewRewardID = replacement.id;
                             await SaveProgress(settings);
                         }
-                        else if (!newRewards.Any(r => r.id == reward.NewRewardID && SameDefinition(r, reward.Original)))
+                        else if (!newRewards.Any(r => r.id == reward.NewRewardID && SameDefinition(r, TwitchRewardMigrationRecovery.ReplacementDefinition(reward))))
                         {
                             throw new InvalidOperationException("The replacement reward changed during migration");
                         }
+                        phase = "command mapping";
+                        await RemapCommands(settings, new Dictionary<Guid, Guid> { [reward.Original.id] = reward.NewRewardID });
                     }
+                    activeReward = null;
 
                     Dictionary<Guid, Guid> mapping = state.Rewards.ToDictionary(r => r.Original.id, r => r.NewRewardID);
                     phase = "command mapping";
@@ -204,12 +222,19 @@ namespace MixItUp.Base.Services.Twitch.New
                     if (state.Rewards.Count > 0)
                     {
                         List<CustomChannelPointRewardModel> verified = await newService.GetMigrationRewards(state.UserID);
-                        if (state.Rewards.Any(r => !verified.Any(n => n.id == r.NewRewardID && SameDefinition(n, r.Original) &&
+                        if (state.Rewards.Any(r => !verified.Any(n => n.id == r.NewRewardID && SameDefinition(n, TwitchRewardMigrationRecovery.ReplacementDefinition(r)) &&
                             n.is_enabled == r.Original.is_enabled && n.is_paused == r.Original.is_paused)))
                         {
                             throw new InvalidOperationException("Replacement reward verification failed");
                         }
                     }
+                }
+
+                // Completed remote migration can outlive a restored command database or legacy credentials.
+                if (rewardsAlreadyMigrated)
+                {
+                    phase = "command mapping";
+                    await RemapCommands(settings, state.Rewards.ToDictionary(r => r.Original.id, r => r.NewRewardID));
                 }
 
                 authentication.UserOAuthToken = state.NewUserToken;
@@ -228,6 +253,11 @@ namespace MixItUp.Base.Services.Twitch.New
             {
                 // Keep credentials, request bodies and token responses out of migration diagnostics.
                 Logger.Log(LogLevel.Error, "Twitch application migration stopped during " + phase + ": " + ex.GetType().Name);
+                if (activeReward != null)
+                {
+                    return new Result(string.Format(ex is TwitchRewardMigrationPausedException
+                        ? Resources.TwitchMigrationRewardPaused : Resources.TwitchMigrationRewardFailed, activeReward.Original.title));
+                }
                 return new Result(ex.Message == Resources.TwitchMigrationAccountMismatch ? ex.Message : Resources.TwitchMigrationFailed);
             }
             finally
@@ -312,6 +342,7 @@ namespace MixItUp.Base.Services.Twitch.New
             {
                 // Sessions are not initialized yet, so CopyLatestValues would erase their saved tokens.
                 await FileSerializerHelper.SerializeSettingsToFile(settings.SettingsFilePath, settings);
+                await TwitchRewardMigrationRecovery.Save(settings);
                 File.Copy(settings.SettingsFilePath, settings.SettingsLocalBackupFilePath, overwrite: true);
             });
         }

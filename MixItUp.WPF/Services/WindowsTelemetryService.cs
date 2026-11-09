@@ -5,6 +5,7 @@ using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Settings;
 using MixItUp.Base.Services;
 using MixItUp.Base.Util;
+using MixItUp.Base.Web;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
@@ -97,6 +98,12 @@ namespace MixItUp.WPF.Services
                     {
                         o.Endpoint = new Uri(endpoint + "v1/traces");
                         o.Protocol = OtlpExportProtocol.HttpProtobuf;
+                        o.HttpClientFactory = () =>
+                        {
+                            var client = HttpConnectionFactory.CreateClient();
+                            client.Timeout = TimeSpan.FromMilliseconds(o.TimeoutMilliseconds);
+                            return client;
+                        };
                         if (!string.IsNullOrEmpty(headers))
                         {
                             o.Headers = headers;
@@ -112,6 +119,12 @@ namespace MixItUp.WPF.Services
                     {
                         o.Endpoint = new Uri(endpoint + "v1/metrics");
                         o.Protocol = OtlpExportProtocol.HttpProtobuf;
+                        o.HttpClientFactory = () =>
+                        {
+                            var client = HttpConnectionFactory.CreateClient();
+                            client.Timeout = TimeSpan.FromMilliseconds(o.TimeoutMilliseconds);
+                            return client;
+                        };
                         if (!string.IsNullOrEmpty(headers))
                         {
                             o.Headers = headers;

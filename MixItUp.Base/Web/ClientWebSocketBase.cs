@@ -61,7 +61,7 @@ namespace MixItUp.Base.Web
                 await this.DisconnectInternal(WebSocketCloseStatus.NormalClosure, waitForReceiveTask: true);
 
                 socket = this.CreateWebSocket();
-                await socket.ConnectAsync(new Uri(endpoint), CancellationToken.None);
+                await WebSocketConnectionFactory.ConnectAsync(socket, new Uri(endpoint), CancellationToken.None);
 
                 CancellationTokenSource cts = new CancellationTokenSource();
                 lock (this.webSocketStateLock)

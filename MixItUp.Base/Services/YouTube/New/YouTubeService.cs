@@ -628,7 +628,7 @@ namespace MixItUp.Base.Services.YouTube.New
         {
             try
             {
-                using (HttpClient client = new HttpClient())
+                using (HttpClient client = HttpConnectionFactory.CreateClient())
                 {
                     HttpResponseMessage response = await client.GetAsync("https://www.gstatic.com/youtube/img/emojis/emojis-svg-8.json");
                     if (response.IsSuccessStatusCode)
@@ -761,6 +761,7 @@ namespace MixItUp.Base.Services.YouTube.New
             this.credential = new UserCredential(new GoogleAuthorizationCodeFlow(
                 new GoogleAuthorizationCodeFlow.Initializer
                 {
+                    HttpClientFactory = new GoogleHttpConnectionFactory(),
                     ClientSecrets = new ClientSecrets()
                     {
                         ClientId = this.ClientID,
@@ -778,12 +779,14 @@ namespace MixItUp.Base.Services.YouTube.New
 
             this.GoogleYouTubeService = new Google.Apis.YouTube.v3.YouTubeService(new BaseClientService.Initializer()
             {
+                HttpClientFactory = new GoogleHttpConnectionFactory(),
                 HttpClientInitializer = this.credential,
                 ApplicationName = this.ClientID
             });
 
             this.GoogleYouTubePartnerService = new YouTubePartnerService(new BaseClientService.Initializer()
             {
+                HttpClientFactory = new GoogleHttpConnectionFactory(),
                 HttpClientInitializer = this.credential,
                 ApplicationName = this.ClientID
             });
