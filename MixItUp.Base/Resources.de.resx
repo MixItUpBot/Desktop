@@ -12606,7 +12606,16 @@ Dies kann durch Klicken auf „Channel Point Reward erstellen“ auf der Channel
     <value>Mix It Up bei der Windows-Anmeldung starten</value>
   </data>
   <data name="TwitchMigrationFailed" xml:space="preserve">
-    <value>Die Aktualisierung der Twitch-Verbindung wurde nicht abgeschlossen. Melde dich erneut an, um fortzufahren.</value>
+    <value>Die Aktualisierung der Twitch-Verbindung wurde nicht abgeschlossen. Versuche es erneut, um fortzufahren. Wenn sie erneut fehlschlägt, wende dich mit deinem Anwendungsprotokoll an den Support.</value>
+  </data>
+  <data name="TwitchMigrationRewardPromptRejected" xml:space="preserve">
+    <value>Twitch hat die Beschreibung für die Kanalpunkte-Belohnung "{0}" abgelehnt. Bearbeite oder lösche die Beschreibung unten, um fortzufahren (maximal 200 Zeichen). Du kannst abbrechen und später fortfahren.</value>
+  </data>
+  <data name="TwitchMigrationRewardPaused" xml:space="preserve">
+    <value>Die Aktualisierung der Twitch-Verbindung wurde angehalten, weil Twitch die Beschreibung für "{0}" abgelehnt hat. Versuche es erneut, um die Beschreibung zu bearbeiten und fortzufahren. Das Wiederherstellen einer älteren Sicherung stellt gelöschte Twitch-Belohnungen nicht wieder her.</value>
+  </data>
+  <data name="TwitchMigrationRewardFailed" xml:space="preserve">
+    <value>Die Aktualisierung der Twitch-Verbindung wurde beim Aktualisieren der Kanalpunkte-Belohnung "{0}" angehalten. Versuche es erneut, um fortzufahren. Wenn sie erneut fehlschlägt, wende dich mit deinem Anwendungsprotokoll an den Support, bevor du eine Sicherung wiederherstellst.</value>
   </data>
   <data name="TwitchMigrationAccountMismatch" xml:space="preserve">
     <value>Diese Twitch-Anmeldung entspricht nicht dem erwarteten Konto oder der erwarteten Anwendung. Melde dich mit demselben Twitch-Konto an und versuche es erneut.</value>

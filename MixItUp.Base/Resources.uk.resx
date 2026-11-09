@@ -12631,7 +12631,16 @@ print(run())</value>
     <value>Запускати Mix It Up під час входу у Windows</value>
   </data>
   <data name="TwitchMigrationFailed" xml:space="preserve">
-    <value>Оновлення підключення до Twitch не завершено. Увійдіть ще раз, щоб продовжити.</value>
+    <value>Оновлення підключення до Twitch не завершено. Спробуйте ще раз, щоб продовжити. Якщо помилка повториться, зверніться до служби підтримки та додайте журнал застосунку.</value>
+  </data>
+  <data name="TwitchMigrationRewardPromptRejected" xml:space="preserve">
+    <value>Twitch відхилив опис винагороди за бали каналу «{0}». Змініть або видаліть опис нижче, щоб продовжити (щонайбільше 200 символів). Можна скасувати дію та продовжити пізніше.</value>
+  </data>
+  <data name="TwitchMigrationRewardPaused" xml:space="preserve">
+    <value>Оновлення підключення до Twitch зупинено, оскільки Twitch відхилив опис «{0}». Спробуйте ще раз, щоб змінити опис і продовжити. Відновлення старої резервної копії не поверне видалені винагороди Twitch.</value>
+  </data>
+  <data name="TwitchMigrationRewardFailed" xml:space="preserve">
+    <value>Оновлення підключення до Twitch зупинено під час оновлення винагороди за бали каналу «{0}». Спробуйте ще раз, щоб продовжити. Якщо помилка повториться, зверніться до служби підтримки та додайте журнал застосунку перед відновленням резервної копії.</value>
   </data>
   <data name="TwitchMigrationAccountMismatch" xml:space="preserve">
     <value>Цей вхід у Twitch не відповідає очікуваному обліковому запису або застосунку. Увійдіть у той самий обліковий запис Twitch і спробуйте ще раз.</value>

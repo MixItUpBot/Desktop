@@ -12602,7 +12602,16 @@ Isto pode ser feito clicando em Criar recompensa de pontos de canal na página P
     <value>Iniciar o Mix It Up ao iniciar sessão no Windows</value>
   </data>
   <data name="TwitchMigrationFailed" xml:space="preserve">
-    <value>A atualização da ligação à Twitch não foi concluída. Inicie sessão novamente para continuar.</value>
+    <value>A atualização da ligação à Twitch não foi concluída. Tente novamente para retomar. Se voltar a falhar, contacte o suporte e envie o registo da aplicação.</value>
+  </data>
+  <data name="TwitchMigrationRewardPromptRejected" xml:space="preserve">
+    <value>A Twitch rejeitou a descrição da recompensa de pontos do canal "{0}". Edite ou apague a descrição abaixo para continuar (máximo de 200 carateres). Pode cancelar e continuar mais tarde.</value>
+  </data>
+  <data name="TwitchMigrationRewardPaused" xml:space="preserve">
+    <value>A atualização da ligação à Twitch foi interrompida porque a Twitch rejeitou a descrição de "{0}". Tente novamente para editar a descrição e retomar. Restaurar uma cópia de segurança anterior não recuperará as recompensas eliminadas da Twitch.</value>
+  </data>
+  <data name="TwitchMigrationRewardFailed" xml:space="preserve">
+    <value>A atualização da ligação à Twitch foi interrompida ao atualizar a recompensa de pontos do canal "{0}". Tente novamente para retomar. Se voltar a falhar, contacte o suporte e envie o registo da aplicação antes de restaurar uma cópia de segurança.</value>
   </data>
   <data name="TwitchMigrationAccountMismatch" xml:space="preserve">
     <value>Este início de sessão na Twitch não corresponde à conta ou aplicação esperada. Inicie sessão com a mesma conta Twitch e tente novamente.</value>

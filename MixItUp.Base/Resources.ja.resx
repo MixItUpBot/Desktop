@@ -12600,7 +12600,16 @@ Mix It Upを使用するには、少なくとも1つのストリーミング・�
     <value>Windows にサインインしたときに Mix It Up を起動する</value>
   </data>
   <data name="TwitchMigrationFailed" xml:space="preserve">
-    <value>Twitch 接続の更新が完了しませんでした。もう一度ログインして続行してください。</value>
+    <value>Twitch 接続の更新が完了しませんでした。もう一度試して再開してください。再び失敗する場合は、アプリケーションのログを添えてサポートにお問い合わせください。</value>
+  </data>
+  <data name="TwitchMigrationRewardPromptRejected" xml:space="preserve">
+    <value>Twitch がチャンネルポイント報酬「{0}」の説明を拒否しました。続行するには、下の説明を編集するか削除してください（最大 200 文字）。キャンセルして後で続行することもできます。</value>
+  </data>
+  <data name="TwitchMigrationRewardPaused" xml:space="preserve">
+    <value>Twitch が「{0}」の説明を拒否したため、Twitch 接続の更新が停止しました。もう一度試して説明を編集し、再開してください。古いバックアップを復元しても、削除された Twitch 報酬は復元されません。</value>
+  </data>
+  <data name="TwitchMigrationRewardFailed" xml:space="preserve">
+    <value>チャンネルポイント報酬「{0}」の更新中に、Twitch 接続の更新が停止しました。もう一度試して再開してください。再び失敗する場合は、バックアップを復元する前に、アプリケーションのログを添えてサポートにお問い合わせください。</value>
   </data>
   <data name="TwitchMigrationAccountMismatch" xml:space="preserve">
     <value>この Twitch ログインは、想定されたアカウントまたはアプリケーションと一致しません。同じ Twitch アカウントでログインし、もう一度お試しください。</value>

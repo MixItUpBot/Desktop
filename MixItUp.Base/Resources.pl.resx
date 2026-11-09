@@ -12600,7 +12600,16 @@ Można to zrobić, klikając opcję Utwórz nagrodę za punkty kanału na stroni
     <value>Uruchamiaj Mix It Up po zalogowaniu do Windows</value>
   </data>
   <data name="TwitchMigrationFailed" xml:space="preserve">
-    <value>Aktualizacja połączenia z Twitchem nie została ukończona. Zaloguj się ponownie, aby kontynuować.</value>
+    <value>Aktualizacja połączenia z Twitchem nie została ukończona. Spróbuj ponownie, aby ją wznowić. Jeśli ponownie się nie powiedzie, skontaktuj się z pomocą techniczną i dołącz dziennik aplikacji.</value>
+  </data>
+  <data name="TwitchMigrationRewardPromptRejected" xml:space="preserve">
+    <value>Twitch odrzucił opis nagrody za punkty kanału „{0}”. Edytuj lub usuń poniższy opis, aby kontynuować (maksymalnie 200 znaków). Możesz anulować i kontynuować później.</value>
+  </data>
+  <data name="TwitchMigrationRewardPaused" xml:space="preserve">
+    <value>Aktualizacja połączenia z Twitchem została zatrzymana, ponieważ Twitch odrzucił opis „{0}”. Spróbuj ponownie, aby edytować opis i wznowić aktualizację. Przywrócenie starszej kopii zapasowej nie przywróci usuniętych nagród Twitch.</value>
+  </data>
+  <data name="TwitchMigrationRewardFailed" xml:space="preserve">
+    <value>Aktualizacja połączenia z Twitchem została zatrzymana podczas aktualizacji nagrody za punkty kanału „{0}”. Spróbuj ponownie, aby ją wznowić. Jeśli ponownie się nie powiedzie, skontaktuj się z pomocą techniczną i dołącz dziennik aplikacji przed przywróceniem kopii zapasowej.</value>
   </data>
   <data name="TwitchMigrationAccountMismatch" xml:space="preserve">
     <value>To logowanie Twitch nie odpowiada oczekiwanemu kontu lub aplikacji. Zaloguj się na to samo konto Twitch i spróbuj ponownie.</value>

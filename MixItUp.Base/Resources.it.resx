@@ -12600,7 +12600,16 @@ Questo può essere fatto facendo clic su Crea ricompensa punti canale nella pagi
     <value>Avvia Mix It Up quando accedo a Windows</value>
   </data>
   <data name="TwitchMigrationFailed" xml:space="preserve">
-    <value>L’aggiornamento della connessione a Twitch non è stato completato. Accedi di nuovo per continuare.</value>
+    <value>L’aggiornamento della connessione a Twitch non è stato completato. Riprova per riprenderlo. Se fallisce di nuovo, contatta l’assistenza allegando il registro dell’applicazione.</value>
+  </data>
+  <data name="TwitchMigrationRewardPromptRejected" xml:space="preserve">
+    <value>Twitch ha rifiutato la descrizione della ricompensa in punti canale "{0}". Modifica o cancella la descrizione qui sotto per continuare (massimo 200 caratteri). Puoi annullare e continuare più tardi.</value>
+  </data>
+  <data name="TwitchMigrationRewardPaused" xml:space="preserve">
+    <value>L’aggiornamento della connessione a Twitch si è interrotto perché Twitch ha rifiutato la descrizione di "{0}". Riprova per modificare la descrizione e riprendere. Il ripristino di un backup precedente non ripristinerà le ricompense Twitch eliminate.</value>
+  </data>
+  <data name="TwitchMigrationRewardFailed" xml:space="preserve">
+    <value>L’aggiornamento della connessione a Twitch si è interrotto durante l’aggiornamento della ricompensa in punti canale "{0}". Riprova per riprenderlo. Se fallisce di nuovo, contatta l’assistenza allegando il registro dell’applicazione prima di ripristinare un backup.</value>
   </data>
   <data name="TwitchMigrationAccountMismatch" xml:space="preserve">
     <value>Questo accesso a Twitch non corrisponde all’account o all’applicazione previsti. Accedi con lo stesso account Twitch e riprova.</value>
