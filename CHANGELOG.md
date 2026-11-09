@@ -1,5 +1,16 @@
 # Mix It Up Desktop Changelog
 
+## 1.8.212 (HOTFIX)
+
+Release Date: 2026-11-09
+
+### FIXES
+
+- Fixed Twitch connection updates getting stuck on rejected channel point reward descriptions, with an option to edit or clear the description and resume.
+- Fixed Twitch channel point commands losing their reward links after restoring a backup during or after the Twitch connection update.
+- Fixed connection timeouts affecting sign-in, services, and downloads on some networks.
+- Fixed `<br>` line breaks supplied through special identifiers appearing as text in overlays.
+
 ## 1.8.211 (HOTFIX)
 
 Release Date: 2026-11-07
