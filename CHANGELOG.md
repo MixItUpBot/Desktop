@@ -1,5 +1,13 @@
 # Mix It Up Desktop Changelog
 
+## 1.8.213 (HOTFIX)
+
+Release Date: 2026-11-09
+
+### FIXES
+
+- Fixed Twitch Clips not playing in the overlay.
+
 ## 1.8.212 (HOTFIX)
 
 Release Date: 2026-11-09
