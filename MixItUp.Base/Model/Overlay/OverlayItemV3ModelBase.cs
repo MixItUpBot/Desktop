@@ -326,6 +326,11 @@ namespace MixItUp.Base.Model.Overlay
                 html = OverlayV3Service.ReplaceProperty(html, nameof(sound.Volume), sound.Volume.ToInvariantNumberString());
                 values.Remove(nameof(sound.Volume));
             }
+            else if (this is OverlayTwitchClipV3Model clip)
+            {
+                html = OverlayV3Service.ReplaceProperty(html, nameof(clip.Volume), clip.Volume.ToInvariantNumberString());
+                values.Remove(nameof(clip.Volume));
+            }
             if (this is OverlayCustomV3Model custom)
             {
                 foreach (var property in custom.Properties)
