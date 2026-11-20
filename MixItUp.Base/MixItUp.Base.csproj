@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\..\.secrets\MixItUpSecrets.cs" Link="MixItUpSecrets.cs" />
+    <Compile Include="$([System.Environment]::GetFolderPath(SpecialFolder.UserProfile))/Dev/Secrets/mixitup-desktop_compiler_secrets.cs" Link="mixitup-desktop_compiler_secrets.cs" />
   </ItemGroup>
 
 	<ItemGroup>
