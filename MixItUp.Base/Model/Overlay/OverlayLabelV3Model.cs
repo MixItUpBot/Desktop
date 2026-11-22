@@ -1,3 +1,5 @@
+using MixItUp.Base.Model.Joystick;
+using MixItUp.Base.Model.Razo;
 using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Kick.Kicks;
 using MixItUp.Base.Model.Velora;
@@ -39,6 +41,8 @@ namespace MixItUp.Base.Model.Overlay
         LatestSubscriptionGifter,
         LatestVeloraCheered,
         LatestVPZoneCheered,
+        LatestJoystickTipped,
+        LatestRazoGift,
 
         Counter = 100,
 
@@ -258,6 +262,7 @@ namespace MixItUp.Base.Model.Overlay
                 EventService.OnResubscribeOccurred += EventService_OnResubscribeOccurred;
                 EventService.OnSubscriptionGiftedOccurred += EventService_OnSubscriptionGiftedOccurred;
                 EventService.OnMassSubscriptionsGiftedOccurred += EventService_OnMassSubscriptionsGiftedOccurred;
+                EventService.RazoSubscriptionsGifted += OnRazoSubscriptionsGifted;
 
                 if (this.IsDisplayEnabled(OverlayLabelDisplayV3TypeEnum.LatestSubscriber) && this.Displays[OverlayLabelDisplayV3TypeEnum.LatestSubscriber].UserID == Guid.Empty)
                 {
@@ -340,6 +345,14 @@ namespace MixItUp.Base.Model.Overlay
             if (this.IsDisplayEnabled(OverlayLabelDisplayV3TypeEnum.LatestVPZoneCheered))
             {
                 EventService.OnVPZoneChannelCheeredOccurred += EventService_OnVPZoneChannelCheeredOccurred;
+            }
+            if (this.IsDisplayEnabled(OverlayLabelDisplayV3TypeEnum.LatestJoystickTipped))
+            {
+                EventService.OnJoystickChannelTippedOccurred += EventService_OnJoystickChannelTippedOccurred;
+            }
+            if (this.IsDisplayEnabled(OverlayLabelDisplayV3TypeEnum.LatestRazoGift))
+            {
+                EventService.OnRazoChannelGiftOccurred += EventService_OnRazoChannelGiftOccurred;
             }
 
             if (this.IsDisplayEnabled(OverlayLabelDisplayV3TypeEnum.Counter))
@@ -511,6 +524,23 @@ namespace MixItUp.Base.Model.Overlay
             }
         }
 
+        private async void OnRazoSubscriptionsGifted(UserV2ViewModel gifter, int count)
+        {
+            if (this.IsDisplayEnabled(OverlayLabelDisplayV3TypeEnum.LatestSubscriptionGifter))
+            {
+                var display = this.Displays[OverlayLabelDisplayV3TypeEnum.LatestSubscriptionGifter];
+                display.ResetData();
+                display.UserFallback = gifter.Model;
+                display.Amount = count;
+                await this.SendUpdate(OverlayLabelDisplayV3TypeEnum.LatestSubscriptionGifter);
+            }
+            if (this.IsDisplayEnabled(OverlayLabelDisplayV3TypeEnum.TotalSubscribers))
+            {
+                this.Displays[OverlayLabelDisplayV3TypeEnum.TotalSubscribers].Amount += count;
+                await this.SendUpdate(OverlayLabelDisplayV3TypeEnum.TotalSubscribers);
+            }
+        }
+
         private async void EventService_OnMassSubscriptionsGiftedOccurred(object sender, IEnumerable<SubscriptionDetailsModel> subscriptions)
         {
             if (subscriptions != null && subscriptions.Count() > 0)
@@ -597,6 +627,19 @@ namespace MixItUp.Base.Model.Overlay
             this.Displays[OverlayLabelDisplayV3TypeEnum.LatestVPZoneCheered].UserID = cheered.User.ID;
             this.Displays[OverlayLabelDisplayV3TypeEnum.LatestVPZoneCheered].Amount = cheered.Amount;
             await this.SendUpdate(OverlayLabelDisplayV3TypeEnum.LatestVPZoneCheered);
+        }
+        private async void EventService_OnJoystickChannelTippedOccurred(object sender, JoystickTippedEventModel cheered)
+        {
+            this.Displays[OverlayLabelDisplayV3TypeEnum.LatestJoystickTipped].UserID = cheered.User.ID;
+            this.Displays[OverlayLabelDisplayV3TypeEnum.LatestJoystickTipped].Amount = cheered.Amount;
+            await this.SendUpdate(OverlayLabelDisplayV3TypeEnum.LatestJoystickTipped);
+        }
+        private async void EventService_OnRazoChannelGiftOccurred(object sender, RazoGiftEventModel cheered)
+        {
+            this.Displays[OverlayLabelDisplayV3TypeEnum.LatestRazoGift].UserID = cheered.User.ID;
+            this.Displays[OverlayLabelDisplayV3TypeEnum.LatestRazoGift].UserFallback = cheered.User.Model;
+            this.Displays[OverlayLabelDisplayV3TypeEnum.LatestRazoGift].Amount = cheered.Amount;
+            await this.SendUpdate(OverlayLabelDisplayV3TypeEnum.LatestRazoGift);
         }
 
         private async void CounterModel_OnCounterUpdated(object sender, CounterModel counter)
@@ -728,12 +771,15 @@ namespace MixItUp.Base.Model.Overlay
             EventService.OnResubscribeOccurred -= EventService_OnResubscribeOccurred;
             EventService.OnSubscriptionGiftedOccurred -= EventService_OnSubscriptionGiftedOccurred;
             EventService.OnMassSubscriptionsGiftedOccurred -= EventService_OnMassSubscriptionsGiftedOccurred;
+            EventService.RazoSubscriptionsGifted -= OnRazoSubscriptionsGifted;
             EventService.OnDonationOccurred -= EventService_OnDonationOccurred;
             EventService.OnTwitchBitsCheeredOccurred -= EventService_OnTwitchBitsCheeredOccurred;
             EventService.OnYouTubeSuperChatOccurred -= EventService_OnYouTubeSuperChatOccurred;
             EventService.OnKickKicksGiftedOccurred -= EventService_OnKickKicksGiftedOccurred;
             EventService.OnVeloraChannelCheeredOccurred -= EventService_OnVeloraChannelCheeredOccurred;
             EventService.OnVPZoneChannelCheeredOccurred -= EventService_OnVPZoneChannelCheeredOccurred;
+            EventService.OnJoystickChannelTippedOccurred -= EventService_OnJoystickChannelTippedOccurred;
+            EventService.OnRazoChannelGiftOccurred -= EventService_OnRazoChannelGiftOccurred;
             CounterModel.OnCounterUpdated -= CounterModel_OnCounterUpdated;
         }
     }

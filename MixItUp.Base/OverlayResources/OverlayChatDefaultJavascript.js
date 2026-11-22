@@ -83,12 +83,13 @@ function remove(data)
     {
         if (pendingMessage[i].id == data.MessageID)
         {
-            pendingMessage.removeChild(pendingMessage[i]);
+            pendingMessage.splice(i, 1);
             return;
         }
-        else if (pendingMessage[i].getAttribute("username") == data.Username)
+        else if ((data.MessageIDPrefix && pendingMessage[i].id.startsWith(data.MessageIDPrefix)) ||
+                 (data.Username && pendingMessage[i].getAttribute("username") == data.Username))
         {
-            pendingMessage.removeChild(pendingMessage[i]);
+            pendingMessage.splice(i, 1);
             i--;
         }
     }
@@ -100,7 +101,8 @@ function remove(data)
             list.removeChild(list.children[i]);
             return;
         }
-        else if (list.children[i].getAttribute("username") == data.Username)
+        else if ((data.MessageIDPrefix && list.children[i].id.startsWith(data.MessageIDPrefix)) ||
+                 (data.Username && list.children[i].getAttribute("username") == data.Username))
         {
             list.removeChild(list.children[i]);
             i--;
@@ -110,6 +112,7 @@ function remove(data)
 
 function clear(data)
 {
+    pendingMessage.length = 0;
     while (list.childElementCount > 0)
     {
         list.removeChild(list.lastElementChild);
@@ -128,11 +131,12 @@ function addBadge(messageSpan, url, include)
 
 function addInternal(message)
 {
-    if (!pendingMessage.includes(message))
+    const index = pendingMessage.indexOf(message);
+    if (index === -1)
     {
-        return
+        return;
     }
-    pendingMessage.splice(message, 1);
+    pendingMessage.splice(index, 1);
     
     if (addMessagesToTop)
     {
@@ -172,6 +176,6 @@ function removeInternal(message)
 {
     performAnimation("{MessageRemovedAnimationFramework}", "{MessageRemovedAnimationName}", message).then((result) =>
     {
-        list.removeChild(message);
+        if (message.parentNode === list) list.removeChild(message);
     });
 }

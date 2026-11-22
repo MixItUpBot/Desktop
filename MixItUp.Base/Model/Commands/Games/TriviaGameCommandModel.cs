@@ -40,6 +40,7 @@ namespace MixItUp.Base.Model.Commands.Games
         public const string GameTriviaQuestionSpecialIdentifier = "gamequestion";
         public const string GameTriviaSpecificAnswerHeaderSpecialIdentifier = "gameanswer";
         public const string GameTriviaAnswersSpecialIdentifier = "gameanswers";
+        public const string GameTriviaCorrectAnswerNumberSpecialIdentifier = "gamecorrectanswernumber";
         public const string GameTriviaCorrectAnswerSpecialIdentifier = "gamecorrectanswer";
 
         private const string OpenTDBUrl = "https://opentdb.com/api.php?amount=1&type=multiple";
@@ -203,6 +204,7 @@ namespace MixItUp.Base.Model.Commands.Games
                 this.runParameters.SpecialIdentifiers[TriviaGameCommandModel.GameTriviaSpecificAnswerHeaderSpecialIdentifier + kvp.Key] = kvp.Value;
             }
             this.runParameters.SpecialIdentifiers[TriviaGameCommandModel.GameTriviaAnswersSpecialIdentifier] = string.Join(", ", this.numbersToAnswers.OrderBy(a => a.Key).Select(a => $"{a.Key}) {a.Value}"));
+            this.runParameters.SpecialIdentifiers[GameTriviaCorrectAnswerNumberSpecialIdentifier] = correctAnswerNumber.ToString();
             this.runParameters.SpecialIdentifiers[TriviaGameCommandModel.GameTriviaCorrectAnswerSpecialIdentifier] = this.question.CorrectAnswer;
 
             IEnumerable<OverlayPollV3Model> widgets = OverlayPollV3Model.GetPollOverlayWidgets(forTrivia: true);
@@ -269,6 +271,12 @@ namespace MixItUp.Base.Model.Commands.Games
                 if (!this.runUsers.ContainsKey(message.User) && !string.IsNullOrEmpty(message.PlainTextMessage) && int.TryParse(message.PlainTextMessage, out int choice) && this.numbersToAnswers.ContainsKey(choice))
                 {
                     CommandParametersModel parameters = new CommandParametersModel(message);
+                    parameters.SpecialIdentifiers[GameTriviaCorrectAnswerNumberSpecialIdentifier] = this.runParameters.SpecialIdentifiers[GameTriviaCorrectAnswerNumberSpecialIdentifier];
+                    parameters.SpecialIdentifiers[GameTriviaCorrectAnswerSpecialIdentifier] = this.question.CorrectAnswer;
+                    foreach (var answer in this.numbersToAnswers)
+                    {
+                        parameters.SpecialIdentifiers[GameTriviaSpecificAnswerHeaderSpecialIdentifier + answer.Key] = answer.Value;
+                    }
                     this.runUsers[message.User] = parameters;
                     this.runUserSelections[message.User] = choice;
                     await this.RunSubCommand(this.UserJoinCommand, parameters);

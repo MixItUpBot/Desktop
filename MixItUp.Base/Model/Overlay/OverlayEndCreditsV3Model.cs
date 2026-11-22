@@ -1,4 +1,6 @@
-﻿using MixItUp.Base.Model.Commands;
+﻿using MixItUp.Base.Model.Joystick;
+using MixItUp.Base.Model.Razo;
+using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Kick.Kicks;
 using MixItUp.Base.Model.Velora;
 using MixItUp.Base.Model.VPZone;
@@ -52,6 +54,8 @@ namespace MixItUp.Base.Model.Overlay
 
         VeloraCheered = 70,
         VPZoneCheered = 71,
+        JoystickTipped = 72,
+        RazoGift = 73,
 
         Donations = 200,
 
@@ -369,6 +373,8 @@ namespace MixItUp.Base.Model.Overlay
         public override bool VPZoneSubscriptions { get { return this.Sections.Any(s => OverlayEndCreditsV3Model.AllSubscriberSectionTypes.Contains(s.Type)); } set { } }
 
         public override bool VPZoneCheered { get { return this.Sections.Any(s => s.Type == OverlayEndCreditsSectionV3Type.VPZoneCheered); } set { } }
+        public override bool JoystickTipped { get { return this.Sections.Any(s => s.Type == OverlayEndCreditsSectionV3Type.JoystickTipped); } set { } }
+        public override bool RazoGift { get { return this.Sections.Any(s => s.Type == OverlayEndCreditsSectionV3Type.RazoGift); } set { } }
 
         [DataMember]
         public override bool Donations { get { return this.Sections.Any(s => s.Type == OverlayEndCreditsSectionV3Type.Donations); } set { } }
@@ -547,6 +553,12 @@ namespace MixItUp.Base.Model.Overlay
             }
         }
 
+        public override void OnRazoSubscriptionsGifted(UserV2ViewModel gifter, int count)
+        {
+            foreach (var section in this.Sections.Where(s => s.Type == OverlayEndCreditsSectionV3Type.GiftedSubscriptions))
+                section.Track(gifter, count);
+        }
+
         public override void OnMassSubscription(object sender, IEnumerable<SubscriptionDetailsModel> subscriptions)
         {
             foreach (OverlayEndCreditsSectionV3Model section in this.Sections)
@@ -663,6 +675,30 @@ namespace MixItUp.Base.Model.Overlay
                 switch (section.Type)
                 {
                     case OverlayEndCreditsSectionV3Type.VPZoneCheered:
+                        section.Track(cheered.User, cheered.Amount);
+                        break;
+                }
+            }
+        }
+        public override void OnJoystickTipped(object sender, JoystickTippedEventModel cheered)
+        {
+            foreach (OverlayEndCreditsSectionV3Model section in this.Sections)
+            {
+                switch (section.Type)
+                {
+                    case OverlayEndCreditsSectionV3Type.JoystickTipped:
+                        section.Track(cheered.User, cheered.Amount);
+                        break;
+                }
+            }
+        }
+        public override void OnRazoGift(object sender, RazoGiftEventModel cheered)
+        {
+            foreach (OverlayEndCreditsSectionV3Model section in this.Sections)
+            {
+                switch (section.Type)
+                {
+                    case OverlayEndCreditsSectionV3Type.RazoGift:
                         section.Track(cheered.User, cheered.Amount);
                         break;
                 }

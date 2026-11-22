@@ -14,6 +14,7 @@ using MixItUp.Base.Services.YouTube.New;
 using MixItUp.Base.Services.Kick.New;
 using MixItUp.Base.Services.Velora.New;
 using MixItUp.Base.Services.VPZone.New;
+using MixItUp.Base.Services.Joystick;
 using MixItUp.Base.Util;
 using MixItUp.Base.Web;
 using Newtonsoft.Json.Linq;
@@ -150,12 +151,6 @@ namespace MixItUp.Base.Services
 
 
         private const string FileServiceBaseUrl = BuildChannelHelper.API_FILES_UPDATE_ROOT; // "https://files.mixitup.bot/apps/mixitup-desktop/windows-x64";
-        private static readonly TimeSpan[] FileServiceRetryDelays = new[]
-        {
-            TimeSpan.FromSeconds(3),
-            TimeSpan.FromSeconds(6),
-            TimeSpan.FromSeconds(9),
-        };
 
         private string accessToken = null;
         private bool isUpdateRequired = false;
@@ -212,98 +207,24 @@ namespace MixItUp.Base.Services
             return null;
         }
 
-        private async Task<UpdateVersionCheckModel> FetchVersionCheckAsync(string channel)
+        public Task<UpdateVersionCheckModel> FetchVersionCheckAsync(string channel) =>
+            FetchUpdateMetadata<UpdateVersionCheckModel>($"{FileServiceBaseUrl}/{channel}/latest");
+
+        public Task<UpdateVersionManifestModel> FetchVersionManifestAsync(string channel, string version) =>
+            FetchUpdateMetadata<UpdateVersionManifestModel>($"{FileServiceBaseUrl}/{channel}/{version}");
+
+        private static async Task<T> FetchUpdateMetadata<T>(string url) where T : class
         {
-            string url = $"{FileServiceBaseUrl}/{channel}/latest";
-            Exception lastError = null;
-
-            for (int attempt = 0; attempt <= FileServiceRetryDelays.Length; attempt++)
+            try
             {
-                try
-                {
-                    using (AdvancedHttpClient client = new AdvancedHttpClient())
-                    {
-                        client.Timeout = TimeSpan.FromSeconds(5);
-                        UpdateVersionCheckModel check = await client.GetAsync<UpdateVersionCheckModel>(url);
-                        if (check != null)
-                        {
-                            return check;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    lastError = ex;
-                    Logger.Log(LogLevel.Warning, $"Attempt {attempt + 1} to fetch version check from {url} failed: {ex.Message}");
-                }
-
-                if (attempt < FileServiceRetryDelays.Length)
-                {
-                    try
-                    {
-                        await Task.Delay(FileServiceRetryDelays[attempt], CancellationToken.None).ConfigureAwait(false);
-                    }
-                    catch (TaskCanceledException)
-                    {
-                        break;
-                    }
-                }
+                using var client = new AdvancedHttpClient { Timeout = TimeSpan.FromSeconds(5) };
+                return await client.GetAsync<T>(url).ConfigureAwait(false);
             }
-
-            if (lastError != null)
+            catch (Exception ex)
             {
-                Logger.Log(lastError);
+                Logger.Log(LogLevel.Warning, $"Could not fetch update metadata from {url}: {ex.Message}");
+                return null;
             }
-
-            Logger.Log(LogLevel.Warning, $"Unable to retrieve version check from {url} after retries.");
-            return null;
-        }
-
-        private async Task<UpdateVersionManifestModel> FetchVersionManifestAsync(string channel, string version)
-        {
-            string url = $"{FileServiceBaseUrl}/{channel}/{version}";
-            Exception lastError = null;
-
-            for (int attempt = 0; attempt <= FileServiceRetryDelays.Length; attempt++)
-            {
-                try
-                {
-                    using (AdvancedHttpClient client = new AdvancedHttpClient())
-                    {
-                        client.Timeout = TimeSpan.FromSeconds(5);
-                        UpdateVersionManifestModel manifest = await client.GetAsync<UpdateVersionManifestModel>(url);
-                        if (manifest != null)
-                        {
-                            return manifest;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    lastError = ex;
-                    Logger.Log(LogLevel.Warning, $"Attempt {attempt + 1} to fetch version manifest from {url} failed: {ex.Message}");
-                }
-
-                if (attempt < FileServiceRetryDelays.Length)
-                {
-                    try
-                    {
-                        await Task.Delay(FileServiceRetryDelays[attempt], CancellationToken.None).ConfigureAwait(false);
-                    }
-                    catch (TaskCanceledException)
-                    {
-                        break;
-                    }
-                }
-            }
-
-            if (lastError != null)
-            {
-                Logger.Log(lastError);
-            }
-
-            Logger.Log(LogLevel.Warning, $"Unable to retrieve version manifest from {url} after retries.");
-            return null;
         }
 
         public async Task SendIssueReport(IssueReportModel report)
@@ -604,6 +525,16 @@ namespace MixItUp.Base.Services
                             }
                         });
 
+                        this.webhookHubConnection.Listen<JObject>("JoystickGatewayEvent", async frame =>
+                        {
+                            try
+                            {
+                                Logger.Log(LogLevel.Debug, $"Joystick Gateway Event Received - {frame?.ToString(Newtonsoft.Json.Formatting.None)}");
+                                await ServiceManager.Get<JoystickSession>().HandleFrame(frame);
+                            }
+                            catch (Exception ex) { Logger.Log(ex); }
+                        });
+
                         this.webhookHubConnection.Listen<string, JObject, JObject>("KickWebhookEvent", (eventType, payload, metadataObject) =>
                         {
                             try
@@ -767,7 +698,7 @@ namespace MixItUp.Base.Services
 
         public async Task Authenticate(CommunityCommandLoginModel login)
         {
-            Logger.Log($"Webhook - Sending Auth - {JSONSerializerHelper.SerializeToString(login)}");
+            Logger.Log("Webhook - Sending Auth");
 
             try
             {
@@ -923,6 +854,10 @@ namespace MixItUp.Base.Services
             if (ServiceManager.Get<VPZoneSession>().IsConnected)
             {
                 login.VPZoneAccessToken = ServiceManager.Get<VPZoneSession>()?.StreamerService?.GetOAuthTokenCopy()?.accessToken;
+            }
+            if (ServiceManager.Get<JoystickSession>().IsConnected)
+            {
+                login.JoystickSessionToken = ServiceManager.Get<JoystickSession>().Service.GetOAuthTokenCopy()?.accessToken;
             }
             return login;
         }

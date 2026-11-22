@@ -187,7 +187,7 @@ namespace MixItUp.Base.Model.Commands.Games
             }
         }
 
-        protected async Task SetSelectedUser(GamePlayerSelectionType selectionType, CommandParametersModel parameters)
+        protected async Task SetSelectedUser(GamePlayerSelectionType selectionType, CommandParametersModel parameters, bool excludeThrower = false)
         {
             if (selectionType.HasFlag(GamePlayerSelectionType.Targeted))
             {
@@ -208,32 +208,19 @@ namespace MixItUp.Base.Model.Commands.Games
 
             if (parameters.TargetUser == null && selectionType.HasFlag(GamePlayerSelectionType.Random))
             {
-                parameters.TargetUser = this.GetRandomUser(parameters);
+                parameters.TargetUser = this.GetRandomUser(parameters, excludeThrower);
             }
         }
 
-        protected UserV2ViewModel GetRandomUser(CommandParametersModel parameters)
+        protected UserV2ViewModel GetRandomUser(CommandParametersModel parameters, bool excludeThrower = false)
         {
-            CurrencyRequirementModel currencyRequirement = this.GetPrimaryCurrencyRequirement();
+            var currencyRequirement = this.GetPrimaryCurrencyRequirement();
             int betAmount = this.GetPrimaryBetAmount(parameters);
-            if (currencyRequirement != null && betAmount > 0)
-            {
-                string currencyName = currencyRequirement.Currency?.Name;
-                List<UserV2ViewModel> users = new List<UserV2ViewModel>(ServiceManager.Get<UserService>().GetActiveUsers(parameters.Platform).Shuffle());
-                users.Remove(parameters.User);
-                foreach (UserV2ViewModel user in users)
-                {
-                    if (!user.IsSpecialtyExcluded && currencyRequirement.Currency.HasAmount(user, betAmount))
-                    {
-                        return user;
-                    }
-                }
-                return null;
-            }
-            else
-            {
-                return ServiceManager.Get<UserService>().GetActiveUsers(parameters.Platform, excludeSpecialtyExcluded: true).Random();
-            }
+            bool hasWager = currencyRequirement != null && betAmount > 0;
+            var candidates = ServiceManager.Get<UserService>().GetActiveUsers(parameters.Platform, excludeSpecialtyExcluded: true);
+            if (excludeThrower || hasWager) { candidates = candidates.Where(user => user.ID != parameters.User.ID); }
+            if (hasWager) { candidates = candidates.Where(user => currencyRequirement.Currency.HasAmount(user, betAmount)); }
+            return candidates.ToList().Random();
         }
 
         public override async Task PreRun(CommandParametersModel parameters)

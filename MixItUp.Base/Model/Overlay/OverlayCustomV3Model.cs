@@ -1,4 +1,6 @@
-﻿using MixItUp.Base.Model.Commands;
+﻿using MixItUp.Base.Model.Joystick;
+using MixItUp.Base.Model.Razo;
+using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Kick.Kicks;
 using MixItUp.Base.Model.Velora;
 using MixItUp.Base.Model.VPZone;
@@ -191,6 +193,24 @@ namespace MixItUp.Base.Model.Overlay
         public override async void OnVPZoneCheered(object sender, VPZoneCheeredEventModel cheered)
         {
             await this.CallFunction("VPZoneCheered", new Dictionary<string, object>()
+            {
+                { "User", cheered.User },
+                { "Amount", cheered.Amount },
+                { "Message", cheered.Message }
+            });
+        }
+        public override async void OnJoystickTipped(object sender, JoystickTippedEventModel cheered)
+        {
+            await this.CallFunction("JoystickTipped", new Dictionary<string, object>()
+            {
+                { "User", cheered.User },
+                { "Amount", cheered.Amount },
+                { "Message", cheered.Message }
+            });
+        }
+        public override async void OnRazoGift(object sender, RazoGiftEventModel cheered)
+        {
+            await this.CallFunction("RazoGift", new Dictionary<string, object>()
             {
                 { "User", cheered.User },
                 { "Amount", cheered.Amount },

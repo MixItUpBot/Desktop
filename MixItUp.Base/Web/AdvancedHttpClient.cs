@@ -469,7 +469,7 @@ namespace MixItUp.Base.Web
 
         private void LogRequest(string method, string requestUri, HttpContent content = null)
         {
-            if (content != null)
+            if (content != null && !requestUri.EndsWith("v2/user/login", StringComparison.OrdinalIgnoreCase))
             {
                 try
                 {

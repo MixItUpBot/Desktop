@@ -1,4 +1,6 @@
-﻿using Google.Apis.YouTube.v3.Data;
+﻿using MixItUp.Base.Model.Joystick;
+using MixItUp.Base.Model.Razo;
+using Google.Apis.YouTube.v3.Data;
 using MixItUp.Base.Model.Kick.Kicks;
 using MixItUp.Base.Model.Velora;
 using MixItUp.Base.Model.VPZone;
@@ -50,6 +52,8 @@ namespace MixItUp.Base.ViewModel.Overlay
         KickKicksGifted,
         VeloraCheered,
         VPZoneCheered,
+        JoystickTipped,
+        RazoGift,
 
     }
 
@@ -232,7 +236,27 @@ namespace MixItUp.Base.ViewModel.Overlay
                 this.NotifyPropertyChanged();
             }
         }
+        public bool JoystickTipped
+        {
+            get { return this.joystickTipped; }
+            set
+            {
+                this.joystickTipped = value;
+                this.NotifyPropertyChanged();
+            }
+        }
+        public bool RazoGift
+        {
+            get { return this.razoGift; }
+            set
+            {
+                this.razoGift = value;
+                this.NotifyPropertyChanged();
+            }
+        }
         private bool vpzoneCheered;
+        private bool joystickTipped;
+        private bool razoGift;
 
         public bool VeloraSubscriptions
         {
@@ -293,6 +317,8 @@ namespace MixItUp.Base.ViewModel.Overlay
             this.KickKicks = item.KickKicks;
             this.VeloraCheered = item.VeloraCheered;
             this.VPZoneCheered = item.VPZoneCheered;
+            this.JoystickTipped = item.JoystickTipped;
+            this.RazoGift = item.RazoGift;
             this.VeloraSubscriptions = item.VeloraSubscriptions;
             this.VPZoneSubscriptions = item.VPZoneSubscriptions;
             this.Donations = item.Donations;
@@ -420,6 +446,14 @@ namespace MixItUp.Base.ViewModel.Overlay
                 {
                     custom.OnVPZoneCheered(this, new VPZoneCheeredEventModel(ChannelSession.User, 100, "Great stream!"));
                 }
+                else if (type == OverlayCustomV3TestTypeEnum.JoystickTipped)
+                {
+                    custom.OnJoystickTipped(this, new JoystickTippedEventModel(ChannelSession.User, 100, "Great stream!"));
+                }
+                else if (type == OverlayCustomV3TestTypeEnum.RazoGift)
+                {
+                    custom.OnRazoGift(this, new RazoGiftEventModel(ChannelSession.User, 100, "Great stream!"));
+                }
             }
 
             await base.TestWidget(widget);
@@ -445,6 +479,8 @@ namespace MixItUp.Base.ViewModel.Overlay
                 KickKicks = this.KickKicks,
                 VeloraCheered = this.VeloraCheered,
                 VPZoneCheered = this.VPZoneCheered,
+                JoystickTipped = this.JoystickTipped,
+                RazoGift = this.RazoGift,
                 VeloraSubscriptions = this.VeloraSubscriptions,
                 VPZoneSubscriptions = this.VPZoneSubscriptions,
                 Donations = this.Donations,

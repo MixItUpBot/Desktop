@@ -74,6 +74,7 @@ namespace MixItUp.Base.Model.Actions
         VPZone = 49,
         VConnect = 50,
         RahiTuber = 51,
+        AltStream = 52,
         // Values are persisted numerically in saved command data. Always append new
         // actions with the next value, never insert into the order above.
     }

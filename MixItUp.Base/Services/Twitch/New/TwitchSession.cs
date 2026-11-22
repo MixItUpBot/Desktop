@@ -138,6 +138,86 @@ namespace MixItUp.Base.Services.Twitch.New
         public TwitchService StreamerService { get; private set; } = new TwitchService(StreamerScopes);
         public TwitchService BotService { get; private set; } = new TwitchService(BotScopes, isBotService: true);
 
+        private readonly object sharedChatLock = new object();
+        private string sharedChatSessionID;
+        private int sharedChatRevision;
+        private bool sharedChatKnown;
+        internal bool IsSharedChatActive { get { lock (this.sharedChatLock) { return this.sharedChatSessionID != null; } } }
+
+        internal bool SetSharedChatSession(string broadcasterID, string sessionID, bool ended)
+        {
+            lock (this.sharedChatLock)
+            {
+                if (string.IsNullOrEmpty(sessionID) || broadcasterID != this.StreamerID) { return false; }
+                if (ended && this.sharedChatSessionID != null && this.sharedChatSessionID != sessionID) { return false; }
+                ++this.sharedChatRevision;
+                bool changed = !this.sharedChatKnown || (ended ? this.sharedChatSessionID != null : this.sharedChatSessionID != sessionID);
+                this.sharedChatKnown = true;
+                this.sharedChatSessionID = ended ? null : sessionID;
+                return changed;
+            }
+        }
+
+        internal async Task RefreshSharedChatSession()
+        {
+            string owner = this.StreamerID;
+            int revision;
+            lock (this.sharedChatLock) { revision = ++this.sharedChatRevision; }
+            try
+            {
+                string sessionID = await this.StreamerService.GetSharedChatSessionID(owner);
+                lock (this.sharedChatLock)
+                {
+                    if (revision == this.sharedChatRevision && owner == this.StreamerID) { this.sharedChatSessionID = sessionID; this.sharedChatKnown = true; }
+                }
+            }
+            catch (Exception ex) { Logger.Log(LogLevel.Debug, "Twitch Shared Chat lookup failed: " + ex.GetType().Name); }
+        }
+
+        internal void ClearSharedChat()
+        {
+            lock (this.sharedChatLock) { ++this.sharedChatRevision; this.sharedChatSessionID = null; this.sharedChatKnown = false; }
+        }
+
+        private readonly object guestRosterLock = new object();
+        private Task<List<UserModel>> guestRoster;
+        private DateTimeOffset guestRosterExpires;
+        internal bool CanReadGuestRoster { get; set; }
+
+        internal void ClearGuestRoster(bool sessionEnded = false)
+        {
+            lock (this.guestRosterLock)
+            {
+                this.guestRoster = sessionEnded ? Task.FromResult(new List<UserModel>()) : null;
+                this.guestRosterExpires = DateTimeOffset.UtcNow.AddMinutes(1);
+            }
+        }
+
+        internal async Task<List<UserModel>> GetGuestRoster()
+        {
+            Task<List<UserModel>> lookup;
+            lock (this.guestRosterLock)
+            {
+                if (!this.IsConnected || !this.CanReadGuestRoster) { return new List<UserModel>(); }
+                if (this.guestRoster == null || (this.guestRoster.IsCompleted && DateTimeOffset.UtcNow >= this.guestRosterExpires))
+                {
+                    this.guestRosterExpires = DateTimeOffset.UtcNow.AddMinutes(1);
+                    this.guestRoster = this.StreamerService.GetGuestStarParticipants(this.StreamerID);
+                }
+                lookup = this.guestRoster;
+            }
+            try
+            {
+                var roster = await lookup;
+                lock (this.guestRosterLock) { return lookup == this.guestRoster ? roster : new List<UserModel>(); }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogLevel.Debug, "Twitch Stream Together roster unavailable: " + ex.GetType().Name);
+                return new List<UserModel>();
+            }
+        }
+
         public TwitchClient Client { get; private set; } = new TwitchClient();
 
         private List<string> emoteSetIDs = new List<string>();
@@ -185,6 +265,9 @@ namespace MixItUp.Base.Services.Twitch.New
                 this.Streamer = await ServiceManager.Get<UserService>().CreateUser(new TwitchUserPlatformV2Model(this.StreamerModel));
             }
 
+            this.ClearSharedChat();
+            this.ClearGuestRoster();
+            this.CanReadGuestRoster = false;
             Result result = await this.Client.Connect();
             if (!result.Success)
             {
@@ -309,6 +392,9 @@ namespace MixItUp.Base.Services.Twitch.New
 
         protected override async Task DisconnectStreamerInternal()
         {
+            this.ClearSharedChat();
+            this.CanReadGuestRoster = false;
+            this.ClearGuestRoster();
             if (this.cancellationTokenSource != null)
             {
                 this.cancellationTokenSource.Cancel();

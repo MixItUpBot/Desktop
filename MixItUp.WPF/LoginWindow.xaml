@@ -46,6 +46,14 @@
                         </Grid.RowDefinitions>
 
                      
+                        <Controls:UpdateReadyButton x:Name="UpdateIndicator" Grid.Row="0" Width="32" Height="32" Margin="-10,-10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"
+                            Style="{StaticResource MaterialDesignIconButton}"
+                            Background="{StaticResource MIU.Brush.Dark.Tertiary}" Foreground="{StaticResource MIU.Brush.Dark.OnTertiary}"
+                            ToolTip="{x:Static resx:Resources.RestartToUpdate}" AutomationProperties.Name="{x:Static resx:Resources.RestartToUpdate}"
+                            AutomationProperties.AutomationId="Login.UpdateReadyButton">
+                            <Controls:MaterialSymbolIcon IconName="download" FontSize="{DynamicResource MIU.IconSize.20}" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+                        </Controls:UpdateReadyButton>
+
                         <Button
                         Grid.Row="0"
                         Width="32"

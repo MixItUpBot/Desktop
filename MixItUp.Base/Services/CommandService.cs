@@ -112,6 +112,7 @@ namespace MixItUp.Base.Services
         public List<VeloraChannelPointsCommandModel> VeloraChannelPointsCommands { get; set; } = new List<VeloraChannelPointsCommandModel>();
 
         public List<VPZoneChannelPointsCommandModel> VPZoneChannelPointsCommands { get; set; } = new List<VPZoneChannelPointsCommandModel>();
+        public List<AltStreamChannelPointsCommandModel> AltStreamChannelPointsCommands { get; set; } = new List<AltStreamChannelPointsCommandModel>();
 
         public IEnumerable<CommandModelBase> AllEnabledChatAccessibleCommands
         {
@@ -146,6 +147,7 @@ namespace MixItUp.Base.Services
                 commands.AddRange(this.KickKicksCommands);
                 commands.AddRange(this.VeloraChannelPointsCommands);
                 commands.AddRange(this.VPZoneChannelPointsCommands);
+                commands.AddRange(this.AltStreamChannelPointsCommands);
                 return commands;
             }
         }
@@ -199,6 +201,7 @@ namespace MixItUp.Base.Services
             this.KickKicksCommands.Clear();
             this.VeloraChannelPointsCommands.Clear();
             this.VPZoneChannelPointsCommands.Clear();
+            this.AltStreamChannelPointsCommands.Clear();
 
             foreach (CommandModelBase command in ChannelSession.Settings.Commands.Values.ToList())
             {
@@ -221,6 +224,7 @@ namespace MixItUp.Base.Services
                 else if (command is KickKicksCommandModel) { this.KickKicksCommands.Add((KickKicksCommandModel)command); }
                 else if (command is VeloraChannelPointsCommandModel) { this.VeloraChannelPointsCommands.Add((VeloraChannelPointsCommandModel)command); }
                 else if (command is VPZoneChannelPointsCommandModel) { this.VPZoneChannelPointsCommands.Add((VPZoneChannelPointsCommandModel)command); }
+                else if (command is AltStreamChannelPointsCommandModel) { this.AltStreamChannelPointsCommands.Add((AltStreamChannelPointsCommandModel)command); }
             }
 
             foreach (PreMadeChatCommandSettingsModel commandSetting in ChannelSession.Settings.PreMadeChatCommandSettings)

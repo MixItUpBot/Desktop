@@ -135,6 +135,7 @@ namespace MixItUp.WPF.Controls.Actions
                 case ActionTypeEnum.VConnect: return new VConnectActionEditorControl();
                 case ActionTypeEnum.Veadotube: return new VeadotubeActionEditorControl();
                 case ActionTypeEnum.Velora: return new VeloraActionEditorControl();
+                case ActionTypeEnum.AltStream: return new AltStreamActionEditorControl();
                 case ActionTypeEnum.VPZone: return new VPZoneActionEditorControl();
                 case ActionTypeEnum.Voicemod: return new VoicemodActionEditorControl();
                 case ActionTypeEnum.VTSPog: return new VTSPogActionEditorControl();

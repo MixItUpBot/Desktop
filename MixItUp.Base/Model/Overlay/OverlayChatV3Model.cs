@@ -45,7 +45,7 @@ namespace MixItUp.Base.Model.Overlay
             properties["Platform"] = message.Platform.ToString();
 
             string messageType = ChatNotificationMessageType.text.ToString();
-            bool isHighlightedMessage = false;
+            bool isHighlightedMessage = message is AltStreamChatMessage { IsHighlighted: true };
             bool isFirstMessage = false;
             int bitsAmount = 0;
 
@@ -62,6 +62,7 @@ namespace MixItUp.Base.Model.Overlay
 
             properties["MessageType"] = messageType;
             properties["IsHighlightedMessage"] = isHighlightedMessage;
+            properties["IsSlashMe"] = message is TwitchChatMessageViewModel { IsSlashMe: true };
             properties["IsFirstMessage"] = isFirstMessage;
             properties["BitsAmount"] = bitsAmount;
 
@@ -146,6 +147,7 @@ namespace MixItUp.Base.Model.Overlay
 
             ChatService.OnChatMessageReceived += ChatService_OnChatMessageReceived;
             ChatService.OnChatMessageDeleted += ChatService_OnChatMessageDeleted;
+            ChatService.OnChannelChatCleared += ChatService_OnChannelChatCleared;
             ChatService.OnChatUserTimedOut += ChatService_OnChatUserTimedOut;
             ChatService.OnChatUserBanned += ChatService_OnChatUserBanned;
             ChatService.OnChatCleared += ChatService_OnChatCleared;
@@ -217,6 +219,11 @@ namespace MixItUp.Base.Model.Overlay
             await this.AddMessage(message);
         }
 
+        private async void ChatService_OnChannelChatCleared(object sender, string prefix)
+        {
+            await this.CallFunction("remove", new Dictionary<string, object> { ["MessageIDPrefix"] = prefix });
+        }
+
         private async void ChatService_OnChatMessageDeleted(object sender, string messageID)
         {
             Dictionary<string, object> properties = new Dictionary<string, object>();
@@ -249,6 +256,7 @@ namespace MixItUp.Base.Model.Overlay
         {
             ChatService.OnChatMessageReceived -= ChatService_OnChatMessageReceived;
             ChatService.OnChatMessageDeleted -= ChatService_OnChatMessageDeleted;
+            ChatService.OnChannelChatCleared -= ChatService_OnChannelChatCleared;
             ChatService.OnChatUserTimedOut -= ChatService_OnChatUserTimedOut;
             ChatService.OnChatUserBanned -= ChatService_OnChatUserBanned;
             ChatService.OnChatCleared -= ChatService_OnChatCleared;

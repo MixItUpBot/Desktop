@@ -1,4 +1,6 @@
-﻿using MixItUp.Base.Model.Kick.Kicks;
+﻿using MixItUp.Base.Model.Joystick;
+using MixItUp.Base.Model.Razo;
+using MixItUp.Base.Model.Kick.Kicks;
 using MixItUp.Base.Model.Twitch.Bits;
 using MixItUp.Base.Model.Velora;
 using MixItUp.Base.Model.VPZone;
@@ -58,6 +60,10 @@ namespace MixItUp.Base.Model.Overlay
         public virtual bool VeloraCheered { get; set; }
         [DataMember]
         public virtual bool VPZoneCheered { get; set; }
+        [DataMember]
+        public virtual bool JoystickTipped { get; set; }
+        [DataMember]
+        public virtual bool RazoGift { get; set; }
 
         [DataMember]
         public virtual bool Donations { get; set; }
@@ -107,6 +113,7 @@ namespace MixItUp.Base.Model.Overlay
                 EventService.OnResubscribeOccurred += OnSubscribe;
                 EventService.OnSubscriptionGiftedOccurred += OnSubscribe;
                 EventService.OnMassSubscriptionsGiftedOccurred += OnMassSubscription;
+                EventService.RazoSubscriptionsGifted += OnRazoSubscriptionsGifted;
             }
 
             if (this.Donations)
@@ -142,6 +149,14 @@ namespace MixItUp.Base.Model.Overlay
             if (this.VPZoneCheered)
             {
                 EventService.OnVPZoneChannelCheeredOccurred += OnVPZoneCheered;
+            }
+            if (this.JoystickTipped)
+            {
+                EventService.OnJoystickChannelTippedOccurred += OnJoystickTipped;
+            }
+            if (this.RazoGift)
+            {
+                EventService.OnRazoChannelGiftOccurred += OnRazoGift;
             }
 
             if (this.YouTubeJewels)
@@ -203,6 +218,9 @@ namespace MixItUp.Base.Model.Overlay
         public virtual void OnVeloraCheered(object sender, VeloraCheeredEventModel cheered) { }
 
         public virtual void OnVPZoneCheered(object sender, VPZoneCheeredEventModel cheered) { }
+        public virtual void OnJoystickTipped(object sender, JoystickTippedEventModel cheered) { }
+        public virtual void OnRazoSubscriptionsGifted(UserV2ViewModel gifter, int count) { }
+        public virtual void OnRazoGift(object sender, RazoGiftEventModel cheered) { }
 
         public virtual void OnYouTubeJewelsGift(object sender, YouTubeJewelsGiftViewModel jewelsGift) { }
 
@@ -225,6 +243,7 @@ namespace MixItUp.Base.Model.Overlay
             EventService.OnResubscribeOccurred -= OnSubscribe;
             EventService.OnSubscriptionGiftedOccurred -= OnSubscribe;
             EventService.OnMassSubscriptionsGiftedOccurred -= OnMassSubscription;
+            EventService.RazoSubscriptionsGifted -= OnRazoSubscriptionsGifted;
             EventService.OnDonationOccurred -= OnDonation;
             EventService.OnTwitchBitsCheeredOccurred -= OnTwitchBits;
             EventService.OnTwitchPowerUpOccurred -= OnTwitchPowerUp;
@@ -232,6 +251,8 @@ namespace MixItUp.Base.Model.Overlay
             EventService.OnKickKicksGiftedOccurred -= OnKickKicksGifted;
             EventService.OnVeloraChannelCheeredOccurred -= OnVeloraCheered;
             EventService.OnVPZoneChannelCheeredOccurred -= OnVPZoneCheered;
+            EventService.OnJoystickChannelTippedOccurred -= OnJoystickTipped;
+            EventService.OnRazoChannelGiftOccurred -= OnRazoGift;
             EventService.OnYouTubeJewelsGiftOccurred -= OnYouTubeJewelsGift;
             EventService.OnChannelPointsRedeemedOccurred -= OnChannelPointsRedeemed;
             EventService.OnStreamlootsOccurred -= OnStreamloots;

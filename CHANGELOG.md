@@ -1,5 +1,130 @@
 # Mix It Up Desktop Changelog
 
+## 1.8.230
+
+Release Date: 2026-11-21
+
+### FEATURES
+
+- Add Joystick.tv, AltStream, and Razo to `Accounts` for chat, commands, and stream start, stream stop, and follow events
+
+- **Joystick.tv**
+  - Channel page title updates, whispers, and message deletion
+  - Subscriptions and resubscriptions (`$usersubmonths`), gifted subscriptions, and mass gifts (`$subsgiftedamount`)
+  - Token tips (`$joysticktokens` for the amount, `$message` for the tip menu item)
+  - Note: Limited internal testing due to account verification restrictions
+
+- **AltStream**
+  - Connect with channel name and application bot token
+  - Channel emotes, replies, and highlighted messages
+  - Incoming raids (`$raidviewercount`). Outgoing raid starts, cancellations, and shoutouts (`$altstreamtargetchannel` when available)
+  - Message pin, unpin, and system message events
+  - `AltStream Channel Points` commands per reward (`$rewardname`, `$rewardcost`, `$rewardid`, `$redemptionid`, viewer's `$message`)
+  - Send Shoutout, Fulfill Redemption, and Refund Redemption actions
+  - `User Lookup` support (`$lookupusername`, `$lookupdisplayname`, `$lookupid`, `$lookupavatarurl`, `$lookupsuccess`)
+  - Ko-fi tips, memberships, and shop orders in chat. (not the same as Mix It Up Ko-Fi events)
+
+- **Razo**
+  - Connect with the channel private code.
+  - Subscriptions, resubscriptions, gifted subscriptions, incoming raids, and jumpscares
+  - Razos gifts (`$razosamount`, `$razogift`), boosts (`$razoboostminutes`), and alert details (`$razoeventid`, `$razotest`)
+  - Clip Created and Clip Featured (`$clipid`, `$cliptitle`, `$clipurl`, `$clipthumbnail`, `$clipduration`, `$clipfeaturedrank` when available)
+
+- User IDs (`$userjoystickid`, `$useraltstreamid`, `$userrazoid`) and chat colors (`$userjoystickcolor`, `$useraltstreamcolor`)
+  - Includes target-user and argument-user variants (`$targetuserrazoid`, `$arg1userrazoid`)
+- Joystick.tv tips, Razos gifts, and Razo subscriptions in Goal, Persistent Timer, and Stream Boss widgets. Latest Joystick.tv tip and Razos gift in Label widgets
+- Alert colors for Joystick.tv tips, AltStream redemptions, and Razos gifts in `Settings > Alerts`
+- Added new bootstrapper and launcher for faster update delivery
+- Twitch Shared Chat status (`$streamissharedchat`) and Stream Together guest list and count (`$streamtogetherparticipants`, `$streamtogetherparticipantscount`)
+  - Guests by position (`$streamtogetherparticipant1username`, `$streamtogetherparticipant1userdisplayname`, `$streamtogetherparticipant1usertwitchid`, `$streamtogetherparticipant1useravatar`). Reauthorize Twitch if your streamer connection predates the Stream Together permission
+- Correct answer position in Trivia commands (`$gamecorrectanswernumber`)
+- `Key Down` and `Key Up` hotkeys alongside `Key Press`
+- Added support for Ogg Vorbis audio playback
+- Added `IsSlashMe` for styling Twitch `/me` messages in custom Chat widgets
+
+### FIXES
+
+- Fixed Twitch migration getting stuck on a missing Twitch ID or another account's completed migration
+- Fixed Twitch migration losing newly created rewards after a restart. Signing back into the correct account preserves reward links
+- Fixed deleted messages reappearing in delayed Chat widgets
+- Fixed Hot Potato passing back to the thrower
+- Fixed incorrect days remaining and missed monthly resets in Goal widgets
+- Fixed Goal widget amounts on systems using a decimal comma
+- Fixed installed OpenType fonts missing from font lists
+
+### PERFORMANCE & GENERAL IMPROVEMENTS
+
+- Developer API v2 command types now always return non localized names
+- Developer API v1 lookup by username or ID update for new platforms
+- Last known details kept on the Channel page if refresh error occurs
+- Refreshed platform and service branding
+- Clarified WebSocket address label in OBS Studio settings
+
+## 1.8.223
+
+Release Date: 2026-11-21
+
+### FIXES
+
+- Joystick.tv, AltStream, and Razo bot messages now follow your chat and command settings. Joystick.tv logs incoming gateway events for diagnostics.
+- Razo can send chat while offline and keeps chat history when the connection drops. Chat logging and deleted messages follow your Desktop settings.
+- AltStream now uses the event participant for follows, raids, and redemptions and reads payment details from Ko-fi events.
+- Desktop checks for updates at most once an hour on every release channel.
+
+## 1.8.222
+
+Release Date: 2026-11-21
+
+### CHANGES
+
+- Added a restart button to Login and the main toolbar when an update is ready.
+- Updated AltStream and Razo account controls to show saved connections and log out.
+
+### FIXES
+
+- AltStream accounts connect as soon as the token is accepted. Channels and chat now reflect accounts connected after startup.
+- Rejected bot credentials are cleared so a new token can be entered.
+
+## 1.8.221
+
+Release Date: 2026-11-21
+
+### FIXES
+
+- Fixed a crash when opening Channels for an AltStream channel without a game or category.
+- Channels keeps the last available stream details when AltStream, Joystick.tv, or Razo cannot refresh.
+
+## 1.8.220
+
+Release Date: 2026-11-21
+
+### FIXES
+
+- Fixed AltStream connections timing out while waiting for chat on a quiet channel.
+- Connecting an AltStream channel now requires its bot token.
+
+## 1.8.219
+
+Release Date: 2026-11-21
+
+### FEATURES
+
+- Connect Joystick.tv in Accounts to receive chat, follows, subscriptions, and tips. Joystick tips expose their token amount through `$joysticktokens`.
+- Connect an AltStream channel for merged chat. Add a channel bot token to send messages, give shoutouts, and fulfill or refund reward redemptions.
+- Connect Razo with a channel private code to receive chat and stream events and post as the channel bot while live.
+  - Razo alerts expose `$razoeventid` and `$razotest`. Gifts expose `$razosamount` and `$razogift`, and boosts expose `$razoboostminutes`.
+  - Razo clip events expose `$clipid`, `$cliptitle`, `$clipurl`, `$clipthumbnail`, `$clipduration`, and `$clipfeaturedrank`.
+- Add `$userjoystickid`, `$userjoystickcolor`, `$useraltstreamid`, `$useraltstreamcolor`, and `$userrazoid`, including their target-user and argument-user variants.
+- Add Twitch Shared Chat and Stream Together identifiers: `$streamissharedchat`, `$streamtogetherparticipants`, and `$streamtogetherparticipantscount`.
+  - Use a participant's position in `$streamtogetherparticipant1username`, `$streamtogetherparticipant1userdisplayname`, `$streamtogetherparticipant1usertwitchid`, or `$streamtogetherparticipant1useravatar`.
+- Add `$gamecorrectanswernumber` to Trivia commands.
+- Add Ogg Vorbis playback and key-down and key-up hotkey triggers.
+
+### FIXES
+
+- Fixed deleted chat messages appearing later in overlays with a display delay.
+- Fixed Twitch action messages displaying duplicated text in the chat overlay.
+
 ## 1.8.213 (HOTFIX)
 
 Release Date: 2026-11-09

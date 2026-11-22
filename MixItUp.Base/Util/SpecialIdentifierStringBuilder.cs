@@ -781,6 +781,25 @@ namespace MixItUp.Base.Util
                 }
 
                 StreamingPlatformSessionBase session = StreamingPlatforms.GetPlatformSession(platform);
+                this.ReplaceSpecialIdentifier("streamissharedchat", (session is TwitchSession { IsConnected: true, IsSharedChatActive: true }).ToString());
+                if (this.ContainsSpecialIdentifier("streamtogetherparticipant"))
+                {
+                    var guests = session is TwitchSession twitch ? await twitch.GetGuestRoster() : new List<MixItUp.Base.Model.Twitch.User.UserModel>();
+                    this.ReplaceSpecialIdentifier("streamtogetherparticipantscount", guests.Count.ToString());
+                    this.ReplaceSpecialIdentifier("streamtogetherparticipants", string.Join(", ", guests.Select(g => g.login)));
+                    foreach (Match match in Regex.Matches(this.text, @"\$streamtogetherparticipant(\d+)(username|userdisplayname|usertwitchid|useravatar)", RegexOptions.IgnoreCase))
+                    {
+                        var guest = int.TryParse(match.Groups[1].Value, out int slot) && slot > 0 && slot <= guests.Count ? guests[slot - 1] : null;
+                        string value = match.Groups[2].Value.ToLowerInvariant() switch
+                        {
+                            "username" => guest?.login,
+                            "userdisplayname" => guest?.display_name,
+                            "usertwitchid" => guest?.id,
+                            _ => guest?.profile_image_url,
+                        };
+                        this.ReplaceSpecialIdentifier(match.Value, value, includeSpecialIdentifierHeader: false);
+                    }
+                }
                 if (session.IsConnected)
                 {
                     this.ReplaceSpecialIdentifier(StreamSpecialIdentifierHeader + "islive", session.IsLive.ToString());
@@ -1475,6 +1494,26 @@ namespace MixItUp.Base.Util
                     VPZoneUserPlatformV2Model pUser = user.GetPlatformData<VPZoneUserPlatformV2Model>(StreamingPlatformTypeEnum.VPZone);
                     this.ReplaceSpecialIdentifier(identifierHeader + UserSpecialIdentifierHeader + "vpzoneid", pUser?.ID);
                     this.ReplaceSpecialIdentifier(identifierHeader + UserSpecialIdentifierHeader + "vpzonecolor", pUser?.Color);
+                }
+
+                if (user.HasPlatformData(StreamingPlatformTypeEnum.Joystick))
+                {
+                    JoystickUserPlatformV2Model pUser = user.GetPlatformData<JoystickUserPlatformV2Model>(StreamingPlatformTypeEnum.Joystick);
+                    this.ReplaceSpecialIdentifier(identifierHeader + UserSpecialIdentifierHeader + "joystickid", pUser?.ID);
+                    this.ReplaceSpecialIdentifier(identifierHeader + UserSpecialIdentifierHeader + "joystickcolor", pUser?.Color);
+                }
+
+                if (user.HasPlatformData(StreamingPlatformTypeEnum.AltStream))
+                {
+                    AltStreamUserPlatformV2Model pUser = user.GetPlatformData<AltStreamUserPlatformV2Model>(StreamingPlatformTypeEnum.AltStream);
+                    this.ReplaceSpecialIdentifier(identifierHeader + UserSpecialIdentifierHeader + "altstreamid", pUser?.ID);
+                    this.ReplaceSpecialIdentifier(identifierHeader + UserSpecialIdentifierHeader + "altstreamcolor", pUser?.Color);
+                }
+
+                if (user.HasPlatformData(StreamingPlatformTypeEnum.Razo))
+                {
+                    RazoUserPlatformV2Model pUser = user.GetPlatformData<RazoUserPlatformV2Model>(StreamingPlatformTypeEnum.Razo);
+                    this.ReplaceSpecialIdentifier(identifierHeader + UserSpecialIdentifierHeader + "razoid", pUser?.ID);
                 }
 
                 string userStreamHeader = identifierHeader + UserSpecialIdentifierHeader + "stream";

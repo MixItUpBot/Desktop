@@ -38,18 +38,23 @@ namespace MixItUp.Base.Model.Actions
         [Obsolete]
         public UserLookupActionModel() { }
 
-        protected override async Task PerformInternal(CommandParametersModel parameters)
+        protected override Task PerformInternal(CommandParametersModel parameters)
         {
-            string usernameOrID = await ReplaceStringWithSpecialModifiers(this.UsernameOrID, parameters);
+            return LookupUser(this.UsernameOrID, this.Platform, parameters);
+        }
+
+        internal static async Task LookupUser(string usernameOrID, StreamingPlatformTypeEnum platform, CommandParametersModel parameters)
+        {
+            usernameOrID = await ReplaceStringWithSpecialModifiers(usernameOrID, parameters);
 
             UserV2ViewModel user = null;
             if (!string.IsNullOrEmpty(usernameOrID))
             {
                 // The value can be either form, so it goes in as both and whichever matches wins.
-                user = await ServiceManager.Get<UserService>().GetUserByPlatform(this.Platform, platformID: usernameOrID, platformUsername: usernameOrID);
+                user = await ServiceManager.Get<UserService>().GetUserByPlatform(platform, platformID: usernameOrID, platformUsername: usernameOrID);
                 if (user == null && TryStartPlatformSearch())
                 {
-                    user = await ServiceManager.Get<UserService>().GetUserByPlatform(this.Platform, platformID: usernameOrID, platformUsername: usernameOrID, performPlatformSearch: true);
+                    user = await ServiceManager.Get<UserService>().GetUserByPlatform(platform, platformID: usernameOrID, platformUsername: usernameOrID, performPlatformSearch: true);
                 }
             }
 

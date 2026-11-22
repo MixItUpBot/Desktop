@@ -91,6 +91,10 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="20" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="{Binding Source={x:Static resx:Resources.ChatMessages}, StringFormat={x:Static resx:Resources.ColumnHeaderFormat}}" />
@@ -134,6 +138,10 @@
 
                 <TextBlock Grid.Row="12" Grid.Column="3" VerticalAlignment="Center" Text="{Binding Source={x:Static resx:Resources.VPZoneCheered}, StringFormat={x:Static resx:Resources.ColumnHeaderFormat}}" />
                 <CheckBox Grid.Row="12" Grid.Column="4" IsChecked="{Binding VPZoneCheered}" VerticalAlignment="Center" Margin="5,0,0,0" AutomationProperties.AutomationId="OverlayCustomV3.VPZoneCheeredCheckBox" AutomationProperties.Name="{x:Static resx:Resources.VPZoneCheered}" />
+                <TextBlock Grid.Row="16" Grid.Column="3" VerticalAlignment="Center" Text="{Binding Source={x:Static resx:Resources.JoystickTipped}, StringFormat={x:Static resx:Resources.ColumnHeaderFormat}}" />
+                <CheckBox Grid.Row="16" Grid.Column="4" IsChecked="{Binding JoystickTipped}" VerticalAlignment="Center" Margin="5,0,0,0" AutomationProperties.AutomationId="OverlayCustomV3.JoystickTippedCheckBox" AutomationProperties.Name="{x:Static resx:Resources.JoystickTipped}" />
+                <TextBlock Grid.Row="18" Grid.Column="3" VerticalAlignment="Center" Text="{Binding Source={x:Static resx:Resources.RazoGift}, StringFormat={x:Static resx:Resources.ColumnHeaderFormat}}" />
+                <CheckBox Grid.Row="18" Grid.Column="4" IsChecked="{Binding RazoGift}" VerticalAlignment="Center" Margin="5,0,0,0" AutomationProperties.AutomationId="OverlayCustomV3.RazoGiftCheckBox" AutomationProperties.Name="{x:Static resx:Resources.RazoGift}" />
 
                 <TextBlock Grid.Row="14" Grid.Column="0" VerticalAlignment="Center" Text="{Binding Source={x:Static resx:Resources.Donations}, StringFormat={x:Static resx:Resources.ColumnHeaderFormat}}" />
                 <CheckBox Grid.Row="14" Grid.Column="1" IsChecked="{Binding Donations}" VerticalAlignment="Center" Margin="5,0,0,0" AutomationProperties.AutomationId="OverlayCustomV3.DonationsCheckBox" AutomationProperties.Name="{x:Static resx:Resources.Donations}" />

@@ -24,6 +24,8 @@ namespace MixItUp.Base.Model.Store
         public string VeloraAccessToken { get; set; }
         [DataMember]
         public string VPZoneAccessToken { get; set; }
+        [DataMember]
+        public string JoystickSessionToken { get; set; }
     }
 
     [DataContract]

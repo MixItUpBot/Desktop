@@ -1,4 +1,6 @@
-﻿using Google.Apis.YouTube.v3.Data;
+﻿using MixItUp.Base.Model.Joystick;
+using MixItUp.Base.Model.Razo;
+using Google.Apis.YouTube.v3.Data;
 using MixItUp.Base.Model.Kick.Kicks;
 using MixItUp.Base.Model.Velora;
 using MixItUp.Base.Model.VPZone;
@@ -39,6 +41,8 @@ namespace MixItUp.Base.ViewModel.Overlay
         KickKicksGifted,
         VeloraCheered,
         VPZoneCheered,
+        JoystickTipped,
+        RazoGift,
 
     }
 
@@ -425,7 +429,27 @@ namespace MixItUp.Base.ViewModel.Overlay
                 this.NotifyPropertyChanged();
             }
         }
+        public bool JoystickTipped
+        {
+            get { return this.joystickTipped; }
+            set
+            {
+                this.joystickTipped = value;
+                this.NotifyPropertyChanged();
+            }
+        }
+        public bool RazoGift
+        {
+            get { return this.razoGift; }
+            set
+            {
+                this.razoGift = value;
+                this.NotifyPropertyChanged();
+            }
+        }
         private bool vpzoneCheered;
+        private bool joystickTipped;
+        private bool razoGift;
 
         public string VeloraCheeredDetailsTemplate
         {
@@ -447,7 +471,27 @@ namespace MixItUp.Base.ViewModel.Overlay
                 this.NotifyPropertyChanged();
             }
         }
+        public string JoystickTippedDetailsTemplate
+        {
+            get { return this.joystickTippedDetailsTemplate; }
+            set
+            {
+                this.joystickTippedDetailsTemplate = value;
+                this.NotifyPropertyChanged();
+            }
+        }
+        public string RazoGiftDetailsTemplate
+        {
+            get { return this.razoGiftDetailsTemplate; }
+            set
+            {
+                this.razoGiftDetailsTemplate = value;
+                this.NotifyPropertyChanged();
+            }
+        }
         private string vpzoneCheeredDetailsTemplate;
+        private string joystickTippedDetailsTemplate;
+        private string razoGiftDetailsTemplate;
 
         public bool VeloraSubscriptions
         {
@@ -625,6 +669,8 @@ namespace MixItUp.Base.ViewModel.Overlay
             this.KickKicksDetailsTemplate = $"{{Amount}} {Resources.KickKicks}";
             this.VeloraCheeredDetailsTemplate = $"{{Amount}} {Resources.VeloraCheered}";
             this.VPZoneCheeredDetailsTemplate = $"{{Amount}} {Resources.VPZoneCheered}";
+            this.JoystickTippedDetailsTemplate = $"{{Amount}} {Resources.JoystickTipped}";
+            this.RazoGiftDetailsTemplate = $"{{Amount}} {Resources.RazoGift}";
 
             this.VeloraSubscriptionsDetailsTemplate = $"{Resources.Subscribed} - {Resources.Tier} {{Tier}}";
             this.VPZoneSubscriptionsDetailsTemplate = $"{Resources.Subscribed} - {Resources.Tier} {{Tier}}";
@@ -691,8 +737,12 @@ namespace MixItUp.Base.ViewModel.Overlay
 
             this.VeloraCheered = item.VeloraCheered;
             this.VPZoneCheered = item.VPZoneCheered;
+            this.JoystickTipped = item.JoystickTipped;
+            this.RazoGift = item.RazoGift;
             this.VeloraCheeredDetailsTemplate = item.VeloraCheeredDetailsTemplate;
             this.VPZoneCheeredDetailsTemplate = item.VPZoneCheeredDetailsTemplate;
+            this.JoystickTippedDetailsTemplate = item.JoystickTippedDetailsTemplate;
+            this.RazoGiftDetailsTemplate = item.RazoGiftDetailsTemplate;
 
             this.VeloraSubscriptions = item.VeloraSubscriptions;
             this.VPZoneSubscriptions = item.VPZoneSubscriptions;
@@ -791,6 +841,14 @@ namespace MixItUp.Base.ViewModel.Overlay
                 {
                     eventList.OnVPZoneCheered(this, new VPZoneCheeredEventModel(ChannelSession.User, 100, "Great stream!"));
                 }
+                else if (type == OverlayEventListV3TestTypeEnum.JoystickTipped)
+                {
+                    eventList.OnJoystickTipped(this, new JoystickTippedEventModel(ChannelSession.User, 100, "Great stream!"));
+                }
+                else if (type == OverlayEventListV3TestTypeEnum.RazoGift)
+                {
+                    eventList.OnRazoGift(this, new RazoGiftEventModel(ChannelSession.User, 100, "Great stream!"));
+                }
             }
 
             await base.TestWidget(widget);
@@ -843,8 +901,12 @@ namespace MixItUp.Base.ViewModel.Overlay
 
                 VeloraCheered = this.VeloraCheered,
                 VPZoneCheered = this.VPZoneCheered,
+                JoystickTipped = this.JoystickTipped,
+                RazoGift = this.RazoGift,
                 VeloraCheeredDetailsTemplate = this.VeloraCheeredDetailsTemplate,
                 VPZoneCheeredDetailsTemplate = this.VPZoneCheeredDetailsTemplate,
+                JoystickTippedDetailsTemplate = this.JoystickTippedDetailsTemplate,
+                RazoGiftDetailsTemplate = this.RazoGiftDetailsTemplate,
 
                 VeloraSubscriptions = this.VeloraSubscriptions,
                 VPZoneSubscriptions = this.VPZoneSubscriptions,

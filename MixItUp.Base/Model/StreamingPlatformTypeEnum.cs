@@ -4,6 +4,9 @@ using MixItUp.Base.Services.Mock.New;
 using MixItUp.Base.Services.Twitch.New;
 using MixItUp.Base.Services.Velora.New;
 using MixItUp.Base.Services.VPZone.New;
+using MixItUp.Base.Services.Joystick;
+using MixItUp.Base.Services.AltStream;
+using MixItUp.Base.Services.Razo;
 using MixItUp.Base.Services.YouTube.New;
 using System;
 using System.Collections.Generic;
@@ -29,6 +32,9 @@ namespace MixItUp.Base.Model
         Kick = 7,
         Velora = 8,
         VPZone = 9,
+        Joystick = 10,
+        AltStream = 11,
+        Razo = 12,
 
         All = 99999,
 
@@ -42,12 +48,18 @@ namespace MixItUp.Base.Model
         public const string KickLogoImageAssetFilePath = "/Assets/Images/kick-color_lg.png";
         public const string VeloraLogoImageAssetFilePath = "/Assets/Images/velora-color_lg.png";
         public const string VPZoneLogoImageAssetFilePath = "/Assets/Images/vpzone-color_lg.png";
+        public const string JoystickLogoImageAssetFilePath = "/Assets/Images/joystick-color_lg.png";
+        public const string AltStreamLogoImageAssetFilePath = "/Assets/Images/altstream-color_lg.png";
+        public const string RazoLogoImageAssetFilePath = "/Assets/Images/razo-color_lg.png";
 
         public const string TwitchSmallLogoImageAssetFilePath = "/Assets/Images/twitch-color_sm.png";
         public const string YouTubeSmallLogoImageAssetFilePath = "/Assets/Images/youtube-color_sm.png";
         public const string KickSmallLogoImageAssetFilePath = "/Assets/Images/kick-color_sm.png";
         public const string VeloraSmallLogoImageAssetFilePath = "/Assets/Images/velora-color_sm.png";
         public const string VPZoneSmallLogoImageAssetFilePath = "/Assets/Images/vpzone-color_sm.png";
+        public const string JoystickSmallLogoImageAssetFilePath = "/Assets/Images/joystick-color_sm.png";
+        public const string AltStreamSmallLogoImageAssetFilePath = "/Assets/Images/altstream-color_sm.png";
+        public const string RazoSmallLogoImageAssetFilePath = "/Assets/Images/razo-color_sm.png";
 
         public static ISet<StreamingPlatformTypeEnum> SupportedPlatforms { get; private set; } = new HashSet<StreamingPlatformTypeEnum>()
         {
@@ -56,6 +68,9 @@ namespace MixItUp.Base.Model
             StreamingPlatformTypeEnum.Kick,
             StreamingPlatformTypeEnum.Velora,
             StreamingPlatformTypeEnum.VPZone,
+            StreamingPlatformTypeEnum.Joystick,
+            StreamingPlatformTypeEnum.AltStream,
+            StreamingPlatformTypeEnum.Razo,
         };
 
         public static ISet<StreamingPlatformTypeEnum> SelectablePlatforms { get; private set; } = new HashSet<StreamingPlatformTypeEnum>()
@@ -66,11 +81,14 @@ namespace MixItUp.Base.Model
             StreamingPlatformTypeEnum.Kick,
             StreamingPlatformTypeEnum.Velora,
             StreamingPlatformTypeEnum.VPZone,
+            StreamingPlatformTypeEnum.Joystick,
+            StreamingPlatformTypeEnum.AltStream,
+            StreamingPlatformTypeEnum.Razo,
         };
 
         public static bool IsValidPlatform(StreamingPlatformTypeEnum platform) { return StreamingPlatforms.SupportedPlatforms.Contains(platform); }
 
-        public static bool ContainsPlatform(StreamingPlatformTypeEnum platform, StreamingPlatformTypeEnum check) { return (platform & check) == check; }
+        public static bool ContainsPlatform(StreamingPlatformTypeEnum platform, StreamingPlatformTypeEnum check) { return platform == StreamingPlatformTypeEnum.All || platform == check; }
 
         public static IEnumerable<StreamingPlatformSessionBase> GetPlatformSessions()
         {
@@ -81,6 +99,9 @@ namespace MixItUp.Base.Model
                 ServiceManager.Get<KickSession>(),
                 ServiceManager.Get<VeloraSession>(),
                 ServiceManager.Get<VPZoneSession>(),
+                ServiceManager.Get<JoystickSession>(),
+                ServiceManager.Get<AltStreamSession>(),
+                ServiceManager.Get<RazoSession>(),
                 //ServiceManager.Get<MockSession>()
             };
         }
@@ -106,6 +127,9 @@ namespace MixItUp.Base.Model
             else if (platform == StreamingPlatformTypeEnum.Kick) { return ServiceManager.Get<KickSession>(); }
             else if (platform == StreamingPlatformTypeEnum.Velora) { return ServiceManager.Get<VeloraSession>(); }
             else if (platform == StreamingPlatformTypeEnum.VPZone) { return ServiceManager.Get<VPZoneSession>(); }
+            else if (platform == StreamingPlatformTypeEnum.Joystick) { return ServiceManager.Get<JoystickSession>(); }
+            else if (platform == StreamingPlatformTypeEnum.AltStream) { return ServiceManager.Get<AltStreamSession>(); }
+            else if (platform == StreamingPlatformTypeEnum.Razo) { return ServiceManager.Get<RazoSession>(); }
             else if (platform == StreamingPlatformTypeEnum.Mock) { return ServiceManager.Get<MockSession>(); }
             else if (platform == StreamingPlatformTypeEnum.All && ChannelSession.Settings != null)
             {
@@ -121,6 +145,9 @@ namespace MixItUp.Base.Model
             else if (platform == StreamingPlatformTypeEnum.Kick) { return KickLogoImageAssetFilePath; }
             else if (platform == StreamingPlatformTypeEnum.Velora) { return VeloraLogoImageAssetFilePath; }
             else if (platform == StreamingPlatformTypeEnum.VPZone) { return VPZoneLogoImageAssetFilePath; }
+            else if (platform == StreamingPlatformTypeEnum.Joystick) { return JoystickLogoImageAssetFilePath; }
+            else if (platform == StreamingPlatformTypeEnum.AltStream) { return AltStreamLogoImageAssetFilePath; }
+            else if (platform == StreamingPlatformTypeEnum.Razo) { return RazoLogoImageAssetFilePath; }
             return string.Empty;
         }
 
@@ -131,6 +158,9 @@ namespace MixItUp.Base.Model
             else if (platform == StreamingPlatformTypeEnum.Kick) { return KickSmallLogoImageAssetFilePath; }
             else if (platform == StreamingPlatformTypeEnum.Velora) { return VeloraSmallLogoImageAssetFilePath; }
             else if (platform == StreamingPlatformTypeEnum.VPZone) { return VPZoneSmallLogoImageAssetFilePath; }
+            else if (platform == StreamingPlatformTypeEnum.Joystick) { return JoystickSmallLogoImageAssetFilePath; }
+            else if (platform == StreamingPlatformTypeEnum.AltStream) { return AltStreamSmallLogoImageAssetFilePath; }
+            else if (platform == StreamingPlatformTypeEnum.Razo) { return RazoSmallLogoImageAssetFilePath; }
             return string.Empty;
         }
 

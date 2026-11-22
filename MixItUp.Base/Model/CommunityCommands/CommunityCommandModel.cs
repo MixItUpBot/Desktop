@@ -62,6 +62,7 @@ namespace MixItUp.Base.Model.Store
         Kick,
         Velora,
         VPZone,
+        AltStream,
 
         // Command Tags
         ChatCommand = 1000,
@@ -81,6 +82,7 @@ namespace MixItUp.Base.Model.Store
         TwitchCustomPowerUpCommand,
         VeloraChannelPoints,
         VPZoneChannelPoints,
+        AltStreamChannelPoints,
 
         // Extra Tags
         [Obsolete]

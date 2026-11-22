@@ -1,0 +1,38 @@
+<UserControl x:Class="MixItUp.WPF.Controls.Accounts.ChannelChatAccountControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:resx="clr-namespace:MixItUp.Base;assembly=MixItUp.Base"
+             Loaded="ControlLoaded">
+    <GroupBox x:Name="Card">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <Image x:Name="Logo" Width="75" Margin="30,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <StackPanel Grid.Column="2" Margin="6,0,6,6">
+                <TextBlock Height="35" HorizontalAlignment="Center" Padding="0,8,0,0"
+                           Text="{Binding Source={x:Static resx:Resources.Bot}, StringFormat={x:Static resx:Resources.ColumnHeaderFormat}}"/>
+                <StackPanel x:Name="Credentials">
+                    <TextBlock x:Name="ChannelLabel" Text="{x:Static resx:Resources.ChannelName}"/>
+                    <TextBox x:Name="Channel" AutomationProperties.Name="{x:Static resx:Resources.ChannelName}"/>
+                    <TextBlock x:Name="TokenLabel" Text="{x:Static resx:Resources.ApplicationBotToken}" Margin="0,6,0,0"/>
+                    <PasswordBox x:Name="Token" AutomationProperties.Name="{x:Static resx:Resources.ApplicationBotToken}"/>
+                    <Button x:Name="ConnectButton" Content="{x:Static resx:Resources.Save}" Click="ConnectClicked" Margin="0,8,0,0" HorizontalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel x:Name="Account" Visibility="Collapsed">
+                    <TextBlock x:Name="Status" Height="40" Padding="0,8,0,0" HorizontalAlignment="Center"/>
+                    <Button x:Name="LogoutButton" Click="DisconnectClicked" Width="210" Height="40"
+                            MaxWidth="{Binding ActualWidth, ElementName=Account}" HorizontalAlignment="Center"
+                            Foreground="Black" AutomationProperties.Name="{x:Static resx:Resources.Logout}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image x:Name="LogoutIcon" Height="23" Margin="0,0,10,0"/>
+                            <TextBlock VerticalAlignment="Center" Text="{x:Static resx:Resources.Logout}"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </GroupBox>
+</UserControl>

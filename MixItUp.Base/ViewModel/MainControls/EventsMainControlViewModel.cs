@@ -314,6 +314,46 @@ namespace MixItUp.Base.ViewModel.MainControls
             vpzoneCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.VPZoneChannelShoutout));
             commandGroups.Add(vpzoneCommands);
 
+            var joystickCommands = new EventCommandGroupViewModel(Resources.Joystick, brandId: "joystick");
+            joystickCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.JoystickChannelStreamStart));
+            joystickCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.JoystickChannelStreamStop));
+            joystickCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.JoystickChannelFollowed));
+            joystickCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.JoystickChannelSubscribed));
+            joystickCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.JoystickChannelResubscribed));
+            joystickCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.JoystickChannelSubscriptionGifted));
+            joystickCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.JoystickChannelMassSubscriptionsGifted));
+            joystickCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.JoystickChannelTipped));
+            commandGroups.Add(joystickCommands);
+
+            var altStreamCommands = new EventCommandGroupViewModel("AltStream", brandId: "altstream");
+            altStreamCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.AltStreamChannelStreamStart));
+            altStreamCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.AltStreamChannelStreamStop));
+            altStreamCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.AltStreamChannelRaided));
+            altStreamCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.AltStreamChannelFollowed));
+            altStreamCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.AltStreamMessagePinned));
+            altStreamCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.AltStreamMessageUnpinned));
+            altStreamCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.AltStreamOutgoingRaidStarted));
+            altStreamCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.AltStreamOutgoingRaidCancelled));
+            altStreamCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.AltStreamShoutout));
+            altStreamCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.AltStreamSystemMessage));
+            altStreamCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.AltStreamChannelPointsRedeemed));
+            commandGroups.Add(altStreamCommands);
+
+            var razoCommands = new EventCommandGroupViewModel("Razo", brandId: "razo");
+            razoCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.RazoChannelStreamStart));
+            razoCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.RazoChannelStreamStop));
+            razoCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.RazoChannelFollowed));
+            razoCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.RazoChannelSubscribed));
+            razoCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.RazoChannelResubscribed));
+            razoCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.RazoChannelMassSubscriptionsGifted));
+            razoCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.RazoChannelRaided));
+            razoCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.RazoChannelGift));
+            razoCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.RazoChannelClipCreated));
+            razoCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.RazoChannelClipFeatured));
+            razoCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.RazoChannelBoost));
+            razoCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.RazoChannelJumpscare));
+            commandGroups.Add(razoCommands);
+
             EventCommandGroupViewModel chatCommands = new EventCommandGroupViewModel(Resources.Chat, iconName: "forum");
             chatCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.ChatUserEntranceCommand));
             chatCommands.Commands.Add(new EventCommandItemViewModel(EventTypeEnum.ChatUserFirstMessage));

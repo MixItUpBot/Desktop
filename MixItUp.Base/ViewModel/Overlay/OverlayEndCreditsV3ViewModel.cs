@@ -50,6 +50,8 @@ namespace MixItUp.Base.ViewModel.Overlay
                     case OverlayEndCreditsSectionV3Type.KickKicks:
                     case OverlayEndCreditsSectionV3Type.VeloraCheered:
                     case OverlayEndCreditsSectionV3Type.VPZoneCheered:
+                    case OverlayEndCreditsSectionV3Type.JoystickTipped:
+                    case OverlayEndCreditsSectionV3Type.RazoGift:
                     case OverlayEndCreditsSectionV3Type.Donations:
                     case OverlayEndCreditsSectionV3Type.ChannelPoints:
                     case OverlayEndCreditsSectionV3Type.YouTubeJewels:
@@ -235,6 +237,8 @@ namespace MixItUp.Base.ViewModel.Overlay
                         case OverlayEndCreditsSectionV3Type.KickKicks:
                         case OverlayEndCreditsSectionV3Type.VeloraCheered:
                         case OverlayEndCreditsSectionV3Type.VPZoneCheered:
+                        case OverlayEndCreditsSectionV3Type.JoystickTipped:
+                        case OverlayEndCreditsSectionV3Type.RazoGift:
                         case OverlayEndCreditsSectionV3Type.Donations:
                         case OverlayEndCreditsSectionV3Type.ChannelPoints:
                         case OverlayEndCreditsSectionV3Type.YouTubeJewels:

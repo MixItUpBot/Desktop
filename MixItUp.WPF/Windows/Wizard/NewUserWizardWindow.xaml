@@ -234,6 +234,8 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="20" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="20" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
                             <AccountControls:StreamingPlatformAccountControl Grid.Row="0" DataContext="{Binding Twitch}" />
@@ -245,6 +247,8 @@
                             <AccountControls:StreamingPlatformAccountControl Grid.Row="6" DataContext="{Binding Velora}" />
 
                             <AccountControls:StreamingPlatformAccountControl Grid.Row="8" DataContext="{Binding VPZone}" />
+
+                            <AccountControls:StreamingPlatformAccountControl Grid.Row="10" DataContext="{Binding Joystick}" />
                         </Grid>
                     </ScrollViewer>
                 </Grid>

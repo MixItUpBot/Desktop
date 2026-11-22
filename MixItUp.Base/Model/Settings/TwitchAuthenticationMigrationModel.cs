@@ -19,6 +19,8 @@ namespace MixItUp.Base.Model.Settings
         public bool AuthenticationConfirmed { get; set; }
         [DataMember]
         public bool InventorySaved { get; set; }
+        [DataMember(EmitDefaultValue = false)]
+        public bool VerifyRewardLinks { get; set; }
         [DataMember]
         public List<Guid> ExistingNewRewardIDs { get; set; } = new List<Guid>();
         [DataMember]

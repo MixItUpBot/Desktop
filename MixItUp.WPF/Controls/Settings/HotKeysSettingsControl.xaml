@@ -83,13 +83,21 @@
                 </ComboBox>
             </Grid>
 
-            <Button x:Name="AddHotKeyButton" Grid.Column="2" MinWidth="60" Click="AddHotKeyButton_Click" Content="{x:Static resx:Resources.Add}" Style="{StaticResource MaterialDesignRaisedButton}" AutomationProperties.AutomationId="HotKeysSettings.AddHotKeyButton" />
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <ComboBox x:Name="TriggerComboBox" Width="140" Margin="0,0,10,0" Style="{StaticResource MaterialDesignOutlinedComboBox}" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.HotKeyTriggerMode}" AutomationProperties.Name="{x:Static resx:Resources.HotKeyTriggerMode}" AutomationProperties.AutomationId="HotKeysSettings.TriggerComboBox">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate><TextBlock Text="{Binding Converter={StaticResource LocalizationConverter}}"/></DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Button x:Name="AddHotKeyButton" MinWidth="60" Click="AddHotKeyButton_Click" Content="{x:Static resx:Resources.Add}" Style="{StaticResource MaterialDesignRaisedButton}" AutomationProperties.AutomationId="HotKeysSettings.AddHotKeyButton" />
+            </StackPanel>
         </Grid>
 
         <Border BorderBrush="{DynamicResource MaterialDesign.Brush.Primary}" Grid.Row="4" BorderThickness="1" Margin="20">
             <DataGrid x:Name="HotKeysDataGrid" Style="{StaticResource StandardDataGrid}" CellStyle="{StaticResource StandardDataGridCell}" HorizontalContentAlignment="Stretch" AutomationProperties.AutomationId="HotKeysSettings.HotKeysDataGrid" AutomationProperties.Name="{x:Static resx:Resources.HotKeys}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="{x:Static resx:Resources.HotKey}" Binding="{Binding HotKey}" IsReadOnly="True" Width="200" />
+                    <DataGridTextColumn Header="{x:Static resx:Resources.HotKeyTriggerMode}" Binding="{Binding TriggerName}" IsReadOnly="True" Width="Auto" />
                     <DataGridTextColumn Header="{x:Static resx:Resources.Command}" Binding="{Binding CommandName}" IsReadOnly="True" Width="*" />
                     <DataGridTemplateColumn Width="80">
                         <DataGridTemplateColumn.CellTemplate>

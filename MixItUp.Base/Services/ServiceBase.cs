@@ -351,13 +351,15 @@ namespace MixItUp.Base.Services
             }
         }
 
-        public bool IsConnected { get; private set; }
-        public bool IsBotConnected { get; private set; }
+        public bool IsConnected { get; protected set; }
+        public bool IsBotConnected { get; protected set; }
+        public virtual bool IsBotUser(UserV2ViewModel user) => this.IsBotConnected && !string.IsNullOrEmpty(this.BotID) && user?.PlatformID == this.BotID;
 
         public StreamingPlatformSessionBase() { }
 
         public async Task<Result> AutomaticConnectStreamer()
         {
+            this.IsConnected = false;
             try
             {
                 Result result = await this.StreamerOAuthService.AutomaticConnect();
@@ -376,6 +378,7 @@ namespace MixItUp.Base.Services
 
         public async Task<Result> ManualConnectStreamer(CancellationToken cancellationToken)
         {
+            this.IsConnected = false;
             try
             {
                 Result result = await this.StreamerOAuthService.ManualConnect(cancellationToken);
@@ -394,6 +397,7 @@ namespace MixItUp.Base.Services
 
         public async Task<Result> ManualConnectStreamerWithTimeout()
         {
+            this.IsConnected = false;
             try
             {
                 Result result = await this.StreamerOAuthService.ManualConnectWithTimeout();
@@ -436,7 +440,7 @@ namespace MixItUp.Base.Services
         {
             this.IsConnected = false;
 
-            await this.StreamerOAuthService.Disconnect();
+            if (this.StreamerOAuthService != null) await this.StreamerOAuthService.Disconnect();
 
             await this.DisconnectStreamerInternal();
         }
@@ -474,6 +478,7 @@ namespace MixItUp.Base.Services
 
         public async Task<Result> AutomaticConnectBot()
         {
+            this.IsBotConnected = false;
             try
             {
                 Result result = await this.BotOAuthService.AutomaticConnect();
@@ -492,6 +497,7 @@ namespace MixItUp.Base.Services
 
         public async Task<Result> ManualConnectBot(CancellationToken cancellationToken)
         {
+            this.IsBotConnected = false;
             try
             {
                 Result result = await this.BotOAuthService.ManualConnect(cancellationToken);
@@ -529,7 +535,7 @@ namespace MixItUp.Base.Services
         {
             this.IsBotConnected = false;
 
-            await this.BotOAuthService.Disconnect();
+            if (this.BotOAuthService != null) await this.BotOAuthService.Disconnect();
 
             await this.DisconnectBotInternal();
         }
@@ -603,21 +609,23 @@ namespace MixItUp.Base.Services
             return null;
         }
 
-        public void SaveAuthenticationSettings()
+        public virtual void SaveAuthenticationSettings()
         {
-            if (ChannelSession.Settings != null)
+            if (ChannelSession.Settings == null) { return; }
+            var authentication = this.GetAuthenticationSettings() ?? new StreamingPlatformAuthenticationSettingsModel(this.Platform);
+            if (this.IsConnected && !string.IsNullOrEmpty(this.StreamerID) && !string.IsNullOrEmpty(this.ChannelID) &&
+                this.StreamerOAuthService.GetOAuthTokenCopy() is OAuthTokenModel streamerToken)
             {
-                ChannelSession.Settings.StreamingPlatformAuthentications[this.Platform] = new StreamingPlatformAuthenticationSettingsModel(this.Platform)
-                {
-                    UserID = this.StreamerID,
-                    UserOAuthToken = this.StreamerOAuthService.GetOAuthTokenCopy(),
-
-                    ChannelID = this.ChannelID,
-
-                    BotID = this.BotID,
-                    BotOAuthToken = this.BotOAuthService.GetOAuthTokenCopy(),
-                };
+                authentication.UserID = this.StreamerID;
+                authentication.ChannelID = this.ChannelID;
+                authentication.UserOAuthToken = streamerToken;
             }
+            if (this.IsBotConnected && !string.IsNullOrEmpty(this.BotID) && this.BotOAuthService.GetOAuthTokenCopy() is OAuthTokenModel botToken)
+            {
+                authentication.BotID = this.BotID;
+                authentication.BotOAuthToken = botToken;
+            }
+            ChannelSession.Settings.StreamingPlatformAuthentications[this.Platform] = authentication;
         }
     }
 

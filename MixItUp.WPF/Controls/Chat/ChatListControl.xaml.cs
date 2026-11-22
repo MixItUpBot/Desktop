@@ -42,6 +42,13 @@ namespace MixItUp.WPF.Controls.Chat
         public ChatListControl()
         {
             InitializeComponent();
+            this.Loaded += (_, _) => ChannelChatSessionBase.AccountChanged += this.AccountChanged;
+            this.Unloaded += (_, _) => ChannelChatSessionBase.AccountChanged -= this.AccountChanged;
+        }
+
+        private void AccountChanged(object sender, EventArgs e)
+        {
+            this.Dispatcher.InvokeAsync(() => this.viewModel?.UpdatePlatformOptions());
         }
 
         protected override async Task InitializeInternal()
@@ -337,6 +344,11 @@ namespace MixItUp.WPF.Controls.Chat
             ChatMessageViewModel message = (e.AddedItems.Count == 0)
                 ? null
                 : e.AddedItems[0] as ChatMessageViewModel;
+            if (LogicalTreeHelper.FindLogicalNode(this.ChatList.ContextMenu, "MessageDeleteMenuItem") is MenuItem delete)
+            {
+                delete.IsEnabled = message != null && message.Platform != MixItUp.Base.Model.StreamingPlatformTypeEnum.AltStream &&
+                    (message.Platform != MixItUp.Base.Model.StreamingPlatformTypeEnum.Razo || ServiceManager.Get<MixItUp.Base.Services.Razo.RazoSession>().CanDelete);
+            }
 
             if (message != null && (message.ContainsLink || ModerationService.LinkRegex.IsMatch(message.PlainTextMessage)))
             {

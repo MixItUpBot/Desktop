@@ -1,0 +1,164 @@
+<local:GroupedCommandsMainControlBase
+    x:Class="MixItUp.WPF.Controls.MainControls.AltStreamChannelPointsControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:CommandsControls="clr-namespace:MixItUp.WPF.Controls.Commands"
+    xmlns:MaterialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:System="clr-namespace:System;assembly=System.Runtime"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:MixItUp.WPF.Controls.MainControls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:MixItUp.Base;assembly=MixItUp.Base"
+    d:DesignHeight="400"
+    d:DesignWidth="500"
+    FontFamily="{DynamicResource NotoSans}"
+    TextElement.FontSize="{DynamicResource MIU.FontSize.BodyMedium}"
+    TextElement.FontWeight="Medium"
+    mc:Ignorable="d">
+    <local:GroupedCommandsMainControlBase.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </local:GroupedCommandsMainControlBase.Resources>
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Text="{Binding Source={x:Static resx:Resources.FilterByName}, StringFormat={x:Static resx:Resources.ColumnHeaderFormat}}" />
+
+            <TextBox
+                x:Name="AltStreamChannelPointsNameFilterTextBox"
+                Grid.Column="2"
+                Width="150"
+                TextChanged="NameFilterTextBox_TextChanged"
+                AutomationProperties.AutomationId="AltStreamChannelPoints.NameFilterTextBox"
+                AutomationProperties.Name="{x:Static resx:Resources.FilterByName}" />
+        </Grid>
+
+        <ScrollViewer
+            Grid.Row="2"
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Visible"
+            Visibility="{Binding ShowList, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <DataGrid
+                HorizontalContentAlignment="Stretch"
+                CellStyle="{StaticResource StandardDataGridCell}"
+                ItemsSource="{Binding DefaultGroup}"
+                PreviewMouseWheel="DataGrid_PreviewMouseWheel"
+                Style="{StaticResource StandardDataGrid}"
+                AutomationProperties.AutomationId="AltStreamChannelPoints.CommandsDataGrid"
+                AutomationProperties.Name="{x:Static resx:Resources.Commands}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding Name}"
+                        Header="{x:Static resx:Resources.RewardName}"
+                        IsReadOnly="True" />
+                    <DataGridTemplateColumn Width="250" Header="{x:Static resx:Resources.Actions}">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CommandsControls:CommandListingButtonsControl
+                                    HorizontalAlignment="Center"
+                                    DeleteClicked="CommandButtons_DeleteClicked"
+                                    EditClicked="CommandButtons_EditClicked" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </ScrollViewer>
+
+        <ScrollViewer
+            Grid.Row="2"
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Visible"
+            Visibility="{Binding ShowGroups, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <ItemsControl HorizontalContentAlignment="Stretch" ItemsSource="{Binding CommandGroups}" AutomationProperties.AutomationId="AltStreamChannelPoints.CommandGroupsList" AutomationProperties.Name="{x:Static resx:Resources.CommandGroups}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="{DynamicResource MaterialDesign.Brush.Primary.Dark}" BorderThickness="1">
+                            <Expander
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Top"
+                                Background="{DynamicResource MaterialDesign.Brush.Primary}"
+                                Visibility="{Binding HasCommands, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                AutomationProperties.AutomationId="CommandGroup.Expander">
+                                <Expander.Header>
+                                    <Grid Background="Transparent">
+                                        <TextBlock
+                                            HorizontalAlignment="Left"
+                                            Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}"
+                                            Text="{Binding DisplayName}" />
+
+                                        <ToggleButton
+                                            HorizontalAlignment="Right"
+                                            IsChecked="{Binding Path=IsEnabled}"
+                                            Style="{StaticResource MaterialDesignSwitchLightToggleButton}"
+                                            BorderBrush="{DynamicResource MaterialDesign.Brush.Primary.Light}"
+                                            Visibility="{Binding IsEnableSwitchToggable, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                            AutomationProperties.AutomationId="CommandGroup.EnableDisableToggle"
+                                            AutomationProperties.Name="{Binding DisplayName, StringFormat={x:Static resx:Resources.EnableDisableFormat}}" />
+                                    </Grid>
+                                </Expander.Header>
+
+                                <DataGrid
+                                    HorizontalContentAlignment="Stretch"
+                                    CellStyle="{StaticResource StandardDataGridCell}"
+                                    ItemsSource="{Binding Commands}"
+                                    PreviewMouseWheel="DataGrid_PreviewMouseWheel"
+                                    Style="{StaticResource StandardDataGrid}"
+                                    AutomationProperties.AutomationId="CommandGroup.CommandsDataGrid"
+                                    AutomationProperties.Name="{x:Static resx:Resources.Commands}">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn
+                                            Width="*"
+                                            Binding="{Binding Name}"
+                                            Header="{x:Static resx:Resources.RewardName}"
+                                            IsReadOnly="True" />
+                                        <DataGridTemplateColumn Width="230" Header="{x:Static resx:Resources.Actions}">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CommandsControls:CommandListingButtonsControl
+                                                        HorizontalAlignment="Center"
+                                                        DeleteClicked="CommandButtons_DeleteClicked"
+                                                        EditClicked="CommandButtons_EditClicked" />
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Expander>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <Grid Grid.Row="4" HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button
+                x:Name="AltStreamChannelPointsAddCommandButton"
+                Grid.Column="0"
+                Width="260"
+                Click="AddCommandButton_Click"
+                Content="{x:Static resx:Resources.AddCommandToExistingReward}"
+                AutomationProperties.AutomationId="AltStreamChannelPoints.AddCommandButton" />
+        </Grid>
+    </Grid>
+</local:GroupedCommandsMainControlBase>

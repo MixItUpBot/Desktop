@@ -1,4 +1,6 @@
-﻿using MixItUp.Base.Model.Kick.Kicks;
+﻿using MixItUp.Base.Model.Joystick;
+using MixItUp.Base.Model.Razo;
+using MixItUp.Base.Model.Kick.Kicks;
 using MixItUp.Base.Model.Twitch.Bits;
 using MixItUp.Base.Model.Velora;
 using MixItUp.Base.Model.VPZone;
@@ -50,6 +52,12 @@ namespace MixItUp.Base.Model.Overlay
         public double VeloraCheeredAmount { get; set; }
         [DataMember]
         public double VPZoneCheeredAmount { get; set; }
+        [DataMember]
+        public double JoystickTippedAmount { get; set; }
+        [DataMember]
+        public double RazoGiftAmount { get; set; }
+        [DataMember]
+        public double RazoSubscriptionAmount { get; set; }
 
         [DataMember]
         public double DonationAmount { get; set; }
@@ -111,6 +119,20 @@ namespace MixItUp.Base.Model.Overlay
             {
                 EventService.OnVPZoneChannelCheeredOccurred += EventService_OnVPZoneChannelCheeredOccurred;
             }
+            if (this.JoystickTippedAmount > 0)
+            {
+                EventService.OnJoystickChannelTippedOccurred += EventService_OnJoystickChannelTippedOccurred;
+            }
+            if (this.RazoSubscriptionAmount > 0)
+            {
+                EventService.RazoSubscriptionsGifted += this.OnRazoSubscriptionsGifted;
+                EventService.OnSubscribeOccurred += this.OnRazoSubscription;
+                EventService.OnResubscribeOccurred += this.OnRazoSubscription;
+            }
+            if (this.RazoGiftAmount > 0)
+            {
+                EventService.OnRazoChannelGiftOccurred += EventService_OnRazoChannelGiftOccurred;
+            }
 
         }
 
@@ -158,6 +180,9 @@ namespace MixItUp.Base.Model.Overlay
             this.VPZoneSubscriptionsAmount.Clear();
             this.VeloraCheeredAmount = 0;
             this.VPZoneCheeredAmount = 0;
+            this.JoystickTippedAmount = 0;
+            this.RazoGiftAmount = 0;
+            this.RazoSubscriptionAmount = 0;
 
             this.DonationAmount = 0;
         }
@@ -298,6 +323,26 @@ namespace MixItUp.Base.Model.Overlay
             Logger.Log(LogLevel.Debug, $"Processing VPZone Cheered of {cheered.Amount} for {this.ID} Overlay Widget");
             await this.ProcessEvent(cheered.User, this.VPZoneCheeredAmount * cheered.Amount);
         }
+        private async void EventService_OnJoystickChannelTippedOccurred(object sender, JoystickTippedEventModel cheered)
+        {
+            Logger.Log(LogLevel.Debug, $"Processing Joystick tip of {cheered.Amount} for {this.ID} Overlay Widget");
+            await this.ProcessEvent(cheered.User, this.JoystickTippedAmount * cheered.Amount);
+        }
+        private async void EventService_OnRazoChannelGiftOccurred(object sender, RazoGiftEventModel cheered)
+        {
+            Logger.Log(LogLevel.Debug, $"Processing Razos gift of {cheered.Amount} for {this.ID} Overlay Widget");
+            await this.ProcessEvent(cheered.User, this.RazoGiftAmount * cheered.Amount);
+        }
+
+        private async void OnRazoSubscriptionsGifted(UserV2ViewModel gifter, int count)
+        {
+            await this.ProcessEvent(gifter, count * this.RazoSubscriptionAmount);
+        }
+
+        private async void OnRazoSubscription(object sender, SubscriptionDetailsModel subscription)
+        {
+            if (subscription.Platform == StreamingPlatformTypeEnum.Razo) await this.ProcessEvent(subscription.User, this.RazoSubscriptionAmount);
+        }
 
         private void RemoveEventHandlers()
         {
@@ -313,6 +358,11 @@ namespace MixItUp.Base.Model.Overlay
             EventService.OnKickKicksGiftedOccurred -= EventService_OnKickKicksGiftedOccurred;
             EventService.OnVeloraChannelCheeredOccurred -= EventService_OnVeloraChannelCheeredOccurred;
             EventService.OnVPZoneChannelCheeredOccurred -= EventService_OnVPZoneChannelCheeredOccurred;
+            EventService.OnJoystickChannelTippedOccurred -= EventService_OnJoystickChannelTippedOccurred;
+            EventService.OnRazoChannelGiftOccurred -= EventService_OnRazoChannelGiftOccurred;
+            EventService.RazoSubscriptionsGifted -= this.OnRazoSubscriptionsGifted;
+            EventService.OnSubscribeOccurred -= this.OnRazoSubscription;
+            EventService.OnResubscribeOccurred -= this.OnRazoSubscription;
         }
     }
 }

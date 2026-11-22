@@ -25,6 +25,8 @@ namespace MixItUp.Base.Services.Twitch.New
             public List<Guid> ExistingNewRewardIDs { get; set; }
             public List<TwitchRewardMigrationModel> Rewards { get; set; }
             public bool Completed { get; set; }
+            [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+            public bool VerifyRewardLinks { get; set; }
         }
 
         internal static string GetPath(SettingsV3Model settings) => Path.Combine(
@@ -44,6 +46,7 @@ namespace MixItUp.Base.Services.Twitch.New
                 ExistingNewRewardIDs = state.ExistingNewRewardIDs,
                 Rewards = state.Rewards,
                 Completed = state.Completed,
+                VerifyRewardLinks = state.VerifyRewardLinks,
             };
             // The recovery record deliberately contains no OAuth tokens or authentication flags.
             Directory.CreateDirectory(Path.GetDirectoryName(path));
@@ -59,31 +62,107 @@ namespace MixItUp.Base.Services.Twitch.New
             }
         }
 
-        internal static async Task Restore(SettingsV3Model settings, string userID)
+        internal static async Task<bool> Restore(SettingsV3Model settings, string userID, Func<Task<string>> verifyOwner = null)
         {
             string path = GetPath(settings);
-            if (!File.Exists(path)) { return; }
-            var record = JsonConvert.DeserializeObject<RecoveryRecord>(await File.ReadAllTextAsync(path));
-            if (record == null || record.Version != 1 || record.ProfileID != settings.ID ||
-                string.IsNullOrEmpty(record.UserID) || record.UserID != userID ||
-                record.Rewards == null || record.ExistingNewRewardIDs == null || !record.InventorySaved ||
-                record.Rewards.Any(r => r?.Original == null || r.Original.id == Guid.Empty) ||
-                record.Rewards.Select(r => r.Original.id).Distinct().Count() != record.Rewards.Count ||
-                (record.Completed && record.Rewards.Any(r => r.NewRewardID == Guid.Empty)))
-            {
-                throw new InvalidDataException("Invalid Twitch reward recovery record");
-            }
+            var record = File.Exists(path) ? await ReadRecord(settings) : null;
             var state = settings.TwitchAuthenticationMigration;
-            if (state != null && state.UserID != userID)
+            if (record == null && state == null) { return false; }
+            if (string.IsNullOrEmpty(userID)) { throw InvalidRecord("missing saved identity"); }
+            bool foreignRecord = record != null && record.UserID != userID;
+            bool foreignState = state != null && state.UserID != userID;
+            if (foreignRecord || foreignState)
             {
-                throw new InvalidDataException("Twitch reward recovery account mismatch");
+                // An empty, completed migration can belong to a different login in a restored profile.
+                // A pending reward or an existing mapping must always stay with its original owner.
+                if (verifyOwner == null ||
+                    (foreignRecord && !IsCompletedEmptyRecord(record)) ||
+                    (foreignState && state is not { Completed: true, InventorySaved: true, Rewards.Count: 0,
+                        ExistingNewRewardIDs.Count: 0, NewUserToken: null, NewBotToken: null }) ||
+                    (foreignRecord && foreignState && record.UserID != state.UserID))
+                {
+                    throw InvalidRecord("owner mismatch");
+                }
+                string otherOwner = foreignRecord ? record.UserID : state.UserID;
+                if (string.IsNullOrEmpty(otherOwner) || otherOwner.Any(c => c < '0' || c > '9')) { throw InvalidRecord("invalid record owner"); }
+                string archive = Path.ChangeExtension(path, otherOwner + ".completed.json");
+                if (!foreignRecord)
+                {
+                    if (!File.Exists(archive)) { throw InvalidRecord("missing recovery record"); }
+                    var archived = await ReadRecord(settings, archive);
+                    if (archived.UserID != otherOwner || !IsCompletedEmptyRecord(archived)) { throw InvalidRecord("conflicting recovery archive"); }
+                }
+                if (await verifyOwner() != userID) { throw new InvalidOperationException(Resources.TwitchMigrationAccountMismatch); }
+                if (foreignRecord)
+                {
+                    // Leave the original in place until Save writes the verified account's inventory.
+                    // A restart on either side of that write can safely repeat the recovery.
+                    await ArchiveCompletedRecord(settings, path, archive, otherOwner);
+                    record = null;
+                }
+                if (foreignState || state == null) { state = new TwitchAuthenticationMigrationModel { UserID = userID }; }
+                state.VerifyRewardLinks = true;
+                settings.TwitchAuthenticationMigration = state;
             }
+            if (record == null) { return foreignRecord || foreignState; }
             state ??= new TwitchAuthenticationMigrationModel { UserID = userID };
+            state.VerifyRewardLinks |= record.VerifyRewardLinks;
             state.InventorySaved = record.InventorySaved;
             state.ExistingNewRewardIDs = record.ExistingNewRewardIDs;
             state.Rewards = record.Rewards;
             state.Completed = record.Completed;
             settings.TwitchAuthenticationMigration = state;
+            return foreignRecord || foreignState;
+        }
+
+        private static bool IsCompletedEmptyRecord(RecoveryRecord record) =>
+            record.Completed && record.Rewards.Count == 0 && record.ExistingNewRewardIDs.Count == 0;
+
+        private static async Task ArchiveCompletedRecord(SettingsV3Model settings, string path, string archive, string owner)
+        {
+            string temporary = archive + "." + Guid.NewGuid().ToString("N") + ".tmp";
+            try
+            {
+                File.Copy(path, temporary);
+                var snapshot = await ReadRecord(settings, temporary);
+                if (snapshot.UserID != owner || !IsCompletedEmptyRecord(snapshot)) { throw InvalidRecord("recovery record changed"); }
+                if (!File.Exists(archive)) { File.Move(temporary, archive); }
+                if (!(await File.ReadAllBytesAsync(archive)).SequenceEqual(await File.ReadAllBytesAsync(path)))
+                {
+                    throw InvalidRecord("conflicting recovery archive");
+                }
+            }
+            finally { if (File.Exists(temporary)) { File.Delete(temporary); } }
+        }
+
+        internal static InvalidDataException InvalidRecord(string reason)
+        {
+            var error = new InvalidDataException("Invalid Twitch reward recovery record");
+            error.Data["RecoveryReason"] = reason;
+            return error;
+        }
+
+        internal static async Task<string> GetRecordOwner(SettingsV3Model settings)
+        {
+            return File.Exists(GetPath(settings)) ? (await ReadRecord(settings)).UserID : null;
+        }
+
+        private static async Task<RecoveryRecord> ReadRecord(SettingsV3Model settings, string path = null)
+        {
+            string json = await File.ReadAllTextAsync(path ?? GetPath(settings));
+            RecoveryRecord record;
+            try { record = JsonConvert.DeserializeObject<RecoveryRecord>(json); }
+            catch (JsonException) { throw InvalidRecord("invalid reward inventory"); }
+            if (record == null || record.Version != 1 || record.ProfileID != settings.ID) { throw InvalidRecord("profile or version mismatch"); }
+            if (string.IsNullOrEmpty(record.UserID)) { throw InvalidRecord("missing record owner"); }
+            if (!record.InventorySaved || record.Rewards == null || record.ExistingNewRewardIDs == null ||
+                record.Rewards.Any(r => r?.Original == null || r.Original.id == Guid.Empty) ||
+                record.Rewards.Select(r => r.Original.id).Distinct().Count() != record.Rewards.Count)
+            {
+                throw InvalidRecord("invalid reward inventory");
+            }
+            if (record.Completed && record.Rewards.Any(r => r.NewRewardID == Guid.Empty)) { throw InvalidRecord("missing replacement ID"); }
+            return record;
         }
 
         internal static CustomChannelPointRewardModel ReplacementDefinition(TwitchRewardMigrationModel reward)

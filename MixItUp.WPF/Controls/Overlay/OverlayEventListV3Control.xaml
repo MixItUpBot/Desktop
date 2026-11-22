@@ -176,6 +176,10 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="20" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="{Binding Source={x:Static resx:Resources.Follows}, StringFormat={x:Static resx:Resources.ColumnHeaderFormat}}" />
@@ -293,6 +297,12 @@
                 <TextBlock Grid.Row="24" Grid.Column="0" VerticalAlignment="Center" Text="{Binding Source={x:Static resx:Resources.VPZoneCheered}, StringFormat={x:Static resx:Resources.ColumnHeaderFormat}}" />
                 <CheckBox Grid.Row="24" Grid.Column="1" IsChecked="{Binding VPZoneCheered}" VerticalAlignment="Center" Margin="5,0,0,0" AutomationProperties.AutomationId="OverlayEventListV3.VPZoneCheeredCheckBox" AutomationProperties.Name="{x:Static resx:Resources.VPZoneCheered}" />
                 <TextBox Grid.Row="24" Grid.Column="3" Text="{Binding VPZoneCheeredDetailsTemplate}" IsEnabled="{Binding VPZoneCheered}" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.ItemTemplate}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" AutomationProperties.AutomationId="OverlayEventListV3.VPZoneCheeredDetailsTemplateTextBox" AutomationProperties.Name="{x:Static resx:Resources.ItemTemplate}" />
+                <TextBlock Grid.Row="26" Grid.Column="0" VerticalAlignment="Center" Text="{Binding Source={x:Static resx:Resources.JoystickTipped}, StringFormat={x:Static resx:Resources.ColumnHeaderFormat}}" />
+                <CheckBox Grid.Row="26" Grid.Column="1" IsChecked="{Binding JoystickTipped}" VerticalAlignment="Center" Margin="5,0,0,0" AutomationProperties.AutomationId="OverlayEventListV3.JoystickTippedCheckBox" AutomationProperties.Name="{x:Static resx:Resources.JoystickTipped}" />
+                <TextBox Grid.Row="26" Grid.Column="3" Text="{Binding JoystickTippedDetailsTemplate}" IsEnabled="{Binding JoystickTipped}" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.ItemTemplate}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" AutomationProperties.AutomationId="OverlayEventListV3.JoystickTippedDetailsTemplateTextBox" AutomationProperties.Name="{x:Static resx:Resources.ItemTemplate}" />
+                <TextBlock Grid.Row="28" Grid.Column="0" VerticalAlignment="Center" Text="{Binding Source={x:Static resx:Resources.RazoGift}, StringFormat={x:Static resx:Resources.ColumnHeaderFormat}}" />
+                <CheckBox Grid.Row="28" Grid.Column="1" IsChecked="{Binding RazoGift}" VerticalAlignment="Center" Margin="5,0,0,0" AutomationProperties.AutomationId="OverlayEventListV3.RazoGiftCheckBox" AutomationProperties.Name="{x:Static resx:Resources.RazoGift}" />
+                <TextBox Grid.Row="28" Grid.Column="3" Text="{Binding RazoGiftDetailsTemplate}" IsEnabled="{Binding RazoGift}" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.ItemTemplate}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" AutomationProperties.AutomationId="OverlayEventListV3.RazoGiftDetailsTemplateTextBox" AutomationProperties.Name="{x:Static resx:Resources.ItemTemplate}" />
             </Grid>
         </GroupBox>
     </Grid>

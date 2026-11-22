@@ -18,20 +18,19 @@ namespace MixItUp.Base.Services.Twitch.New
     {
         public static Task<Result> Migrate(SettingsV3Model settings)
         {
-            return SettingsUpdateService.WithStrictDatabaseErrors(() => MigrateInternal(settings));
-        }
-
-        private static async Task<Result> MigrateInternal(SettingsV3Model settings)
-        {
             if (!settings.StreamingPlatformAuthentications.TryGetValue(StreamingPlatformTypeEnum.Twitch, out var authentication) ||
                 authentication.UserOAuthToken == null)
             {
-                return new Result();
+                return Task.FromResult(new Result());
             }
+            return SettingsUpdateService.WithStrictDatabaseErrors(() => MigrateInternal(settings, authentication,
+                new TwitchService(TwitchSession.StreamerScopes, useLegacyApplication: true), new TwitchService(TwitchSession.StreamerScopes),
+                new TwitchService(TwitchSession.BotScopes, isBotService: true)));
+        }
 
-            TwitchService oldService = new TwitchService(TwitchSession.StreamerScopes, useLegacyApplication: true);
-            TwitchService newService = new TwitchService(TwitchSession.StreamerScopes);
-            TwitchService botService = new TwitchService(TwitchSession.BotScopes, isBotService: true);
+        internal static async Task<Result> MigrateInternal(SettingsV3Model settings, StreamingPlatformAuthenticationSettingsModel authentication,
+            TwitchService oldService, TwitchService newService, TwitchService botService)
+        {
             string phase = "authorization";
             TwitchRewardMigrationModel activeReward = null;
             try
@@ -40,7 +39,51 @@ namespace MixItUp.Base.Services.Twitch.New
                 {
                     throw new InvalidOperationException("Updated Twitch application credentials are missing");
                 }
-                await TwitchRewardMigrationRecovery.Restore(settings, authentication.UserID);
+                bool recoveredOwner = false;
+                if (string.IsNullOrEmpty(authentication.UserID) || string.IsNullOrEmpty(authentication.ChannelID))
+                {
+                    string recordOwner = await TwitchRewardMigrationRecovery.GetRecordOwner(settings);
+                    var owners = new[] { authentication.UserID, authentication.ChannelID, settings.TwitchAuthenticationMigration?.UserID, recordOwner }
+                        .Where(owner => !string.IsNullOrEmpty(owner)).Distinct().ToList();
+                    if (owners.Count == 0) { throw TwitchRewardMigrationRecovery.InvalidRecord("missing saved identity"); }
+                    if (owners.Count != 1) { throw TwitchRewardMigrationRecovery.InvalidRecord("owner mismatch"); }
+                    var service = IsLegacy(authentication.UserOAuthToken) ? oldService : newService;
+                    var validation = await Authorize(service, authentication.UserOAuthToken, TwitchSession.StreamerScopes, owners[0]);
+                    string owner = (string)validation["user_id"];
+                    await TwitchRewardMigrationRecovery.Restore(settings, owner);
+                    var previousToken = authentication.UserOAuthToken;
+                    string previousUser = authentication.UserID;
+                    string previousChannel = authentication.ChannelID;
+                    try
+                    {
+                        authentication.UserOAuthToken = service.GetOAuthTokenCopy();
+                        authentication.UserID = authentication.ChannelID = owner;
+                        await SettingsService.WithFileSnapshot(async () =>
+                        {
+                            await FileSerializerHelper.SerializeSettingsToFile(settings.SettingsFilePath, settings);
+                            File.Copy(settings.SettingsFilePath, settings.SettingsLocalBackupFilePath, overwrite: true);
+                        });
+                    }
+                    catch
+                    {
+                        authentication.UserOAuthToken = previousToken;
+                        authentication.UserID = previousUser;
+                        authentication.ChannelID = previousChannel;
+                        throw;
+                    }
+                }
+                else
+                {
+                    if (authentication.UserID != authentication.ChannelID) { throw TwitchRewardMigrationRecovery.InvalidRecord("owner mismatch"); }
+                    recoveredOwner = await TwitchRewardMigrationRecovery.Restore(settings, authentication.UserID, async () =>
+                    {
+                        var service = IsLegacy(authentication.UserOAuthToken) ? oldService : newService;
+                        var validation = await Authorize(service, authentication.UserOAuthToken, TwitchSession.StreamerScopes,
+                            authentication.UserID, allowAccountSelection: true);
+                        authentication.UserOAuthToken = service.GetOAuthTokenCopy();
+                        return (string)validation["user_id"];
+                    });
+                }
                 var state = settings.TwitchAuthenticationMigration;
                 bool migrateStreamer = IsLegacy(authentication.UserOAuthToken);
                 bool migrateBot = authentication.BotOAuthToken != null && IsLegacy(authentication.BotOAuthToken);
@@ -51,8 +94,20 @@ namespace MixItUp.Base.Services.Twitch.New
                     {
                         throw new InvalidOperationException(Resources.TwitchMigrationAccountMismatch);
                     }
+                    if (state.VerifyRewardLinks && !recoveredOwner)
+                    {
+                        await Authorize(newService, authentication.UserOAuthToken, TwitchSession.StreamerScopes, state.UserID, allowAccountSelection: true);
+                        authentication.UserOAuthToken = newService.GetOAuthTokenCopy();
+                    }
                     phase = "command mapping";
                     await RemapCommands(settings, state.Rewards.ToDictionary(r => r.Original.id, r => r.NewRewardID));
+                    if (state.VerifyRewardLinks)
+                    {
+                        phase = "reward verification";
+                        await VerifyLinkedRewards(settings, state.UserID, newService);
+                        state.VerifyRewardLinks = false;
+                        await SaveProgress(settings);
+                    }
                     phase = "credential cleanup";
                     await ClearStoredCredentials(settings);
                     return new Result();
@@ -236,6 +291,12 @@ namespace MixItUp.Base.Services.Twitch.New
                     phase = "command mapping";
                     await RemapCommands(settings, state.Rewards.ToDictionary(r => r.Original.id, r => r.NewRewardID));
                 }
+                if (state.VerifyRewardLinks)
+                {
+                    phase = "reward verification";
+                    await VerifyLinkedRewards(settings, state.UserID, newService);
+                    state.VerifyRewardLinks = false;
+                }
 
                 authentication.UserOAuthToken = state.NewUserToken;
                 authentication.BotOAuthToken = state.NewBotToken;
@@ -252,7 +313,8 @@ namespace MixItUp.Base.Services.Twitch.New
             catch (Exception ex)
             {
                 // Keep credentials, request bodies and token responses out of migration diagnostics.
-                Logger.Log(LogLevel.Error, "Twitch application migration stopped during " + phase + ": " + ex.GetType().Name);
+                Logger.Log(LogLevel.Error, "Twitch application migration stopped during " + phase + ": " + ex.GetType().Name +
+                    (ex.Data["RecoveryReason"] is string reason ? " (" + reason + ")" : ex.Message == Resources.TwitchMigrationAccountMismatch ? " (owner mismatch)" : string.Empty));
                 if (activeReward != null)
                 {
                     return new Result(string.Format(ex is TwitchRewardMigrationPausedException
@@ -273,9 +335,15 @@ namespace MixItUp.Base.Services.Twitch.New
             return string.IsNullOrEmpty(token.clientID) || token.clientID == TwitchService.LegacyClientID;
         }
 
-        private static async Task<JObject> Authorize(TwitchService service, OAuthTokenModel token, IEnumerable<string> scopes, string userID, CancellationToken cancellationToken = default)
+        private static async Task<JObject> Authorize(TwitchService service, OAuthTokenModel token, IEnumerable<string> scopes, string userID,
+            CancellationToken cancellationToken = default, bool allowAccountSelection = false)
         {
-            JObject validation = await service.ValidateMigrationToken(token, scopes, userID);
+            JObject validation = null;
+            try { validation = await service.ValidateMigrationToken(token, scopes, userID); }
+            catch (InvalidOperationException ex) when (allowAccountSelection && ex.Message == Resources.TwitchMigrationAccountMismatch)
+            {
+                // A restored profile may still hold the other streamer's grant. Prompt once for the expected account.
+            }
             if (validation == null)
             {
                 Result result = await service.ManualConnect(cancellationToken);
@@ -359,18 +427,43 @@ namespace MixItUp.Base.Services.Twitch.New
             return commands;
         }
 
-        internal static string RemapCommand(string json, IReadOnlyDictionary<Guid, Guid> mapping)
+        private static async Task VerifyLinkedRewards(SettingsV3Model settings, string owner, TwitchService service)
         {
-            JObject command = JObject.Parse(json);
-            bool changed = false;
+            var commands = await ReadCommands(settings);
+            var links = commands.Values.SelectMany(json => RewardLinks(JObject.Parse(json))).Select(link => link.ID).Distinct().ToList();
+            if (links.Count == 0) { return; }
+            var channelRewards = await service.GetMigrationRewards(owner, manageableOnly: false);
+            var missing = links.Except(channelRewards.Select(reward => reward.id)).ToList();
+            Logger.Log(LogLevel.Information, $"Twitch account recovery verified {links.Count - missing.Count} of {links.Count} linked channel rewards.");
+            if (missing.Count > 0)
+            {
+                Logger.Log(LogLevel.Warning, "Twitch did not return these linked rewards. The command links were retained: " + string.Join(", ", missing));
+            }
+        }
+
+        internal static IEnumerable<(JProperty Property, Guid ID)> RewardLinks(JObject command)
+        {
             foreach (JProperty property in command.Descendants().OfType<JProperty>().Where(p => p.Name == "ChannelPointRewardID"))
             {
                 string type = (string)property.Parent["$type"];
                 if (type != null && (type.StartsWith("MixItUp.Base.Model.Commands.TwitchChannelPointsCommandModel,", StringComparison.Ordinal) ||
                     type.StartsWith("MixItUp.Base.Model.Actions.TwitchActionModel,", StringComparison.Ordinal)) &&
-                    Guid.TryParse((string)property.Value, out Guid oldID) && mapping.TryGetValue(oldID, out Guid newID))
+                    Guid.TryParse((string)property.Value, out Guid id) && id != Guid.Empty)
                 {
-                    property.Value = newID.ToString();
+                    yield return (property, id);
+                }
+            }
+        }
+
+        internal static string RemapCommand(string json, IReadOnlyDictionary<Guid, Guid> mapping)
+        {
+            JObject command = JObject.Parse(json);
+            bool changed = false;
+            foreach (var link in RewardLinks(command))
+            {
+                if (mapping.TryGetValue(link.ID, out Guid newID))
+                {
+                    link.Property.Value = newID.ToString();
                     changed = true;
                 }
             }

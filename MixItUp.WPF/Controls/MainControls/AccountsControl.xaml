@@ -35,6 +35,12 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="20" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" TextWrapping="Wrap" FontWeight="Bold" TextDecorations="Underline" HorizontalAlignment="Center" Text="{x:Static resx:Resources.AccountsChangesRequireRestart}"/>
@@ -50,6 +56,10 @@
             <AccountControls:StreamingPlatformAccountControl Grid.Row="10" DataContext="{Binding Velora}" />
 
             <AccountControls:StreamingPlatformAccountControl Grid.Row="12" DataContext="{Binding VPZone}" />
+
+            <AccountControls:StreamingPlatformAccountControl Grid.Row="14" DataContext="{Binding Joystick}" />
+            <AccountControls:ChannelChatAccountControl Grid.Row="16" Platform="AltStream" />
+            <AccountControls:ChannelChatAccountControl Grid.Row="18" Platform="Razo" />
 
         </Grid>
     </ScrollViewer>

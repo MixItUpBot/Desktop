@@ -2,6 +2,7 @@
 using MixItUp.Base.Util;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Threading.Tasks;
@@ -121,10 +122,50 @@ namespace MixItUp.WPF.Services
         private IntPtr windowHandle;
         private HwndSource windowSource;
 
-        private HashSet<int> registeredHotKeys = new HashSet<int>();
+        private readonly Dictionary<int, HotKeyConfiguration> registeredHotKeys = new Dictionary<int, HotKeyConfiguration>();
+        private readonly HashSet<int> heldHotKeys = new HashSet<int>();
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct RawInputDevice
+        {
+            public ushort UsagePage, Usage;
+            public uint Flags;
+            public IntPtr Target;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct RawInputHeader
+        {
+            public uint Type, Size;
+            public IntPtr Device, WParam;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct RawKeyboardInput
+        {
+            public RawInputHeader Header;
+            public ushort MakeCode, Flags, Reserved, VirtualKey;
+            public uint Message, ExtraInformation;
+        }
+
+        [DllImport("user32.dll")]
+        private static extern bool RegisterRawInputDevices(RawInputDevice[] devices, uint count, uint size);
+
+        [DllImport("user32.dll")]
+        private static extern uint GetRawInputData(IntPtr handle, uint command, out RawKeyboardInput data, ref uint size, uint headerSize);
+
+        [DllImport("user32.dll")]
+        private static extern short GetAsyncKeyState(int key);
+
+        private bool ObserveKeyboard(bool enable)
+        {
+            var device = new RawInputDevice { UsagePage = 1, Usage = 6, Flags = enable ? 0x100u : 1u, Target = enable ? this.windowHandle : IntPtr.Zero };
+            return RegisterRawInputDevices(new[] { device }, 1, (uint)Marshal.SizeOf<RawInputDevice>());
+        }
 
         public void Initialize(IntPtr windowHandle)
         {
+            if (this.windowSource != null) { this.ReleaseHotKeys(); }
             this.windowHandle = windowHandle;
             this.windowSource = HwndSource.FromHwnd(this.windowHandle);
             this.windowSource.AddHook(HwndHook);
@@ -213,32 +254,65 @@ namespace MixItUp.WPF.Services
             await Task.Delay(250);
         }
 
-        public bool RegisterHotKey(HotKeyModifiersEnum modifiers, VirtualKeyEnum key)
+        public bool IsHotKeyRegistered(HotKey key) => this.registeredHotKeys.ContainsKey(this.GetHotKeyID(key.Modifiers, key.VirtualKey));
+
+        public bool RegisterHotKey(HotKeyConfiguration key)
         {
-            if (this.windowHandle != IntPtr.Zero)
+            if (this.windowHandle == IntPtr.Zero || key.VirtualKey == VirtualKeyEnum.F12) { return false; }
+            int id = this.GetHotKeyID(key.Modifiers, key.VirtualKey);
+            this.registeredHotKeys.TryGetValue(id, out var previous);
+            bool exclusive = key.Trigger == HotKeyTrigger.HotKeyPress;
+            bool wasExclusive = previous?.Trigger == HotKeyTrigger.HotKeyPress;
+            if (exclusive && !wasExclusive && !RegisterHotKey(this.windowHandle, id, (uint)key.Modifiers | 0x4000, (uint)key.VirtualKey)) { return false; }
+            if (!exclusive && !this.registeredHotKeys.Values.Any(k => k.Trigger != HotKeyTrigger.HotKeyPress) && !this.ObserveKeyboard(true)) { return false; }
+            if (!exclusive && wasExclusive && !UnregisterHotKey(this.windowHandle, id)) { return false; }
+            this.registeredHotKeys[id] = key;
+            this.heldHotKeys.Remove(id);
+            if (exclusive && previous != null && !wasExclusive && this.registeredHotKeys.Values.All(k => k.Trigger == HotKeyTrigger.HotKeyPress))
             {
-                int hotKeyID = this.GetHotKeyID(modifiers, key);
-                if (!this.registeredHotKeys.Contains(hotKeyID))
-                {
-                    this.registeredHotKeys.Add(hotKeyID);
-                    return RegisterHotKey(this.windowHandle, hotKeyID, (uint)modifiers, (uint)key);
-                }
+                this.ObserveKeyboard(false);
             }
-            return false;
+            return true;
         }
 
         public bool UnregisterHotKey(HotKeyModifiersEnum modifiers, VirtualKeyEnum key)
         {
-            if (this.windowHandle != IntPtr.Zero)
+            int id = this.GetHotKeyID(modifiers, key);
+            if (!this.registeredHotKeys.TryGetValue(id, out var binding)) { return false; }
+            if (binding.Trigger == HotKeyTrigger.HotKeyPress && !UnregisterHotKey(this.windowHandle, id)) { return false; }
+            this.registeredHotKeys.Remove(id);
+            this.heldHotKeys.Remove(id);
+            if (binding.Trigger != HotKeyTrigger.HotKeyPress && this.registeredHotKeys.Values.All(k => k.Trigger == HotKeyTrigger.HotKeyPress))
             {
-                int hotKeyID = this.GetHotKeyID(modifiers, key);
-                if (this.registeredHotKeys.Contains(hotKeyID))
+                this.ObserveKeyboard(false);
+            }
+            return true;
+        }
+
+        private void HandleKeyTransition(IntPtr packet)
+        {
+            uint size = (uint)Marshal.SizeOf<RawKeyboardInput>();
+            if (GetRawInputData(packet, 0x10000003, out var input, ref size, (uint)Marshal.SizeOf<RawInputHeader>()) == uint.MaxValue || input.Header.Type != 1) { return; }
+            bool released = (input.Flags & 1) != 0;
+            foreach (var entry in this.registeredHotKeys.Where(pair => pair.Value.Trigger != HotKeyTrigger.HotKeyPress && (ushort)pair.Value.VirtualKey == input.VirtualKey).ToArray())
+            {
+                if (released)
                 {
-                    this.registeredHotKeys.Remove(hotKeyID);
-                    return UnregisterHotKey(this.windowHandle, hotKeyID);
+                    if (this.heldHotKeys.Remove(entry.Key) && entry.Value.Trigger == HotKeyTrigger.HotKeyUp) { this.HotKeyPressed?.Invoke(this, entry.Value); }
+                }
+                else
+                {
+                    var modifiers = HotKeyModifiersEnum.None;
+                    if (GetAsyncKeyState(0x10) < 0) { modifiers |= HotKeyModifiersEnum.Shift; }
+                    if (GetAsyncKeyState(0x11) < 0) { modifiers |= HotKeyModifiersEnum.Control; }
+                    if (GetAsyncKeyState(0x12) < 0) { modifiers |= HotKeyModifiersEnum.Alt; }
+                    if (GetAsyncKeyState(0x5B) < 0 || GetAsyncKeyState(0x5C) < 0) { modifiers |= HotKeyModifiersEnum.Windows; }
+                    if (modifiers == entry.Value.Modifiers && this.heldHotKeys.Add(entry.Key) && entry.Value.Trigger == HotKeyTrigger.HotKeyDown)
+                    {
+                        this.HotKeyPressed?.Invoke(this, entry.Value);
+                    }
                 }
             }
-            return false;
         }
 
         public bool PreFilterMessage(ref Message message)
@@ -246,7 +320,7 @@ namespace MixItUp.WPF.Services
             if (message.Msg == WINDOWS_MESSAGE_HOTKEY && message.HWnd == this.windowHandle)
             {
                 int hotKeyID = message.WParam.ToInt32();
-                if (this.registeredHotKeys.Contains(hotKeyID))
+                if (this.registeredHotKeys.ContainsKey(hotKeyID))
                 {
                     return true;
                 }
@@ -258,16 +332,10 @@ namespace MixItUp.WPF.Services
         {
             try
             {
-                if (msg == WINDOWS_MESSAGE_HOTKEY)
+                if (msg == 0x00FF) { this.HandleKeyTransition(lParam); }
+                if (msg == WINDOWS_MESSAGE_HOTKEY && this.registeredHotKeys.TryGetValue(wParam.ToInt32(), out var binding) && binding.Trigger == HotKeyTrigger.HotKeyPress)
                 {
-                    int hotKeyID = wParam.ToInt32();
-                    if (this.registeredHotKeys.Contains(hotKeyID))
-                    {
-                        VirtualKeyEnum virtualKey = (VirtualKeyEnum)(((int)lParam >> 16) & 0xFFFF);
-                        HotKeyModifiersEnum modifiers = (HotKeyModifiersEnum)((int)lParam & 0xFFFF);
-
-                        this.HotKeyPressed?.Invoke(this, new HotKey(modifiers, virtualKey));
-                    }
+                    this.HotKeyPressed?.Invoke(this, binding);
                 }
             }
             catch (Exception ex) { Logger.Log(ex); }
@@ -285,6 +353,15 @@ namespace MixItUp.WPF.Services
 
         private uint ConvertVirtualKeyToScanCode(VirtualKeyEnum virtualKey) { return MapVirtualKeyA((uint)virtualKey, MAPVK_VK_TO_VSC_EX); }
 
+        private void ReleaseHotKeys()
+        {
+            foreach (var key in this.registeredHotKeys.Values.ToList()) { this.UnregisterHotKey(key.Modifiers, key.VirtualKey); }
+            this.registeredHotKeys.Clear();
+            this.heldHotKeys.Clear();
+            this.windowSource?.RemoveHook(HwndHook);
+            System.Windows.Forms.Application.RemoveMessageFilter(this);
+        }
+
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
 
@@ -294,22 +371,7 @@ namespace MixItUp.WPF.Services
             {
                 if (disposing)
                 {
-                    // Dispose managed state (managed objects).
-                    if (this.windowSource != null)
-                    {
-                        this.windowSource.RemoveHook(HwndHook);
-                    }
-
-                    if (this.windowHandle != IntPtr.Zero)
-                    {
-                        foreach (int hotKeyID in this.registeredHotKeys)
-                        {
-                            UnregisterHotKey(this.windowHandle, hotKeyID);
-                        }
-                        this.registeredHotKeys.Clear();
-
-                        System.Windows.Forms.Application.RemoveMessageFilter(this);
-                    }
+                    this.ReleaseHotKeys();
                 }
 
                 // Free unmanaged resources (unmanaged objects) and override a finalizer below.

@@ -5665,7 +5665,7 @@ abilitato. Puoi considerarlo simile all'attivazione dell'opzione "Sblocca comand
     <value>Il servizio OBS Studio ti consente di interagire direttamente con la tua istanza di OBS Studio per apportare modifiche a scene e fonti.</value>
   </data>
   <data name="OBSStudioInfo2" xml:space="preserve">
-    <value>La connettività di OBS Studio può essere abilitata andando su Strumenti -&gt; obs-websocket in OBS Studio e facendo clic su "Abilita server WebSocket". Assicurati che "Abilita autenticazione" sia deselezionato o di aver impostato una password sia in OBS Studio che in Mix It Up.</value>
+    <value>La connettività di OBS Studio può essere abilitata andando su Strumenti -&gt; obs-websocket in OBS Studio e facendo clic su "Abilita server WebSocket". Assicurati che "Abilita autenticazione" sia deselezionato o di aver impostato una password sia in OBS Studio che in Mix It Up. Su questo computer usa ws://127.0.0.1:4455. Per un altro computer usa ws:// seguito dal nome host e dalla porta configurata.</value>
   </data>
   <data name="OBSStudioSuccess" xml:space="preserve">
     <value>Test di connessione di OBS Studio riuscito!</value>
@@ -8876,7 +8876,7 @@ tramite Twitch, è una situazione "il tuo chilometraggio può variare".</value>
     <value>Comando Mix It Up|*.miucommand|Tutti i file (*.*)|*.*</value>
   </data>
   <data name="SoundFileFormatFilter" xml:space="preserve">
-    <value>File audio|*.mp3;*.wav;*.flac;*.mp4;*.m4a;*.aac;*.wma|Tutti i file (*.*)|*.*</value>
+    <value>File audio|*.mp3;*.wav;*.flac;*.mp4;*.m4a;*.aac;*.wma;*.ogg|Tutti i file (*.*)|*.*</value>
   </data>
   <data name="TextFileFormatFilter" xml:space="preserve">
     <value>File di testo|*.txt|Tutti i file (*.*)|*.*</value>
@@ -12642,5 +12642,204 @@ Questo può essere fatto facendo clic su Crea ricompensa punti canale nella pagi
   <data name="VelumStudioInvalidConnection" xml:space="preserve"><value>Usa un indirizzo ws:// o wss://. Se fornita, l’impronta del certificato deve contenere 64 caratteri esadecimali.</value></data>
   <data name="RunHotKeyByName" xml:space="preserve">
     <value>Attiva scorciatoia per nome</value>
+  </data>
+  <data name="HotKeyPress" xml:space="preserve">
+    <value>Pressione del tasto</value>
+  </data>
+  <data name="HotKeyDown" xml:space="preserve">
+    <value>Alla pressione</value>
+  </data>
+  <data name="HotKeyUp" xml:space="preserve">
+    <value>Al rilascio</value>
+  </data>
+  <data name="HotKeyTriggerMode" xml:space="preserve">
+    <value>Modalità di attivazione</value>
+  </data>
+  <data name="HotKeyUnavailable" xml:space="preserve">
+    <value>Questa scorciatoia non è disponibile.</value>
+  </data>
+  <data name="Joystick" xml:space="preserve">
+    <value>Joystick.tv</value>
+  </data>
+  <data name="LogInWithJoystick" xml:space="preserve">
+    <value>Accedere con Joystick.tv</value>
+  </data>
+  <data name="LogOutOfJoystick" xml:space="preserve">
+    <value>Disconnettersi da Joystick.tv</value>
+  </data>
+  <data name="JoystickChannelStreamStart" xml:space="preserve">
+    <value>Joystick.tv Channel Stream Start</value>
+  </data>
+  <data name="JoystickChannelStreamStop" xml:space="preserve">
+    <value>Joystick.tv Channel Stream Stop</value>
+  </data>
+  <data name="JoystickChannelFollowed" xml:space="preserve">
+    <value>Joystick.tv Channel Seguito</value>
+  </data>
+  <data name="JoystickChannelSubscribed" xml:space="preserve">
+    <value>Canale Joystick.tv Abbonati</value>
+  </data>
+  <data name="JoystickChannelResubscribed" xml:space="preserve">
+    <value>Joystick.tv Channel Reiscritto</value>
+  </data>
+  <data name="JoystickChannelSubscriptionGifted" xml:space="preserve">
+    <value>Abbonamento a Joystick.tv Channel Regalato</value>
+  </data>
+  <data name="JoystickChannelMassSubscriptionsGifted" xml:space="preserve">
+    <value>Canale Joystick.tv Abbonamento di massa Regalato</value>
+  </data>
+  <data name="JoystickChannelTipped" xml:space="preserve">
+    <value>Mancia in token su Joystick.tv</value>
+  </data>
+  <data name="JoystickTipped" xml:space="preserve">
+    <value>Mancia in token su Joystick.tv</value>
+  </data>
+  <data name="LatestJoystickTipped" xml:space="preserve">
+    <value>Ultima mancia in token su Joystick.tv</value>
+  </data>
+  <data name="AltStreamChannelStreamStart" xml:space="preserve">
+    <value>AltStream Channel Stream Start</value>
+  </data>
+  <data name="AltStreamChannelStreamStop" xml:space="preserve">
+    <value>AltStream Channel Stream Stop</value>
+  </data>
+  <data name="AltStreamChannelRaided" xml:space="preserve">
+    <value>Raid del canale AltStream</value>
+  </data>
+  <data name="AltStreamChannelPointsRedeemed" xml:space="preserve">
+    <value>Punti AltStream Channel riscattati</value>
+  </data>
+  <data name="AltStreamChannelPoints" xml:space="preserve">
+    <value>Punti del canale AltStream</value>
+  </data>
+  <data name="RazoChannelStreamStart" xml:space="preserve">
+    <value>Razo Channel Stream Start</value>
+  </data>
+  <data name="RazoChannelStreamStop" xml:space="preserve">
+    <value>Razo Channel Stream Stop</value>
+  </data>
+  <data name="RazoChannelFollowed" xml:space="preserve">
+    <value>Razo Channel Seguito</value>
+  </data>
+  <data name="RazoChannelSubscribed" xml:space="preserve">
+    <value>Canale Razo Abbonati</value>
+  </data>
+  <data name="RazoChannelResubscribed" xml:space="preserve">
+    <value>Razo Channel Reiscritto</value>
+  </data>
+  <data name="RazoChannelMassSubscriptionsGifted" xml:space="preserve">
+    <value>Canale Razo Abbonamento di massa Regalato</value>
+  </data>
+  <data name="RazoChannelRaided" xml:space="preserve">
+    <value>Raid del canale Razo</value>
+  </data>
+  <data name="RazoChannelClipCreated" xml:space="preserve">
+    <value>Clip del canale Razo creata</value>
+  </data>
+  <data name="Razo" xml:space="preserve">
+    <value>Razo</value>
+  </data>
+  <data name="AltStream" xml:space="preserve">
+    <value>AltStream</value>
+  </data>
+  <data name="RazoChannelGift" xml:space="preserve">
+    <value>Regalo in Razos</value>
+  </data>
+  <data name="RazoGift" xml:space="preserve">
+    <value>Regalo in Razos</value>
+  </data>
+  <data name="LatestRazoGift" xml:space="preserve">
+    <value>Ultimo regalo in Razos</value>
+  </data>
+  <data name="RazoChannelClipFeatured" xml:space="preserve">
+    <value>Razo · Clip in evidenza</value>
+  </data>
+  <data name="RazoChannelBoost" xml:space="preserve">
+    <value>Razo · Promozione del canale</value>
+  </data>
+  <data name="RazoChannelJumpscare" xml:space="preserve">
+    <value>Razo · Spavento</value>
+  </data>
+  <data name="RazoPrivateCode" xml:space="preserve">
+    <value>Codice privato</value>
+  </data>
+  <data name="RazoGiftedSubscriptions" xml:space="preserve">
+    <value>Razo · Abbonamenti regalati</value>
+  </data>
+  <data name="FulfillRedemption" xml:space="preserve">
+    <value>Completa riscatto</value>
+  </data>
+  <data name="RefundRedemption" xml:space="preserve">
+    <value>Rimborsa riscatto</value>
+  </data>
+  <data name="RedemptionIdentifier" xml:space="preserve">
+    <value>ID riscatto</value>
+  </data>
+  <data name="RestartToUpdate" xml:space="preserve">
+    <value>Riavvia per applicare l’aggiornamento</value>
+  </data>
+  <data name="ShowAltStreamChannelPoints" xml:space="preserve">
+    <value>Mostra i punti canale di AltStream</value>
+  </data>
+  <data name="AlertAltStreamChannelPointRedeemed" xml:space="preserve">
+    <value>{0} ha riscattato {1}</value>
+    <comment>{0} is the name of the user, {1} is the name of the reward</comment>
+  </data>
+  <data name="AltStreamChannelFollowed" xml:space="preserve">
+    <value>Nuovo follower su AltStream</value>
+  </data>
+  <data name="AltStreamMessagePinned" xml:space="preserve">
+    <value>Messaggio fissato su AltStream</value>
+  </data>
+  <data name="AltStreamMessageUnpinned" xml:space="preserve">
+    <value>Messaggio non più fissato su AltStream</value>
+  </data>
+  <data name="AltStreamOutgoingRaidStarted" xml:space="preserve">
+    <value>Raid in uscita avviato su AltStream</value>
+  </data>
+  <data name="AltStreamOutgoingRaidCancelled" xml:space="preserve">
+    <value>Raid in uscita annullato su AltStream</value>
+  </data>
+  <data name="AltStreamShoutout" xml:space="preserve">
+    <value>Shoutout su AltStream</value>
+  </data>
+  <data name="AltStreamSystemMessage" xml:space="preserve">
+    <value>Messaggio di sistema di AltStream</value>
+  </data>
+  <data name="GetChannelInfo" xml:space="preserve">
+    <value>Ottieni informazioni sul canale</value>
+  </data>
+  <data name="GetChannelPanels" xml:space="preserve">
+    <value>Ottieni pannelli del canale</value>
+  </data>
+  <data name="GetChannelRewards" xml:space="preserve">
+    <value>Ottieni ricompense del canale</value>
+  </data>
+  <data name="GetChannelEmotes" xml:space="preserve">
+    <value>Ottieni emote del canale</value>
+  </data>
+  <data name="GetChannelTags" xml:space="preserve">
+    <value>Ottieni tag del canale</value>
+  </data>
+  <data name="GetUserProfile" xml:space="preserve">
+    <value>Ottieni profilo utente</value>
+  </data>
+  <data name="GetUserSettings" xml:space="preserve">
+    <value>Ottieni impostazioni pubbliche dell’utente</value>
+  </data>
+  <data name="GetUserAchievements" xml:space="preserve">
+    <value>Ottieni obiettivi dell’utente</value>
+  </data>
+  <data name="GetStickers" xml:space="preserve">
+    <value>Ottieni adesivi</value>
+  </data>
+  <data name="GetModerators" xml:space="preserve">
+    <value>Ottieni moderatori</value>
+  </data>
+  <data name="GetRedemptions" xml:space="preserve">
+    <value>Ottieni riscatti delle ricompense</value>
+  </data>
+  <data name="JoystickChatSendUnconfirmed" xml:space="preserve">
+    <value>Joystick.tv non ha confermato la consegna del messaggio in chat.</value>
   </data>
 </root>

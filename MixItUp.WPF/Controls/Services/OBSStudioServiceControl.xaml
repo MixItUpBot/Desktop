@@ -52,7 +52,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Controls:MaterialSymbolIcon IconName="sensors" FontSize="{DynamicResource MIU.IconSize.16}" Foreground="{DynamicResource MaterialDesign.Brush.Foreground}" Grid.Column="0" VerticalAlignment="Center" Margin="0,10,0,0" />
-                <TextBox Grid.Column="2" Text="{Binding IPAddress}" Width="130" VerticalAlignment="Center" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.IPAddress}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" AutomationProperties.AutomationId="OBSStudioService.IPAddressTextBox" AutomationProperties.Name="{x:Static resx:Resources.IPAddress}" />
+                <TextBox Grid.Column="2" Text="{Binding IPAddress}" Width="130" VerticalAlignment="Center" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.WebSocketAddress}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" AutomationProperties.AutomationId="OBSStudioService.IPAddressTextBox" AutomationProperties.Name="{x:Static resx:Resources.WebSocketAddress}" />
             </Grid>
 
             <Grid Grid.Row="2">

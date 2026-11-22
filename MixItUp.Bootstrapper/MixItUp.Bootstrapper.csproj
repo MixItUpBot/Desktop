@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PlatformTarget>x64</PlatformTarget>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>MixItUp.Bootstrapper</AssemblyName>
+    <AssemblyVersion>1.8.230.0</AssemblyVersion>
+    <FileVersion>1.8.230.0</FileVersion>
+    <Version>1.8.213</Version>
+    <Company>Blazing Cacti LLC</Company>
+    <Description>Mix It Up Desktop Update Bootstrapper</Description>
+    <Configurations>Debug;Dev;Public;Preview</Configurations>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Runtime.Serialization" />
+  </ItemGroup>
+</Project>

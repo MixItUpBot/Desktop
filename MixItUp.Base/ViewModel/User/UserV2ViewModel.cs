@@ -194,6 +194,9 @@ namespace MixItUp.Base.ViewModel.User
                 }
                 else if (this.Platform == StreamingPlatformTypeEnum.Velora) { return $"https://velora.tv/{this.Username}"; }
                 else if (this.Platform == StreamingPlatformTypeEnum.VPZone) { return $"https://vpzone.tv/{this.Username}"; }
+                else if (this.Platform == StreamingPlatformTypeEnum.Joystick) { return $"https://joystick.tv/u/{Uri.EscapeDataString(this.Username)}"; }
+                else if (this.Platform == StreamingPlatformTypeEnum.AltStream) { return $"https://altstream.online/{Uri.EscapeDataString(this.Username)}"; }
+                else if (this.Platform == StreamingPlatformTypeEnum.Razo) { return $"https://razo.tv/{Uri.EscapeDataString(this.Username)}"; }
                 return string.Empty;
             }
         }
@@ -211,6 +214,9 @@ namespace MixItUp.Base.ViewModel.User
                 else if (this.Platform == StreamingPlatformTypeEnum.Kick) { return "kick-color_sm.png"; }
                 else if (this.Platform == StreamingPlatformTypeEnum.Velora) { return "velora-color_sm.png"; }
                 else if (this.Platform == StreamingPlatformTypeEnum.VPZone) { return "vpzone-color_sm.png"; }
+                else if (this.Platform == StreamingPlatformTypeEnum.Joystick) { return "joystick-color_sm.png"; }
+                else if (this.Platform == StreamingPlatformTypeEnum.AltStream) { return "altstream-color_sm.png"; }
+                else if (this.Platform == StreamingPlatformTypeEnum.Razo) { return "razo-color_sm.png"; }
                 return null;
             }
         }
@@ -800,6 +806,14 @@ namespace MixItUp.Base.ViewModel.User
                 else if (this.Platform == StreamingPlatformTypeEnum.Velora)
                 {
                     this.Color = ((VeloraUserPlatformV2Model)this.PlatformModel).Color;
+                }
+                else if (this.Platform == StreamingPlatformTypeEnum.Joystick)
+                {
+                    this.Color = ((JoystickUserPlatformV2Model)this.PlatformModel).Color;
+                }
+                else if (this.Platform == StreamingPlatformTypeEnum.AltStream)
+                {
+                    this.Color = ((AltStreamUserPlatformV2Model)this.PlatformModel).Color;
                 }
                 else if (this.Platform == StreamingPlatformTypeEnum.VPZone)
                 {

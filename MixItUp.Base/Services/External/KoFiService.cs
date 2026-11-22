@@ -140,7 +140,7 @@ namespace MixItUp.Base.Services.External
                 KoFiWebhookPayload koFiPayload = JsonConvert.DeserializeObject<KoFiWebhookPayload>(payload);
                 if (koFiPayload == null || string.IsNullOrEmpty(koFiPayload.Type))
                 {
-                    Logger.Log($"Ko-fi - Invalid webhook payload - {payload}");
+                    Logger.Log("Ko-fi - Invalid webhook payload");
                     return;
                 }
 

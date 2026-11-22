@@ -58,6 +58,7 @@ namespace MixItUp.Base.ViewModel.Wizard
         public StreamingPlatformAccountControlViewModel Velora { get; set; } = new StreamingPlatformAccountControlViewModel(StreamingPlatformTypeEnum.Velora);
 
         public StreamingPlatformAccountControlViewModel VPZone { get; set; } = new StreamingPlatformAccountControlViewModel(StreamingPlatformTypeEnum.VPZone);
+        public StreamingPlatformAccountControlViewModel Joystick { get; set; } = new StreamingPlatformAccountControlViewModel(StreamingPlatformTypeEnum.Joystick);
 
         #endregion Accounts Page
 
@@ -170,7 +171,9 @@ namespace MixItUp.Base.ViewModel.Wizard
             this.Velora.EndLoadingOperationOccurred += (sender, eventArgs) => { this.EndLoadingOperation(); };
 
             this.VPZone.StartLoadingOperationOccurred += (sender, eventArgs) => { this.StartLoadingOperation(); };
+            this.Joystick.StartLoadingOperationOccurred += (sender, eventArgs) => { this.StartLoadingOperation(); };
             this.VPZone.EndLoadingOperationOccurred += (sender, eventArgs) => { this.EndLoadingOperation(); };
+            this.Joystick.EndLoadingOperationOccurred += (sender, eventArgs) => { this.EndLoadingOperation(); };
 
             this.SetBackupLocationCommand = this.CreateCommand(() =>
             {
@@ -200,7 +203,7 @@ namespace MixItUp.Base.ViewModel.Wizard
                 }
                 else if (this.StreamerAccountsPageVisible)
                 {
-                    if (!this.Twitch.IsStreamerAccountConnected && !this.YouTube.IsStreamerAccountConnected && !this.Kick.IsStreamerAccountConnected && !this.Velora.IsStreamerAccountConnected && !this.VPZone.IsStreamerAccountConnected)
+                    if (!this.Twitch.IsStreamerAccountConnected && !this.YouTube.IsStreamerAccountConnected && !this.Kick.IsStreamerAccountConnected && !this.Velora.IsStreamerAccountConnected && !this.VPZone.IsStreamerAccountConnected && !this.Joystick.IsStreamerAccountConnected)
                     {
                         this.StatusMessage = MixItUp.Base.Resources.NewUserWizardAtLeastOneAccountMustBeSignedIn;
                         return;

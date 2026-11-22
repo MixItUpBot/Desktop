@@ -5665,7 +5665,7 @@
     <value>OBS Studio 服務可讓您直接與 OBS Studio 執行個體互動以對場景和來源進行變更。</value>
   </data>
   <data name="OBSStudioInfo2" xml:space="preserve">
-    <value>可以透過前往 OBS Studio 中的工具 -&gt; obs-websocket 並點擊「啟用 WebSocket 伺服器」來啟用 OBS Studio 連線。確保未選取「啟用身份驗證」或您已在 OBS Studio 和 Mix It Up 中設定了密碼。</value>
+    <value>可以透過前往 OBS Studio 中的工具 -&gt; obs-websocket 並點擊「啟用 WebSocket 伺服器」來啟用 OBS Studio 連線。確保未選取「啟用身份驗證」或您已在 OBS Studio 和 Mix It Up 中設定了密碼。 在這部電腦上請使用 ws://127.0.0.1:4455。連線至其他電腦時，請在 ws:// 後輸入主機名稱和設定的連接埠。</value>
   </data>
   <data name="OBSStudioSuccess" xml:space="preserve">
     <value>OBS Studio連線測試成功！</value>
@@ -8876,7 +8876,7 @@ ID 與現有報價相符的匯入報價將變更為下一個最大數量。匯�
     <value>混合命令|*.miucommand|所有檔案 (*.*)|*.*</value>
   </data>
   <data name="SoundFileFormatFilter" xml:space="preserve">
-    <value>聲音檔案|*.mp3;*.wav;*.flac;*.mp4;*.m4a;*.aac;*.wma|所有檔案 (*.*)|*.*</value>
+    <value>聲音檔案|*.mp3;*.wav;*.flac;*.mp4;*.m4a;*.aac;*.wma;*.ogg|所有檔案 (*.*)|*.*</value>
   </data>
   <data name="TextFileFormatFilter" xml:space="preserve">
     <value>文字檔案|*.txt|所有檔案 (*.*)|*.*</value>
@@ -12673,5 +12673,204 @@ sendParentMessage({ 型別: "ScriptComplete", ID: "{ID}", 結果: 結果 });</va
   <data name="VelumStudioInvalidConnection" xml:space="preserve"><value>請使用 ws:// 或 wss:// 位址。若提供憑證指紋，必須包含 64 個十六進位字元。</value></data>
   <data name="RunHotKeyByName" xml:space="preserve">
     <value>依名稱觸發快捷鍵</value>
+  </data>
+  <data name="HotKeyPress" xml:space="preserve">
+    <value>按鍵</value>
+  </data>
+  <data name="HotKeyDown" xml:space="preserve">
+    <value>按下時</value>
+  </data>
+  <data name="HotKeyUp" xml:space="preserve">
+    <value>放開時</value>
+  </data>
+  <data name="HotKeyTriggerMode" xml:space="preserve">
+    <value>觸發模式</value>
+  </data>
+  <data name="HotKeyUnavailable" xml:space="preserve">
+    <value>無法使用此快速鍵。</value>
+  </data>
+  <data name="Joystick" xml:space="preserve">
+    <value>Joystick.tv</value>
+  </data>
+  <data name="LogInWithJoystick" xml:space="preserve">
+    <value>用 Joystick.tv 登录</value>
+  </data>
+  <data name="LogOutOfJoystick" xml:space="preserve">
+    <value>退出 Joystick.tv</value>
+  </data>
+  <data name="JoystickChannelStreamStart" xml:space="preserve">
+    <value>Joystick.tv 頻道直播開始</value>
+  </data>
+  <data name="JoystickChannelStreamStop" xml:space="preserve">
+    <value>Joystick.tv 頻道直播結束</value>
+  </data>
+  <data name="JoystickChannelFollowed" xml:space="preserve">
+    <value>Joystick.tv 頻道已追蹤</value>
+  </data>
+  <data name="JoystickChannelSubscribed" xml:space="preserve">
+    <value>Joystick.tv 頻道已訂閱</value>
+  </data>
+  <data name="JoystickChannelResubscribed" xml:space="preserve">
+    <value>Joystick.tv 頻道已重新訂閱</value>
+  </data>
+  <data name="JoystickChannelSubscriptionGifted" xml:space="preserve">
+    <value>Joystick.tv 頻道訂閱贈禮</value>
+  </data>
+  <data name="JoystickChannelMassSubscriptionsGifted" xml:space="preserve">
+    <value>Joystick.tv 頻道大量訂閱贈禮</value>
+  </data>
+  <data name="JoystickChannelTipped" xml:space="preserve">
+    <value>Joystick.tv 代幣小費</value>
+  </data>
+  <data name="JoystickTipped" xml:space="preserve">
+    <value>Joystick.tv 代幣小費</value>
+  </data>
+  <data name="LatestJoystickTipped" xml:space="preserve">
+    <value>最近的 Joystick.tv 代幣小費</value>
+  </data>
+  <data name="AltStreamChannelStreamStart" xml:space="preserve">
+    <value>AltStream 頻道直播開始</value>
+  </data>
+  <data name="AltStreamChannelStreamStop" xml:space="preserve">
+    <value>AltStream 頻道直播結束</value>
+  </data>
+  <data name="AltStreamChannelRaided" xml:space="preserve">
+    <value>AltStream 頻道突襲</value>
+  </data>
+  <data name="AltStreamChannelPointsRedeemed" xml:space="preserve">
+    <value>AltStream 頻道點數已兌換</value>
+  </data>
+  <data name="AltStreamChannelPoints" xml:space="preserve">
+    <value>AltStream 頻道點數</value>
+  </data>
+  <data name="RazoChannelStreamStart" xml:space="preserve">
+    <value>Razo 頻道直播開始</value>
+  </data>
+  <data name="RazoChannelStreamStop" xml:space="preserve">
+    <value>Razo 頻道直播結束</value>
+  </data>
+  <data name="RazoChannelFollowed" xml:space="preserve">
+    <value>Razo 頻道已追蹤</value>
+  </data>
+  <data name="RazoChannelSubscribed" xml:space="preserve">
+    <value>Razo 頻道已訂閱</value>
+  </data>
+  <data name="RazoChannelResubscribed" xml:space="preserve">
+    <value>Razo 頻道已重新訂閱</value>
+  </data>
+  <data name="RazoChannelMassSubscriptionsGifted" xml:space="preserve">
+    <value>Razo 頻道大量訂閱贈禮</value>
+  </data>
+  <data name="RazoChannelRaided" xml:space="preserve">
+    <value>Razo 頻道突襲</value>
+  </data>
+  <data name="RazoChannelClipCreated" xml:space="preserve">
+    <value>Razo 頻道剪輯已建立</value>
+  </data>
+  <data name="Razo" xml:space="preserve">
+    <value>Razo</value>
+  </data>
+  <data name="AltStream" xml:space="preserve">
+    <value>AltStream</value>
+  </data>
+  <data name="RazoChannelGift" xml:space="preserve">
+    <value>Razos 禮物</value>
+  </data>
+  <data name="RazoGift" xml:space="preserve">
+    <value>Razos 禮物</value>
+  </data>
+  <data name="LatestRazoGift" xml:space="preserve">
+    <value>最新 Razos 禮物</value>
+  </data>
+  <data name="RazoChannelClipFeatured" xml:space="preserve">
+    <value>Razo · 精選剪輯</value>
+  </data>
+  <data name="RazoChannelBoost" xml:space="preserve">
+    <value>Razo · 頻道推廣</value>
+  </data>
+  <data name="RazoChannelJumpscare" xml:space="preserve">
+    <value>Razo · 驚嚇事件</value>
+  </data>
+  <data name="RazoPrivateCode" xml:space="preserve">
+    <value>私人代碼</value>
+  </data>
+  <data name="RazoGiftedSubscriptions" xml:space="preserve">
+    <value>Razo · 贈送訂閱</value>
+  </data>
+  <data name="FulfillRedemption" xml:space="preserve">
+    <value>完成兌換</value>
+  </data>
+  <data name="RefundRedemption" xml:space="preserve">
+    <value>退還兌換點數</value>
+  </data>
+  <data name="RedemptionIdentifier" xml:space="preserve">
+    <value>兌換 ID</value>
+  </data>
+  <data name="RestartToUpdate" xml:space="preserve">
+    <value>重新啟動以套用更新</value>
+  </data>
+  <data name="ShowAltStreamChannelPoints" xml:space="preserve">
+    <value>顯示 AltStream 頻道點數</value>
+  </data>
+  <data name="AlertAltStreamChannelPointRedeemed" xml:space="preserve">
+    <value>{0} 已兌換 {1}</value>
+    <comment>{0} is the name of the user, {1} is the name of the reward</comment>
+  </data>
+  <data name="AltStreamChannelFollowed" xml:space="preserve">
+    <value>AltStream 頻道新增追隨者</value>
+  </data>
+  <data name="AltStreamMessagePinned" xml:space="preserve">
+    <value>AltStream 訊息已置頂</value>
+  </data>
+  <data name="AltStreamMessageUnpinned" xml:space="preserve">
+    <value>AltStream 訊息已取消置頂</value>
+  </data>
+  <data name="AltStreamOutgoingRaidStarted" xml:space="preserve">
+    <value>AltStream 對外揪團已開始</value>
+  </data>
+  <data name="AltStreamOutgoingRaidCancelled" xml:space="preserve">
+    <value>AltStream 對外揪團已取消</value>
+  </data>
+  <data name="AltStreamShoutout" xml:space="preserve">
+    <value>AltStream 頻道推薦</value>
+  </data>
+  <data name="AltStreamSystemMessage" xml:space="preserve">
+    <value>AltStream 系統訊息</value>
+  </data>
+  <data name="GetChannelInfo" xml:space="preserve">
+    <value>取得頻道資訊</value>
+  </data>
+  <data name="GetChannelPanels" xml:space="preserve">
+    <value>取得頻道面板</value>
+  </data>
+  <data name="GetChannelRewards" xml:space="preserve">
+    <value>取得頻道獎勵</value>
+  </data>
+  <data name="GetChannelEmotes" xml:space="preserve">
+    <value>取得頻道表情符號</value>
+  </data>
+  <data name="GetChannelTags" xml:space="preserve">
+    <value>取得頻道標籤</value>
+  </data>
+  <data name="GetUserProfile" xml:space="preserve">
+    <value>取得使用者個人檔案</value>
+  </data>
+  <data name="GetUserSettings" xml:space="preserve">
+    <value>取得使用者公開設定</value>
+  </data>
+  <data name="GetUserAchievements" xml:space="preserve">
+    <value>取得使用者成就</value>
+  </data>
+  <data name="GetStickers" xml:space="preserve">
+    <value>取得貼圖</value>
+  </data>
+  <data name="GetModerators" xml:space="preserve">
+    <value>取得版主名單</value>
+  </data>
+  <data name="GetRedemptions" xml:space="preserve">
+    <value>取得獎勵兌換紀錄</value>
+  </data>
+  <data name="JoystickChatSendUnconfirmed" xml:space="preserve">
+    <value>Joystick.tv 未確認聊天訊息已送達。</value>
   </data>
 </root>

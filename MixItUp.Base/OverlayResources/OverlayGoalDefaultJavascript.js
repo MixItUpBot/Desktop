@@ -8,6 +8,7 @@ const goalMaxAmount = document.getElementById("goalMaxAmount");
 
 function update(data)
 {
+    if (data.GoalEnd !== undefined) { goalEnd.textContent = data.GoalEnd; }
     goalAmount.textContent = data.GoalAmount;
     adjustProgress(data);
     performAnimation("{ProgressOccurredAnimationFramework}", "{ProgressOccurredAnimationName}", main).then((result) =>

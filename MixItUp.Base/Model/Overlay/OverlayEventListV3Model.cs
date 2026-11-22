@@ -1,4 +1,6 @@
-﻿using Google.Apis.YouTube.v3.Data;
+﻿using MixItUp.Base.Model.Joystick;
+using MixItUp.Base.Model.Razo;
+using Google.Apis.YouTube.v3.Data;
 using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Kick.Kicks;
 using MixItUp.Base.Model.Velora;
@@ -95,6 +97,10 @@ namespace MixItUp.Base.Model.Overlay
         public string VeloraCheeredDetailsTemplate { get; set; }
         [DataMember]
         public string VPZoneCheeredDetailsTemplate { get; set; }
+        [DataMember]
+        public string JoystickTippedDetailsTemplate { get; set; }
+        [DataMember]
+        public string RazoGiftDetailsTemplate { get; set; }
 
         [DataMember]
         public string VeloraSubscriptionsDetailsTemplate { get; set; }
@@ -312,6 +318,14 @@ namespace MixItUp.Base.Model.Overlay
         {
             await this.AddEvent(cheered.User, nameof(this.VPZoneCheered), this.VPZoneCheeredDetailsTemplate, new Dictionary<string, string>() { { DetailsAmountPropertyName, cheered.Amount.ToString() } });
         }
+        public override async void OnJoystickTipped(object sender, JoystickTippedEventModel cheered)
+        {
+            await this.AddEvent(cheered.User, nameof(this.JoystickTipped), this.JoystickTippedDetailsTemplate, new Dictionary<string, string>() { { DetailsAmountPropertyName, cheered.Amount.ToString() } });
+        }
+        public override async void OnRazoGift(object sender, RazoGiftEventModel cheered)
+        {
+            await this.AddEvent(cheered.User, nameof(this.RazoGift), this.RazoGiftDetailsTemplate, new Dictionary<string, string>() { { DetailsAmountPropertyName, cheered.Amount.ToString() } });
+        }
 
         public override Dictionary<string, object> GetGenerationProperties()
         {
@@ -449,6 +463,16 @@ namespace MixItUp.Base.Model.Overlay
                 if (this.VPZoneCheered)
                 {
                     this.OnVPZoneCheered(this, new VPZoneCheeredEventModel(ChannelSession.User, 100, "Great stream!"));
+                    await Task.Delay(3000);
+                }
+                if (this.JoystickTipped)
+                {
+                    this.OnJoystickTipped(this, new JoystickTippedEventModel(ChannelSession.User, 100, "Great stream!"));
+                    await Task.Delay(3000);
+                }
+                if (this.RazoGift)
+                {
+                    this.OnRazoGift(this, new RazoGiftEventModel(ChannelSession.User, 100, "Great stream!"));
                     await Task.Delay(3000);
                 }
 

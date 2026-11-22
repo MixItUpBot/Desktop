@@ -38,6 +38,7 @@ namespace MixItUp.Base.ViewModel.Accounts
                 if (this.Platform == StreamingPlatformTypeEnum.Kick) { return "#00E701"; }
                 if (this.Platform == StreamingPlatformTypeEnum.Velora) { return "#FDCB16"; }
                 if (this.Platform == StreamingPlatformTypeEnum.VPZone) { return "#7C3AED"; }
+                if (this.Platform == StreamingPlatformTypeEnum.Joystick) { return "#09ABAB"; }
                 return "#3f51b5";
             }
         }
@@ -50,6 +51,7 @@ namespace MixItUp.Base.ViewModel.Accounts
                 if (this.Platform == StreamingPlatformTypeEnum.Kick) { return "/Assets/Images/kick-light_lg.png"; }
                 if (this.Platform == StreamingPlatformTypeEnum.Velora) { return "/Assets/Images/velora-light_lg.png"; }
                 if (this.Platform == StreamingPlatformTypeEnum.VPZone) { return "/Assets/Images/vpzone-light_lg.png"; }
+                if (this.Platform == StreamingPlatformTypeEnum.Joystick) { return "/Assets/Images/joystick-light_lg.png"; }
                 return StreamingPlatforms.GetPlatformImage(this.Platform);
             }
         }
@@ -62,6 +64,7 @@ namespace MixItUp.Base.ViewModel.Accounts
                 if (this.Platform == StreamingPlatformTypeEnum.Kick) { return "#000000"; }
                 if (this.Platform == StreamingPlatformTypeEnum.Velora) { return "#000000"; }
                 if (this.Platform == StreamingPlatformTypeEnum.VPZone) { return "#FFFFFF"; }
+                if (this.Platform == StreamingPlatformTypeEnum.Joystick) { return "#000000"; }
                 return "#000000";
             }
         }
@@ -75,6 +78,7 @@ namespace MixItUp.Base.ViewModel.Accounts
                 else if (this.Platform == StreamingPlatformTypeEnum.Kick) { return MixItUp.Base.Resources.LogInWithKick; }
                 else if (this.Platform == StreamingPlatformTypeEnum.Velora) { return MixItUp.Base.Resources.LogInWithVelora; }
                 else if (this.Platform == StreamingPlatformTypeEnum.VPZone) { return MixItUp.Base.Resources.LogInWithVPZone; }
+                else if (this.Platform == StreamingPlatformTypeEnum.Joystick) { return MixItUp.Base.Resources.LogInWithJoystick; }
                 return string.Empty;
             }
         }
@@ -88,6 +92,7 @@ namespace MixItUp.Base.ViewModel.Accounts
                 else if (this.Platform == StreamingPlatformTypeEnum.Kick) { return MixItUp.Base.Resources.LogOutOfKick; }
                 else if (this.Platform == StreamingPlatformTypeEnum.Velora) { return MixItUp.Base.Resources.LogOutOfVelora; }
                 else if (this.Platform == StreamingPlatformTypeEnum.VPZone) { return MixItUp.Base.Resources.LogOutOfVPZone; }
+                else if (this.Platform == StreamingPlatformTypeEnum.Joystick) { return MixItUp.Base.Resources.LogOutOfJoystick; }
                 return string.Empty;
             }
         }
@@ -154,7 +159,7 @@ namespace MixItUp.Base.ViewModel.Accounts
 
         public string BotAccountUsername
         {
-            get { return this.botAccountUsername; }
+            get { return this.Platform == StreamingPlatformTypeEnum.Joystick ? this.session?.BotUsername : this.botAccountUsername; }
             set
             {
                 this.botAccountUsername = value;
@@ -180,7 +185,8 @@ namespace MixItUp.Base.ViewModel.Accounts
         public bool IsStreamerAccountLogoutVisible { get { return this.IsStreamerAccountEnabled || this.IsStreamerAccountConnected; } }
         public ICommand StreamerAccountLogOutCommand { get; set; }
 
-        public bool IsBotAccountLogInVisible { get { return !this.IsBotAccountEnabled && !this.IsBotAccountConnected && !this.isBotConnecting; } }
+        public bool HasBotAccountColumn => this.Platform != StreamingPlatformTypeEnum.Joystick;
+        public bool IsBotAccountLogInVisible { get { return this.Platform != StreamingPlatformTypeEnum.Joystick && !this.IsBotAccountEnabled && !this.IsBotAccountConnected && !this.isBotConnecting; } }
         public ICommand BotAccountLogInCommand { get; set; }
         public bool IsBotAccountCancelVisible { get { return !this.IsBotAccountEnabled && !this.IsBotAccountConnected && this.isBotConnecting; } }
         public ICommand BotAccountCancelCommand { get; set; }

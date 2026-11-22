@@ -228,6 +228,10 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="20" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <GroupBox Header="{x:Static resx:Resources.Follows}" Grid.Row="0" Grid.Column="0">
@@ -450,6 +454,54 @@
                     <TextBox Grid.Row="0" Text="{Binding VPZoneCheeredAmount}" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.ProgressMultiplier}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" AutomationProperties.AutomationId="OverlayGoalV3.VPZoneCheeredTextBox" AutomationProperties.Name="{x:Static resx:Resources.ProgressMultiplier}" />
 
                     <TextBlock Grid.Row="2" Text="{Binding VPZoneCheeredEquation}" />
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="{x:Static resx:Resources.JoystickTipped}" Grid.Row="20" Grid.Column="0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBox Grid.Row="0" Text="{Binding JoystickTippedAmount}" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.ProgressMultiplier}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" AutomationProperties.AutomationId="OverlayGoalV3.JoystickTippedTextBox" AutomationProperties.Name="{x:Static resx:Resources.ProgressMultiplier}" />
+
+                    <TextBlock Grid.Row="2" Text="{Binding JoystickTippedEquation}" />
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="{x:Static resx:Resources.RazoGift}" Grid.Row="22" Grid.Column="0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBox Grid.Row="0" Text="{Binding RazoGiftAmount}" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.ProgressMultiplier}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" AutomationProperties.AutomationId="OverlayGoalV3.RazoGiftTextBox" AutomationProperties.Name="{x:Static resx:Resources.ProgressMultiplier}" />
+
+                    <TextBlock Grid.Row="2" Text="{Binding RazoGiftEquation}" />
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="{x:Static resx:Resources.RazoGiftedSubscriptions}" Grid.Row="22" Grid.Column="2">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBox Grid.Row="0" Text="{Binding RazoSubscriptionAmount}" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.ProgressMultiplier}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" AutomationProperties.AutomationId="OverlayGoalV3.RazoSubscriptionTextBox" AutomationProperties.Name="{x:Static resx:Resources.ProgressMultiplier}" />
+
+                    <TextBlock Grid.Row="2" Text="{Binding RazoSubscriptionEquation}" />
                 </Grid>
             </GroupBox>
 

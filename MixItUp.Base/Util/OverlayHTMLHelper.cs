@@ -32,10 +32,17 @@ namespace MixItUp.Base.Util
                 case OverlayItemV3Type.Poll: current = OverlayResources.OverlayPollDefaultJavascript; break;
                 default: return javascript;
             }
+            string stock = current.Replace("\r\n", "\n");
+            string saved = javascript?.Replace("\r\n", "\n");
+            if (type == OverlayItemV3Type.Goal)
+            {
+                stock = stock.Replace("    if (data.GoalEnd !== undefined) { goalEnd.textContent = data.GoalEnd; }\n", string.Empty);
+                if (saved == stock) { return current; }
+            }
             string previous = type == OverlayItemV3Type.Chat
                 ? current.Replace("pronouns.firstElementChild.textContent", "pronouns.firstElementChild.innerHTML")
                     .Replace("username.firstElementChild.textContent", "username.firstElementChild.innerHTML")
-                : current.Replace(".textContent", ".innerHTML");
+                : stock.Replace(".textContent", ".innerHTML");
             // Saved defaults are upgraded without rewriting customized scripts.
             return string.Equals(javascript?.Replace("\r\n", "\n"), previous.Replace("\r\n", "\n"), StringComparison.Ordinal)
                 ? current : javascript;
@@ -58,7 +65,7 @@ namespace MixItUp.Base.Util
             IReadOnlyDictionary<string, object> properties = null)
         {
             if (string.IsNullOrEmpty(html)) { return html; }
-            Dictionary<string, string> values = new Dictionary<string, string>();
+            var values = new Dictionary<string, (string Display, string ScriptNumber)>();
             if (properties != null)
             {
                 foreach (var property in properties)
@@ -67,7 +74,15 @@ namespace MixItUp.Base.Util
                     if (!html.Contains(placeholder)) { continue; }
                     string marker = "miuvalue" + Guid.NewGuid().ToString("N");
                     html = html.Replace(placeholder, marker);
-                    values[marker] = await SpecialIdentifierStringBuilder.ProcessSpecialIdentifiers(property.Value?.ToString(), parameters) ?? string.Empty;
+                    string display = await SpecialIdentifierStringBuilder.ProcessSpecialIdentifiers(property.Value?.ToString(), parameters) ?? string.Empty;
+                    string number = property.Value switch
+                    {
+                        double d when double.IsFinite(d) => d.ToString("R", CultureInfo.InvariantCulture),
+                        float n when float.IsFinite(n) => n.ToString("R", CultureInfo.InvariantCulture),
+                        decimal or long or ulong or int or uint or short or ushort or byte or sbyte => Convert.ToString(property.Value, CultureInfo.InvariantCulture),
+                        _ => null,
+                    };
+                    values[marker] = (display, number);
                 }
             }
             if (!SpecialIdentifierStringBuilder.ContainsSpecialIdentifiers(html) && values.Count == 0) { return html; }
@@ -77,7 +92,11 @@ namespace MixItUp.Base.Util
                 text = encoder == null
                     ? await SpecialIdentifierStringBuilder.ProcessSpecialIdentifiers(text, parameters)
                     : await SpecialIdentifierStringBuilder.ProcessSpecialIdentifiers(text, parameters, encoder);
-                foreach (var value in values) { text = text.Replace(value.Key, encoder == null ? value.Value : encoder(value.Value)); }
+                foreach (var value in values)
+                {
+                    string replacement = encoder == EncodeJavascriptData && value.Value.ScriptNumber != null ? value.Value.ScriptNumber : value.Value.Display;
+                    text = text.Replace(value.Key, encoder == null ? replacement : encoder(replacement));
+                }
                 return text;
             }
             bool HasValues(string text) => SpecialIdentifierStringBuilder.ContainsSpecialIdentifiers(text) || values.Keys.Any(text.Contains);

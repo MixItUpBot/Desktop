@@ -123,7 +123,7 @@ namespace MixItUp.Base.ViewModel.Chat
                     {
                         return true;
                     }
-                    else if (StreamingPlatforms.GetPlatformSession(this.Platform).IsBotConnected && string.Equals(this.User?.PlatformID, StreamingPlatforms.GetPlatformSession(this.Platform)?.BotID))
+                    else if (StreamingPlatforms.GetPlatformSession(this.Platform).IsBotUser(this.User))
                     {
                         return true;
                     }

@@ -363,6 +363,12 @@ namespace MixItUp.Base.Model.Settings
         [DataMember]
         public string AlertVPZoneCheeredColor { get; set; }
         [DataMember]
+        public string AlertAltStreamChannelPointsColor { get; set; }
+        [DataMember]
+        public string AlertJoystickTipsColor { get; set; }
+        [DataMember]
+        public string AlertRazoGiftsColor { get; set; }
+        [DataMember]
         public string AlertTwitchUserWarnedColor { get; set; }
         [DataMember]
         public string AlertTwitchShoutoutReceivedColor { get; set; }
@@ -873,6 +879,8 @@ namespace MixItUp.Base.Model.Settings
                 }
             }
 
+            await this.AddMissingChatPlatformUserColumns();
+
             await ServiceManager.Get<IDatabaseService>().Read(this.DatabaseFilePath, "SELECT * FROM Quotes", (Dictionary<string, object> data) =>
             {
                 DateTimeOffset.TryParse((string)data["DateTime"], out DateTimeOffset dateTime);
@@ -983,6 +991,10 @@ namespace MixItUp.Base.Model.Settings
                     else if (type == CommandTypeEnum.VPZoneChannelPoints)
                     {
                         command = JSONSerializerHelper.DeserializeFromString<VPZoneChannelPointsCommandModel>(commandData);
+                    }
+                    else if (type == CommandTypeEnum.AltStreamChannelPoints)
+                    {
+                        command = JSONSerializerHelper.DeserializeFromString<AltStreamChannelPointsCommandModel>(commandData);
                     }
 
                     if (command != null)
@@ -1188,8 +1200,8 @@ namespace MixItUp.Base.Model.Settings
 
             IEnumerable<UserV2Model> changedUsers = this.Users.GetAddedChangedValues();
             await ServiceManager.Get<IDatabaseService>().BulkWrite(this.DatabaseFilePath,
-                "REPLACE INTO Users(ID, TwitchID, TwitchUsername, YouTubeID, YouTubeUsername, FacebookID, FacebookUsername, TrovoID, TrovoUsername, Data, KickID, KickUsername, VeloraID, VeloraUsername, VPZoneID, VPZoneUsername) " +
-                "VALUES($ID, $TwitchID, $TwitchUsername, $YouTubeID, $YouTubeUsername, $FacebookID, $FacebookUsername, $TrovoID, $TrovoUsername, $Data, $KickID, $KickUsername, $VeloraID, $VeloraUsername, $VPZoneID, $VPZoneUsername)",
+                "REPLACE INTO Users(ID, TwitchID, TwitchUsername, YouTubeID, YouTubeUsername, FacebookID, FacebookUsername, TrovoID, TrovoUsername, Data, KickID, KickUsername, VeloraID, VeloraUsername, VPZoneID, VPZoneUsername, JoystickID, JoystickUsername, AltStreamID, AltStreamUsername, RazoID, RazoUsername) " +
+                "VALUES($ID, $TwitchID, $TwitchUsername, $YouTubeID, $YouTubeUsername, $FacebookID, $FacebookUsername, $TrovoID, $TrovoUsername, $Data, $KickID, $KickUsername, $VeloraID, $VeloraUsername, $VPZoneID, $VPZoneUsername, $JoystickID, $JoystickUsername, $AltStreamID, $AltStreamUsername, $RazoID, $RazoUsername)",
                 changedUsers.Select(u => new Dictionary<string, object>()
                 {
                     { "$ID", u.ID.ToString() },
@@ -1202,7 +1214,10 @@ namespace MixItUp.Base.Model.Settings
                     { "$Data", JSONSerializerHelper.SerializeToString(u) },
                     { "$KickID", u.GetPlatformID(StreamingPlatformTypeEnum.Kick) }, { "$KickUsername", u.GetPlatformUsername(StreamingPlatformTypeEnum.Kick) },
                     { "$VeloraID", u.GetPlatformID(StreamingPlatformTypeEnum.Velora) }, { "$VeloraUsername", u.GetPlatformUsername(StreamingPlatformTypeEnum.Velora) },
-                    { "$VPZoneID", u.GetPlatformID(StreamingPlatformTypeEnum.VPZone) }, { "$VPZoneUsername", u.GetPlatformUsername(StreamingPlatformTypeEnum.VPZone) }
+                    { "$VPZoneID", u.GetPlatformID(StreamingPlatformTypeEnum.VPZone) }, { "$VPZoneUsername", u.GetPlatformUsername(StreamingPlatformTypeEnum.VPZone) },
+                    { "$JoystickID", u.GetPlatformID(StreamingPlatformTypeEnum.Joystick) }, { "$JoystickUsername", u.GetPlatformUsername(StreamingPlatformTypeEnum.Joystick) },
+                    { "$AltStreamID", u.GetPlatformID(StreamingPlatformTypeEnum.AltStream) }, { "$AltStreamUsername", u.GetPlatformUsername(StreamingPlatformTypeEnum.AltStream) },
+                    { "$RazoID", u.GetPlatformID(StreamingPlatformTypeEnum.Razo) }, { "$RazoUsername", u.GetPlatformUsername(StreamingPlatformTypeEnum.Razo) }
                 }));
 
             List<Guid> removedCommands = new List<Guid>();
@@ -1422,6 +1437,20 @@ namespace MixItUp.Base.Model.Settings
             if (!hasVeloraUsername)
             {
                 await ServiceManager.Get<IDatabaseService>().Write(this.DatabaseFilePath, "ALTER TABLE Users ADD COLUMN VeloraUsername TEXT");
+            }
+        }
+
+        private async Task AddMissingChatPlatformUserColumns()
+        {
+            var columns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var database = ServiceManager.Get<IDatabaseService>();
+            await database.Read(this.DatabaseFilePath, "PRAGMA table_info(Users)", row => columns.Add(row["name"].ToString()));
+            foreach (string column in new[] { "JoystickID", "JoystickUsername", "AltStreamID", "AltStreamUsername", "RazoID", "RazoUsername" })
+            {
+                if (!columns.Contains(column))
+                {
+                    await database.Write(this.DatabaseFilePath, $"ALTER TABLE Users ADD COLUMN {column} TEXT");
+                }
             }
         }
 

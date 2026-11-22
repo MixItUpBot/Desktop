@@ -2,6 +2,7 @@
 using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.User;
 using MixItUp.Base.Model.User.Platform;
+using MixItUp.Base.Services.AltStream;
 using MixItUp.Base.Services.Kick.New;
 using MixItUp.Base.Services.Twitch.New;
 using MixItUp.Base.Services.Velora.New;
@@ -249,6 +250,17 @@ namespace MixItUp.Base.Services
                             platformModel = new VPZoneUserPlatformV2Model(vpzoneUser);
                         }
                     }
+                    else if (platform == StreamingPlatformTypeEnum.AltStream)
+                    {
+                        var profile = await ServiceManager.Get<AltStreamSession>().FindUser(platformUsername);
+                        // User Lookup passes the same input as both candidate ID and username.
+                        bool byUsername = string.IsNullOrEmpty(platformID) || SanitizeUsername(platformID) == platformUsername;
+                        if (profile != null && (profile.ID == platformID ||
+                            (byUsername && string.Equals(profile.Username, platformUsername, StringComparison.OrdinalIgnoreCase))))
+                        {
+                            platformModel = profile;
+                        }
+                    }
                 }
 
                 if (platformModel != null)
@@ -293,11 +305,11 @@ namespace MixItUp.Base.Services
             return Guid.Empty;
         }
 
-        public async Task<UserV2ViewModel> CreateUser(UserPlatformV2ModelBase platformModel)
+        public async Task<UserV2ViewModel> CreateUser(UserPlatformV2ModelBase platformModel, bool matchUsername = true)
         {
             if (platformModel != null && !string.IsNullOrEmpty(platformModel.ID))
             {
-                UserV2ViewModel user = await this.GetUserByPlatform(platformModel.Platform, platformModel.ID, platformModel.Username);
+                UserV2ViewModel user = await this.GetUserByPlatform(platformModel.Platform, platformModel.ID, matchUsername ? platformModel.Username : null);
                 if (user == null)
                 {
                     return await this.CreateUserInternal(platformModel);

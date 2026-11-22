@@ -18,6 +18,9 @@ namespace MixItUp.Base.ViewModel.Chat.Twitch
         private const char SOHCharacter = (char)1;
         private static readonly string SlashMeAction = SOHCharacter.ToString() + "ACTION ";
 
+        internal static bool IsActionMessage(string text) => text != null && text.Length > SlashMeAction.Length &&
+            text.StartsWith(SlashMeAction, StringComparison.Ordinal) && text[text.Length - 1] == SOHCharacter;
+
         private const string TagMessageID = "msg-id";
         private const string MessageIDHighlightedMessage = "highlighted-message";
 
@@ -75,11 +78,10 @@ namespace MixItUp.Base.ViewModel.Chat.Twitch
             this.HasBits = (int.TryParse(message.Bits, out int bits) && bits > 0);
             this.IsHighlightedMessage = message.RawPacket.Tags.ContainsKey(TagMessageID) && message.RawPacket.Tags[TagMessageID].Equals(MessageIDHighlightedMessage);
 
-            if (message.Message.StartsWith(SlashMeAction) && message.Message.Last() == SOHCharacter)
+            if (IsActionMessage(message.Message))
             {
                 this.IsSlashMe = true;
-                string text = message.Message.Replace(SlashMeAction, string.Empty);
-                this.ProcessMessageContents(text.Substring(0, text.Length - 1));
+                this.ProcessMessageContents(message.Message.Substring(SlashMeAction.Length, message.Message.Length - SlashMeAction.Length - 1));
             }
             else
             {
@@ -142,6 +144,7 @@ namespace MixItUp.Base.ViewModel.Chat.Twitch
 
             this.HasBits = notification.cheer?.bits > 0;
             this.BitsAmount = notification.cheer?.bits ?? 0;
+            this.IsSlashMe = IsActionMessage(notification.message?.text);
             this.MessageType = notification.MessageType;
             this.IsHighlightedMessage =
                 notification.MessageType == ChatNotificationMessageType.power_ups_message_effect ||

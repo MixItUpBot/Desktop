@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
+    <DesktopEulaFile Condition="'$(DesktopEulaFile)' == '' and Exists('$(MSBuildThisFileDirectory)..\..\..\repos\Docs\Legal\Desktop\Embedded\End-User-License-Agreement.md')">$(MSBuildThisFileDirectory)..\..\..\repos\Docs\Legal\Desktop\Embedded\End-User-License-Agreement.md</DesktopEulaFile>
+    <DesktopEulaFile Condition="'$(DesktopEulaFile)' == ''">$(MSBuildThisFileDirectory)..\legal\EULA.md</DesktopEulaFile>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
 	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	<SelfContained>true</SelfContained>
@@ -10,8 +12,8 @@
     <AssemblyTitle>MixItUp.Client</AssemblyTitle>
     <Company>Blazing Cacti LLC</Company>
 		<Copyright>Copyright © 2026 Blazing Cacti LLC, All Rights Reserved.</Copyright>
-    <AssemblyVersion>1.8.213.0</AssemblyVersion>
-    <FileVersion>1.8.213.0</FileVersion>
+    <AssemblyVersion>1.8.230.0</AssemblyVersion>
+    <FileVersion>1.8.230.0</FileVersion>
 		<Version>1.8.210</Version>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
@@ -64,6 +66,10 @@ del $(TargetDir)MixItUp.zip</PostBuildEvent>
     		<FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup Label="Project References">
+    <EmbeddedResource Include="$(DesktopEulaFile)" LogicalName="MixItUp.EULA.md" />
+    <ProjectReference Include="..\MixItUp.Bootstrapper\MixItUp.Bootstrapper.csproj" ReferenceOutputAssembly="false" SkipGetTargetFrameworkProperties="true" GlobalPropertiesToRemove="RuntimeIdentifier;SelfContained;RuntimeFrameworkVersion;TargetFramework;OutDir" />
+    <Content Include="..\MixItUp.Bootstrapper\bin\$(Configuration)\net48\MixItUp.Bootstrapper.exe" Link="MixItUp.Bootstrapper.exe" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Compile Include="..\MixItUp.Bootstrapper\PendingUpdate.cs" Link="Services\PendingUpdate.cs" />
   <ProjectReference Include="..\APIs\MixItUp.API\MixItUp.API.csproj" />
     <ProjectReference Include="..\MixItUp.Base\MixItUp.Base.csproj" />
     <ProjectReference Include="..\MixItUp.Reporter\MixItUp.Reporter.csproj" />
@@ -92,6 +98,7 @@ del $(TargetDir)MixItUp.zip</PostBuildEvent>
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.8" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.142" />
 		<PackageReference Include="NAudio" Version="2.3.0" />
+		<PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="PixiEditor.ColorPicker" Version="3.4.2.3" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="4.1.3" />
@@ -140,6 +147,18 @@ del $(TargetDir)MixItUp.zip</PostBuildEvent>
 	<Resource Include="Assets\Images\vpzone-color_sm.png" />
 	<Resource Include="Assets\Images\vpzone-dark_lg.png" />
 	<Resource Include="Assets\Images\vpzone-light_lg.png" />
+	<Resource Include="Assets\Images\altstream-color_lg.png" />
+	<Resource Include="Assets\Images\altstream-color_sm.png" />
+	<Resource Include="Assets\Images\altstream-dark_lg.png" />
+	<Resource Include="Assets\Images\altstream-light_lg.png" />
+	<Resource Include="Assets\Images\joystick-color_lg.png" />
+	<Resource Include="Assets\Images\joystick-color_sm.png" />
+	<Resource Include="Assets\Images\joystick-dark_lg.png" />
+	<Resource Include="Assets\Images\joystick-light_lg.png" />
+	<Resource Include="Assets\Images\razo-color_lg.png" />
+	<Resource Include="Assets\Images\razo-color_sm.png" />
+	<Resource Include="Assets\Images\razo-dark_lg.png" />
+	<Resource Include="Assets\Images\razo-light_lg.png" />
     <Resource Include="Assets\Images\twitter-color_sm.png" /> 
     <Resource Include="Assets\Images\wiki-color_sm.png" />  
     <Resource Include="Assets\Images\youtube-color_lg.png" />

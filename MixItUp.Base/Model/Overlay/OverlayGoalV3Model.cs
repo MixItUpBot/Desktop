@@ -171,12 +171,19 @@ namespace MixItUp.Base.Model.Overlay
         {
             get
             {
-                if (this.ResetTracker?.Amount > 0)
+                if (this.ResetTracker?.Amount > 0 && this.ResetTracker.Type != ResetTypeEnum.None)
                 {
-                    return this.ResetTracker.GetEndDateTimeOffset().GetAge();
+                    return FormatRemainingTime(this.ResetTracker.GetEndDateTimeOffset(), DateTimeOffset.Now);
                 }
                 return string.Empty;
             }
+        }
+
+        internal static string FormatRemainingTime(DateTimeOffset end, DateTimeOffset now)
+        {
+            int days = (end - now).Days;
+            if (days < 1) { return "<1 " + Resources.Day; }
+            return days + " " + (days == 1 ? Resources.Day : Resources.TimeDays);
         }
 
         [JsonIgnore]
@@ -227,9 +234,9 @@ namespace MixItUp.Base.Model.Overlay
             this.CurrentSegment = this.Segments.First();
             this.ProgressSegments();
 
-            if (this.ResetTracker?.Amount > 0 && this.ResetTracker.MustBeReset())
+            this.ResetTracker.UpgradeToNewerFormat();
+            if (this.ResetTracker.MustBeReset())
             {
-                this.ResetTracker.PerformReset();
                 await this.Reset();
             }
         }

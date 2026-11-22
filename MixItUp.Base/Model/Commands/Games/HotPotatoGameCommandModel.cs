@@ -79,7 +79,7 @@ namespace MixItUp.Base.Model.Commands.Games
                 return;
             }
 
-            await this.SetSelectedUser(this.PlayerSelectionType, parameters);
+            await this.SetSelectedUser(this.PlayerSelectionType, parameters, excludeThrower: true);
             if (parameters.TargetUser != null && !parameters.IsTargetUserSelf)
             {
                 if (this.startParameters == null)

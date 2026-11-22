@@ -25,7 +25,6 @@ namespace MixItUp.WPF
     /// </summary>
     public partial class LoginWindow : LoadingWindowBase
     {
-        private bool updateFound = false;
         private OutageModel currentOutage;
         private string _patreonMemberSocialLink;
 
@@ -64,7 +63,6 @@ namespace MixItUp.WPF
 
             await CheckForOutages();
 
-            await this.CheckForUpdates();
 
             bool isBuildExpired = await Util.BuildExpirationHelper.CheckBuildExpiration();
             if (isBuildExpired)
@@ -107,24 +105,18 @@ namespace MixItUp.WPF
                 {
                     await Task.Delay(5000);
 
-                    if (!updateFound)
+                    if (await this.ExistingSettingLogin(autoLogInSettings))
                     {
-                        if (await this.ExistingSettingLogin(autoLogInSettings))
+                        LoadingWindowBase newWindow = null;
+                        if (ChannelSession.Settings.ReRunWizard)
                         {
-                            LoadingWindowBase newWindow = null;
-                            if (ChannelSession.Settings.ReRunWizard)
-                            {
-                                newWindow = new NewUserWizardWindow();
-                            }
-                            else
-                            {
-                                newWindow = new MainWindow();
-                            }
-                            ShowMainWindow(newWindow);
-                            this.Hide();
-                            this.Close();
-                            return;
+                            newWindow = new NewUserWizardWindow();
                         }
+                        else { newWindow = new MainWindow(); }
+                        ShowMainWindow(newWindow);
+                        this.Hide();
+                        this.Close();
+                        return;
                     }
                 }
             }
@@ -248,24 +240,6 @@ namespace MixItUp.WPF
             });
         }
 
-        private async Task CheckForUpdates()
-        {
-            MixItUpService mixItUpService = ServiceManager.Get<MixItUpService>();
-            if (mixItUpService == null) { return; }
-
-            var result = await mixItUpService.GetLatestUpdate();
-            if (result == null) { return; }
-
-            var (check, manifest) = result.Value;
-            Version currentVersion = VersionHelper.GetCurrentVersion();
-            bool isMandatory = currentVersion < check.GetNormalizedMinimumVersion();
-
-            updateFound = true;
-            UpdateWindow window = new UpdateWindow(manifest, check.channel, isMandatory, check.minimumVersion);
-            window.Owner = this;
-            window.ShowDialog();
-        }
-
         private async Task CheckForOutages()
         {
             try
@@ -349,10 +323,15 @@ namespace MixItUp.WPF
         private async void ChannelSession_OnRestartRequested(object sender, EventArgs e)
         {
             await ChannelSession.AppSettings.Save();
-
+            Services.BackgroundUpdates.Relaunch(null);
             this.Close();
+        }
 
-            ServiceManager.Get<IProcessService>().LaunchProgram(Environment.ProcessPath);
+        internal async void RestartForUpdate()
+        {
+            await ChannelSession.AppSettings.Save();
+            Services.BackgroundUpdates.Relaunch(Guid.Empty);
+            this.Close();
         }
 
         public void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)

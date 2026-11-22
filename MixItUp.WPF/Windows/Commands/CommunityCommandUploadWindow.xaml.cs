@@ -90,6 +90,7 @@ namespace MixItUp.WPF.Windows.Commands
                         case CommandTypeEnum.KickKicks: this.uploadCommand.Tags.Add(CommunityCommandTagEnum.KickKicks); break;
                         case CommandTypeEnum.VeloraChannelPoints: this.uploadCommand.Tags.Add(CommunityCommandTagEnum.VeloraChannelPoints); break;
                         case CommandTypeEnum.VPZoneChannelPoints: this.uploadCommand.Tags.Add(CommunityCommandTagEnum.VPZoneChannelPoints); break;
+                        case CommandTypeEnum.AltStreamChannelPoints: this.uploadCommand.Tags.Add(CommunityCommandTagEnum.AltStreamChannelPoints); break;
                     }
                 }
                 else

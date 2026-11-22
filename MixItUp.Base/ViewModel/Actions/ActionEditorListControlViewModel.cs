@@ -88,6 +88,7 @@ namespace MixItUp.Base.ViewModel.Actions
                         case ActionTypeEnum.VConnect: editorViewModel = new VConnectActionEditorControlViewModel(); break;
                         case ActionTypeEnum.Veadotube: editorViewModel = new VeadotubeActionEditorControlViewModel(); break;
                         case ActionTypeEnum.Velora: editorViewModel = new VeloraActionEditorControlViewModel(); break;
+                        case ActionTypeEnum.AltStream: editorViewModel = new AltStreamActionEditorControlViewModel(); break;
                         case ActionTypeEnum.VPZone: editorViewModel = new VPZoneActionEditorControlViewModel(); break;
                         case ActionTypeEnum.Voicemod: editorViewModel = new VoicemodActionEditorControlViewModel(); break;
                         case ActionTypeEnum.VTSPog: editorViewModel = new VTSPogActionEditorControlViewModel(); break;
@@ -276,6 +277,7 @@ namespace MixItUp.Base.ViewModel.Actions
                 case ActionTypeEnum.VConnect: return new VConnectActionEditorControlViewModel((VConnectActionModel)action);
                 case ActionTypeEnum.Veadotube: return new VeadotubeActionEditorControlViewModel((VeadotubeActionModel)action);
                 case ActionTypeEnum.Velora: return new VeloraActionEditorControlViewModel((VeloraActionModel)action);
+                case ActionTypeEnum.AltStream: return new AltStreamActionEditorControlViewModel((AltStreamActionModel)action);
                 case ActionTypeEnum.VPZone: return new VPZoneActionEditorControlViewModel((VPZoneActionModel)action);
                 case ActionTypeEnum.Voicemod: return new VoicemodActionEditorControlViewModel((VoicemodActionModel)action);
                 case ActionTypeEnum.VTSPog: return new VTSPogActionEditorControlViewModel((VTSPogActionModel)action);

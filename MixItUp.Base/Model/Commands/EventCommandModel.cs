@@ -24,6 +24,7 @@ namespace MixItUp.Base.Model.Commands
             {
                 // Generic
                 case EventTypeEnum.ChannelRaided:
+                case EventTypeEnum.AltStreamChannelRaided:
                     specialIdentifiers["raidviewercount"] = "123";
                     break;
                 case EventTypeEnum.ChannelSubscribed:
@@ -344,6 +345,36 @@ namespace MixItUp.Base.Model.Commands
                     specialIdentifiers["cheeramount"] = "100";
                     specialIdentifiers["voltsamount"] = "100";
                     specialIdentifiers["message"] = "Test Message";
+                    break;
+
+                case EventTypeEnum.AltStreamChannelPointsRedeemed:
+                    specialIdentifiers["rewardid"] = "5";
+                    specialIdentifiers["redemptionid"] = "42";
+                    specialIdentifiers["rewardcost"] = "100";
+                    specialIdentifiers["rewardname"] = "Test Reward";
+                    specialIdentifiers["message"] = "Test Message";
+                    break;
+                case EventTypeEnum.AltStreamMessagePinned:
+                case EventTypeEnum.AltStreamMessageUnpinned:
+                case EventTypeEnum.AltStreamOutgoingRaidStarted:
+                case EventTypeEnum.AltStreamOutgoingRaidCancelled:
+                case EventTypeEnum.AltStreamShoutout:
+                case EventTypeEnum.AltStreamSystemMessage:
+                    specialIdentifiers["altstreamtargetchannel"] = "testchannel";
+                    specialIdentifiers["message"] = "Test Message";
+                    specialIdentifiers["messageid"] = "42";
+                    specialIdentifiers["raidviewercount"] = "12";
+                    break;
+                case EventTypeEnum.JoystickChannelTipped:
+                    specialIdentifiers["cheeramount"] = specialIdentifiers["joysticktokens"] = "100";
+                    specialIdentifiers["message"] = "Test Message";
+                    break;
+                case EventTypeEnum.JoystickChannelSubscribed:
+                case EventTypeEnum.JoystickChannelResubscribed:
+                    specialIdentifiers["usersubmonths"] = "1";
+                    break;
+                case EventTypeEnum.JoystickChannelMassSubscriptionsGifted:
+                    specialIdentifiers["subsgiftedamount"] = "5";
                     break;
 
                 // VPZone
@@ -695,6 +726,14 @@ namespace MixItUp.Base.Model.Commands
             {
                 specialIdentifiers[SpecialIdentifierStringBuilder.StreamingPlatformSpecialIdentifier] = StreamingPlatformTypeEnum.Velora.ToString();
             }
+            else if (eventNumber >= 12000 && eventNumber < 12100)
+            {
+                specialIdentifiers[SpecialIdentifierStringBuilder.StreamingPlatformSpecialIdentifier] = StreamingPlatformTypeEnum.AltStream.ToString();
+            }
+            else if (eventNumber >= 900 && eventNumber < 1000)
+            {
+                specialIdentifiers[SpecialIdentifierStringBuilder.StreamingPlatformSpecialIdentifier] = StreamingPlatformTypeEnum.Joystick.ToString();
+            }
             else if (eventNumber >= 800 && eventNumber < 900)
             {
                 specialIdentifiers[SpecialIdentifierStringBuilder.StreamingPlatformSpecialIdentifier] = StreamingPlatformTypeEnum.VPZone.ToString();
@@ -767,7 +806,7 @@ namespace MixItUp.Base.Model.Commands
                 {
                     return true;
                 }
-                else if (this.EventType == EventTypeEnum.VPZoneChannelFollowed)
+                else if (this.EventType == EventTypeEnum.VPZoneChannelFollowed || this.EventType == EventTypeEnum.JoystickChannelFollowed || this.EventType == EventTypeEnum.AltStreamChannelFollowed)
                 {
                     return true;
                 }

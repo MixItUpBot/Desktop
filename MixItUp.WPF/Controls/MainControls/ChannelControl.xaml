@@ -266,7 +266,7 @@
             </Border>
             <!-- Velora -->
             <Border Visibility="{Binding IsVeloraConnected, Converter={StaticResource BooleanToVisibilityConverter}}" BorderBrush="{DynamicResource MaterialDesign.Brush.Primary.Dark}" BorderThickness="1">
-                <Expander DataContext="{Binding Velora}" VerticalContentAlignment="Top" HorizontalContentAlignment="Stretch" Background="{DynamicResource MaterialDesign.Brush.Primary}" IsExpanded="True" AutomationProperties.AutomationId="KickChannel.Expander">
+                <Expander DataContext="{Binding Velora}" VerticalContentAlignment="Top" HorizontalContentAlignment="Stretch" Background="{DynamicResource MaterialDesign.Brush.Primary}" IsExpanded="True" AutomationProperties.AutomationId="VeloraChannel.Expander">
                     <Expander.Header>
                         <Grid Background="Transparent">
                             <Grid.ColumnDefinitions>
@@ -297,12 +297,12 @@
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
 
-                                        <ComboBox Grid.Column="0" Text="{Binding Title}" ItemsSource="{Binding PastTitles}" IsEditable="True" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.Title}" Style="{StaticResource MaterialDesignFloatingHintComboBox}" AutomationProperties.AutomationId="KickChannel.TitleComboBox" AutomationProperties.Name="{x:Static resx:Resources.Title}" />
+                                        <ComboBox Grid.Column="0" Text="{Binding Title}" ItemsSource="{Binding PastTitles}" IsEditable="True" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.Title}" Style="{StaticResource MaterialDesignFloatingHintComboBox}" AutomationProperties.AutomationId="VeloraChannel.TitleComboBox" AutomationProperties.Name="{x:Static resx:Resources.Title}" />
 
-                                        <ComboBox Grid.Column="2" Text="{Binding Category}" ItemsSource="{Binding PastCategories}" IsEditable="True" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.Category}" Style="{StaticResource MaterialDesignFloatingHintComboBox}" AutomationProperties.AutomationId="KickChannel.CategoryComboBox" AutomationProperties.Name="{x:Static resx:Resources.Category}" />
+                                        <ComboBox Grid.Column="2" Text="{Binding Category}" ItemsSource="{Binding PastCategories}" IsEditable="True" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.Category}" Style="{StaticResource MaterialDesignFloatingHintComboBox}" AutomationProperties.AutomationId="VeloraChannel.CategoryComboBox" AutomationProperties.Name="{x:Static resx:Resources.Category}" />
                                     </Grid>
 
-                                    <Button Grid.Row="2" Content="{x:Static resx:Resources.Update}" Command="{Binding UpdateChannelInformationCommand}" Width="150" AutomationProperties.AutomationId="KickChannel.UpdateChannelInfoButton" />
+                                    <Button Grid.Row="2" Content="{x:Static resx:Resources.Update}" Command="{Binding UpdateChannelInformationCommand}" Width="150" AutomationProperties.AutomationId="VeloraChannel.UpdateChannelInfoButton" />
                                 </Grid>
                             </GroupBox>
                         </Grid>
@@ -348,6 +348,109 @@
                                     </Grid>
 
                                     <Button Grid.Row="2" Content="{x:Static resx:Resources.Update}" Command="{Binding UpdateChannelInformationCommand}" Width="150" AutomationProperties.AutomationId="VPZoneChannel.UpdateChannelInfoButton" />
+                                </Grid>
+                            </GroupBox>
+                        </Grid>
+                    </Grid>
+                </Expander>
+            </Border>
+            <!-- Joystick -->
+            <Border Visibility="{Binding IsJoystickConnected, Converter={StaticResource BooleanToVisibilityConverter}}" BorderBrush="{DynamicResource MaterialDesign.Brush.Primary.Dark}" BorderThickness="1">
+                <Expander DataContext="{Binding Joystick}" VerticalContentAlignment="Top" HorizontalContentAlignment="Stretch" Background="{DynamicResource MaterialDesign.Brush.Primary}" IsExpanded="True" AutomationProperties.AutomationId="JoystickChannel.Expander">
+                    <Expander.Header>
+                        <Grid Background="Transparent">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="20" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Image Grid.Column="0" Source="/Assets/Images/joystick-color_sm.png" Height="24" Width="24" VerticalAlignment="Center" />
+
+                            <TextBlock Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{x:Static resx:Resources.Joystick}" Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
+                        </Grid>
+                    </Expander.Header>
+
+                    <Grid Background="{DynamicResource MaterialDesign.Brush.Background}">
+                        <Grid Margin="10">
+                            <GroupBox Header="{x:Static resx:Resources.ChannelInfo}">
+                                <Grid Margin="10">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="20" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBox Grid.Row="0" Text="{Binding Title}" IsEnabled="{Binding CanUpdateTitle}" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.Title}" />
+
+                                    <Button Grid.Row="2" Visibility="{Binding CanUpdateTitle, Converter={StaticResource BooleanToVisibilityConverter}}" Content="{x:Static resx:Resources.Update}" Command="{Binding UpdateChannelInformationCommand}" Width="150" AutomationProperties.AutomationId="JoystickChannel.UpdateChannelInfoButton" />
+                                </Grid>
+                            </GroupBox>
+                        </Grid>
+                    </Grid>
+                </Expander>
+            </Border>
+            <!-- AltStream -->
+            <Border Visibility="{Binding IsAltStreamConnected, Converter={StaticResource BooleanToVisibilityConverter}}" BorderBrush="{DynamicResource MaterialDesign.Brush.Primary.Dark}" BorderThickness="1">
+                <Expander DataContext="{Binding AltStream}" VerticalContentAlignment="Top" HorizontalContentAlignment="Stretch" Background="{DynamicResource MaterialDesign.Brush.Primary}" IsExpanded="True" AutomationProperties.AutomationId="AltStreamChannel.Expander">
+                    <Expander.Header>
+                        <Grid Background="Transparent">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="20" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Image Grid.Column="0" Source="/Assets/Images/altstream-color_sm.png" Height="24" Width="24" VerticalAlignment="Center" />
+
+                            <TextBlock Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" Text="AltStream" Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
+                        </Grid>
+                    </Expander.Header>
+
+                    <Grid Background="{DynamicResource MaterialDesign.Brush.Background}">
+                        <Grid Margin="10">
+                            <GroupBox Header="{x:Static resx:Resources.ChannelInfo}">
+                                <Grid Margin="10">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="20" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBox Grid.Row="0" Text="{Binding Title}" IsReadOnly="True" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.Title}" />
+
+                                </Grid>
+                            </GroupBox>
+                        </Grid>
+                    </Grid>
+                </Expander>
+            </Border>
+            <!-- Razo -->
+            <Border Visibility="{Binding IsRazoConnected, Converter={StaticResource BooleanToVisibilityConverter}}" BorderBrush="{DynamicResource MaterialDesign.Brush.Primary.Dark}" BorderThickness="1">
+                <Expander DataContext="{Binding Razo}" VerticalContentAlignment="Top" HorizontalContentAlignment="Stretch" Background="{DynamicResource MaterialDesign.Brush.Primary}" IsExpanded="True" AutomationProperties.AutomationId="RazoChannel.Expander">
+                    <Expander.Header>
+                        <Grid Background="Transparent">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="20" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Image Grid.Column="0" Source="/Assets/Images/razo-color_sm.png" Height="24" Width="24" VerticalAlignment="Center" />
+
+                            <TextBlock Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Razo" Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
+                        </Grid>
+                    </Expander.Header>
+
+                    <Grid Background="{DynamicResource MaterialDesign.Brush.Background}">
+                        <Grid Margin="10">
+                            <GroupBox Header="{x:Static resx:Resources.ChannelInfo}">
+                                <Grid Margin="10">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="20" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBox Grid.Row="0" Text="{Binding Title}" IsReadOnly="True" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.Title}" />
+
                                 </Grid>
                             </GroupBox>
                         </Grid>

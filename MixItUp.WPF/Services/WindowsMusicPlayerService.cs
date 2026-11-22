@@ -104,7 +104,7 @@ namespace MixItUp.WPF.Services
         private List<MusicPlayerSong> playbackHistory = new List<MusicPlayerSong>();
         private bool playbackSessionActive = false;
 
-        private CancellationTokenSource backgroundPlayThreadTokenSource = new CancellationTokenSource();
+
         private WaveOutEvent currentWaveOutEvent;
         private WaveStream currentWaveStream;
 
@@ -240,22 +240,7 @@ namespace MixItUp.WPF.Services
             {
                 await this.sempahore.WaitAsync();
 
-                this.State = MusicPlayerState.Stopped;
-
-                if (this.currentWaveOutEvent != null)
-                {
-                    this.currentWaveOutEvent.Stop();
-                }
-                this.currentWaveOutEvent = null;
-                this.currentWaveStream = null;
-
-                if (this.backgroundPlayThreadTokenSource != null)
-                {
-                    this.backgroundPlayThreadTokenSource.Cancel();
-                }
-                this.backgroundPlayThreadTokenSource = null;
-                this.stopOnSpecificSongCompletion = false;
-                this.stopOnSpecificSong = null;
+                this.StopCurrentSong();
             }
             catch (Exception ex)
             {
@@ -267,17 +252,31 @@ namespace MixItUp.WPF.Services
             }
         }
 
-        public async Task Next()
+        private void StopCurrentSong()
         {
-            MusicPlayerSong previousSong = this.CurrentSong;
+            var output = this.currentWaveOutEvent;
+            var stream = this.currentWaveStream;
+            this.currentWaveOutEvent = null;
+            this.currentWaveStream = null;
+            this.State = MusicPlayerState.Stopped;
+            this.stopOnSpecificSongCompletion = false;
+            this.stopOnSpecificSong = null;
+            try { output?.Dispose(); }
+            finally { stream?.Dispose(); }
+        }
 
-            await this.Stop();
+        public Task Next() => this.Next(null);
 
+        private async Task Next(WaveOutEvent completedOutput)
+        {
             bool startPlaying = false;
             try
             {
                 await this.sempahore.WaitAsync();
 
+                if (completedOutput != null && completedOutput != this.currentWaveOutEvent) { return; }
+                var previousSong = this.CurrentSong;
+                this.StopCurrentSong();
                 if (this.songs.Count > 0)
                 {
                     if (previousSong != null)
@@ -899,19 +898,14 @@ namespace MixItUp.WPF.Services
                 return;
             }
 
-            if (this.backgroundPlayThreadTokenSource != null)
-            {
-                this.backgroundPlayThreadTokenSource.Cancel();
-            }
-            this.backgroundPlayThreadTokenSource = new CancellationTokenSource();
-
             WindowsAudioService audioService = ServiceManager.Get<IAudioService>() as WindowsAudioService;
             Tuple<WaveOutEvent, WaveStream> output = audioService.PlayWithOutput(song.FilePath, this.Volume, ChannelSession.Settings.MusicPlayerAudioOutput);
             if (output != null)
             {
                 this.currentWaveOutEvent = output.Item1;
                 this.currentWaveStream = output.Item2;
-                Task backgroundPlayThreadTask = Task.Run(async () => await this.PlayBackground(this.currentWaveOutEvent, song), this.backgroundPlayThreadTokenSource.Token);
+                output.Item1.PlaybackStopped += this.PlaybackStopped;
+                if (output.Item1.PlaybackState == PlaybackState.Stopped) { _ = this.CompleteSong(output.Item1); }
             }
             else
             {
@@ -934,13 +928,12 @@ namespace MixItUp.WPF.Services
                 previousPosition = this.currentWaveStream.CurrentTime;
             }
 
-            WaveOutEvent previousWaveOutEvent = this.currentWaveOutEvent;
+            var previousOutput = this.currentWaveOutEvent;
+            var previousStream = this.currentWaveStream;
             this.currentWaveOutEvent = null;
             this.currentWaveStream = null;
-            if (previousWaveOutEvent != null)
-            {
-                previousWaveOutEvent.Stop();
-            }
+            try { previousOutput?.Dispose(); }
+            finally { previousStream?.Dispose(); }
 
             this.PlayInternal(song);
 
@@ -958,45 +951,34 @@ namespace MixItUp.WPF.Services
             }
         }
 
-        private async Task PlayBackground(WaveOutEvent waveOutEvent, MusicPlayerSong song)
+        private async void PlaybackStopped(object sender, StoppedEventArgs args)
         {
-            using (waveOutEvent)
-            {
-                while (waveOutEvent != null && (waveOutEvent.PlaybackState == PlaybackState.Playing || waveOutEvent.PlaybackState == PlaybackState.Paused))
-                {
-                    await Task.Delay(500);
-                }
-                waveOutEvent.Dispose();
+            try { await this.CompleteSong((WaveOutEvent)sender); }
+            catch (Exception ex) { Logger.Log(ex); }
+        }
 
-                if (this.currentWaveOutEvent == waveOutEvent && this.CurrentSong == song && this.State == MusicPlayerState.Playing)
+        private async Task CompleteSong(WaveOutEvent output)
+        {
+            await this.sempahore.WaitAsync();
+            try
+            {
+                if (this.currentWaveOutEvent != output || this.State != MusicPlayerState.Playing) { return; }
+                if (this.stopOnSpecificSongCompletion && this.CurrentSong == this.stopOnSpecificSong)
                 {
-                    if (this.stopOnSpecificSongCompletion && song == this.stopOnSpecificSong)
-                    {
-                        await this.Stop();
-                    }
-                    else if (this.RepeatOne)
-                    {
-                        await this.sempahore.WaitAsync();
-                        try
-                        {
-                            if (this.currentWaveOutEvent == waveOutEvent && this.CurrentSong == song && this.State == MusicPlayerState.Playing)
-                            {
-                                this.currentWaveStream?.Dispose();
-                                this.currentWaveStream = null;
-                                this.PlayInternal(song);
-                            }
-                        }
-                        finally
-                        {
-                            this.sempahore.Release();
-                        }
-                    }
-                    else
-                    {
-                        await this.Next();
-                    }
+                    this.StopCurrentSong();
+                    return;
+                }
+                if (this.RepeatOne)
+                {
+                    var song = this.CurrentSong;
+                    this.StopCurrentSong();
+                    this.State = MusicPlayerState.Playing;
+                    this.PlayInternal(song);
+                    return;
                 }
             }
+            finally { this.sempahore.Release(); }
+            await this.Next(output);
         }
 
         private bool PickNextShuffleSong()

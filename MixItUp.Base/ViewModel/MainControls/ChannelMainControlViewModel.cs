@@ -1,4 +1,4 @@
-﻿using Google.Apis.YouTube.v3.Data;
+using Google.Apis.YouTube.v3.Data;
 using MixItUp.Base.Model;
 using MixItUp.Base.Model.Kick.Categories;
 using MixItUp.Base.Model.Kick.Common;
@@ -13,6 +13,9 @@ using MixItUp.Base.Services.Kick.New;
 using MixItUp.Base.Services.Twitch.New;
 using MixItUp.Base.Services.Velora.New;
 using MixItUp.Base.Services.VPZone.New;
+using MixItUp.Base.Services.Joystick;
+using MixItUp.Base.Services.AltStream;
+using MixItUp.Base.Services.Razo;
 using MixItUp.Base.Services.YouTube.New;
 using MixItUp.Base.Util;
 using MixItUp.Base.ViewModel.Kick;
@@ -446,6 +449,30 @@ namespace MixItUp.Base.ViewModel.MainControls
         protected override Task SearchChannelsToRaid() { return Task.CompletedTask; }
     }
 
+    public class JoystickChannelControlViewModel : PlatformChannelControlViewModelBase
+    {
+        public JoystickChannelControlViewModel() { this.Platform = StreamingPlatformTypeEnum.Joystick; }
+        public bool CanUpdateTitle => ServiceManager.Get<JoystickSession>().Permissions.Contains("stream:manage");
+        protected override Task<Result> UpdateChannelInformation() => ServiceManager.Get<JoystickSession>().SetStreamTitle(this.Title);
+        protected override Task SearchChannelsToRaid() => Task.CompletedTask;
+    }
+
+    public class AltStreamChannelControlViewModel : PlatformChannelControlViewModelBase
+    {
+        public AltStreamChannelControlViewModel() { this.Platform = StreamingPlatformTypeEnum.AltStream; }
+        public bool CanUpdateTitle => false;
+        protected override Task<Result> UpdateChannelInformation() => Task.FromResult(new Result(false));
+        protected override Task SearchChannelsToRaid() => Task.CompletedTask;
+    }
+
+    public class RazoChannelControlViewModel : PlatformChannelControlViewModelBase
+    {
+        public RazoChannelControlViewModel() { this.Platform = StreamingPlatformTypeEnum.Razo; }
+        public bool CanUpdateTitle => false;
+        protected override Task<Result> UpdateChannelInformation() => Task.FromResult(new Result(false));
+        protected override Task SearchChannelsToRaid() => Task.CompletedTask;
+    }
+
     public abstract class PlatformChannelControlViewModelBase : UIViewModelBase
     {
         public class ChannelToRaidItemViewModel : UIViewModelBase
@@ -594,7 +621,7 @@ namespace MixItUp.Base.ViewModel.MainControls
         {
             StreamingPlatformSessionBase session = StreamingPlatforms.GetPlatformSession(this.Platform);
 
-            await session.RefreshDetails();
+            if ((await AsyncRunner.RunAsync(session.RefreshDetails()))?.Success != true) { return; }
 
             this.Title = session.StreamTitle;
             this.Category = session.StreamCategoryName;
@@ -636,6 +663,9 @@ namespace MixItUp.Base.ViewModel.MainControls
         public VeloraChannelControlViewModel Velora { get; set; } = new VeloraChannelControlViewModel();
 
         public VPZoneChannelControlViewModel VPZone { get; set; } = new VPZoneChannelControlViewModel();
+        public JoystickChannelControlViewModel Joystick { get; set; } = new JoystickChannelControlViewModel();
+        public AltStreamChannelControlViewModel AltStream { get; set; } = new AltStreamChannelControlViewModel();
+        public RazoChannelControlViewModel Razo { get; set; } = new RazoChannelControlViewModel();
 
         public bool IsTwitchConnected { get { return ServiceManager.Get<TwitchSession>().IsConnected; } }
 
@@ -646,8 +676,19 @@ namespace MixItUp.Base.ViewModel.MainControls
         public bool IsVeloraConnected { get { return ServiceManager.Get<VeloraSession>().IsConnected; } }
 
         public bool IsVPZoneConnected { get { return ServiceManager.Get<VPZoneSession>().IsConnected; } }
+        public bool IsJoystickConnected { get { return ServiceManager.Get<JoystickSession>().IsConnected; } }
+        public bool IsAltStreamConnected { get { return ServiceManager.Get<AltStreamSession>().IsConnected; } }
+        public bool IsRazoConnected { get { return ServiceManager.Get<RazoSession>().IsConnected; } }
 
         public ChannelMainControlViewModel(MainWindowViewModel windowViewModel) : base(windowViewModel) { }
+
+        public async Task RefreshAccount(ChannelChatSessionBase session)
+        {
+            this.NotifyPropertyChanged("Is" + session.Platform + "Connected");
+            if (!session.IsConnected) return;
+            if (session.Platform == StreamingPlatformTypeEnum.AltStream) await this.AltStream.OnVisible();
+            if (session.Platform == StreamingPlatformTypeEnum.Razo) await this.Razo.OnVisible();
+        }
 
         protected override async Task OnOpenInternal()
         {
@@ -675,12 +716,33 @@ namespace MixItUp.Base.ViewModel.MainControls
             {
                 await this.VPZone.OnOpen();
             }
+            if (this.IsJoystickConnected)
+            {
+                await this.Joystick.OnOpen();
+            }
+            if (this.IsAltStreamConnected)
+            {
+                await this.AltStream.OnOpen();
+            }
+            if (this.IsRazoConnected)
+            {
+                await this.Razo.OnOpen();
+            }
 
             await base.OnOpenInternal();
         }
 
         protected override async Task OnVisibleInternal()
         {
+            this.NotifyPropertyChanged(nameof(IsTwitchConnected));
+            this.NotifyPropertyChanged(nameof(IsYouTubeConnected));
+            this.NotifyPropertyChanged(nameof(IsKickConnected));
+            this.NotifyPropertyChanged(nameof(IsVeloraConnected));
+            this.NotifyPropertyChanged(nameof(IsVPZoneConnected));
+            this.NotifyPropertyChanged(nameof(IsJoystickConnected));
+            this.NotifyPropertyChanged(nameof(IsAltStreamConnected));
+            this.NotifyPropertyChanged(nameof(IsRazoConnected));
+
             if (this.IsTwitchConnected)
             {
                 await this.Twitch.OnVisible();
@@ -704,6 +766,18 @@ namespace MixItUp.Base.ViewModel.MainControls
             if (this.IsVPZoneConnected)
             {
                 await this.VPZone.OnVisible();
+            }
+            if (this.IsJoystickConnected)
+            {
+                await this.Joystick.OnVisible();
+            }
+            if (this.IsAltStreamConnected)
+            {
+                await this.AltStream.OnVisible();
+            }
+            if (this.IsRazoConnected)
+            {
+                await this.Razo.OnVisible();
             }
 
             await base.OnVisibleInternal();

@@ -5665,7 +5665,7 @@
     <value>OBS Studio サービスを使用すると、OBS Studio のインスタンスと直接対話して、シーンやソースに変更を加えることができます。</value>
   </data>
   <data name="OBSStudioInfo2" xml:space="preserve">
-    <value>OBS Studio の接続を有効にするには、OBS Studio で [ツール] -&gt; [obs-websocket] に進み、[WebSocket サーバーを有効にする] をクリックします。 「認証を有効にする」のチェックが外れているか、OBS Studio と Mix It Up の両方でパスワードを設定していることを確認してください。</value>
+    <value>OBS Studio の接続を有効にするには、OBS Studio で [ツール] -&gt; [obs-websocket] に進み、[WebSocket サーバーを有効にする] をクリックします。 「認証を有効にする」のチェックが外れているか、OBS Studio と Mix It Up の両方でパスワードを設定していることを確認してください。 このコンピューターでは ws://127.0.0.1:4455 を使用します。別のコンピューターでは ws:// に続けてホスト名と設定したポートを入力します。</value>
   </data>
   <data name="OBSStudioSuccess" xml:space="preserve">
     <value>OBS Studioの接続テストに成功しました！</value>
@@ -8876,7 +8876,7 @@ Twitch経由では、「マイレージは異なる場合があります」状�
     <value>Mix It Up コマンド|*.miucommand|すべてのファイル (*.*)|*.*</value>
   </data>
   <data name="SoundFileFormatFilter" xml:space="preserve">
-    <value>サウンド ファイル|*.mp3;*.wav;*.flac;*.mp4;*.m4a;*.aac;*.wma|すべてのファイル (*.*)|*.*</value>
+    <value>サウンド ファイル|*.mp3;*.wav;*.flac;*.mp4;*.m4a;*.aac;*.wma;*.ogg|すべてのファイル (*.*)|*.*</value>
   </data>
   <data name="TextFileFormatFilter" xml:space="preserve">
     <value>テキスト ファイル|*.txt|すべてのファイル (*.*)|*.*</value>
@@ -12642,5 +12642,204 @@ Mix It Upを使用するには、少なくとも1つのストリーミング・�
   <data name="VelumStudioInvalidConnection" xml:space="preserve"><value>ws:// または wss:// のアドレスを使用してください。証明書のフィンガープリントを指定する場合は、64 桁の16進数で入力してください。</value></data>
   <data name="RunHotKeyByName" xml:space="preserve">
     <value>名前でホットキーを実行</value>
+  </data>
+  <data name="HotKeyPress" xml:space="preserve">
+    <value>キー押下</value>
+  </data>
+  <data name="HotKeyDown" xml:space="preserve">
+    <value>キーを押したとき</value>
+  </data>
+  <data name="HotKeyUp" xml:space="preserve">
+    <value>キーを離したとき</value>
+  </data>
+  <data name="HotKeyTriggerMode" xml:space="preserve">
+    <value>起動条件</value>
+  </data>
+  <data name="HotKeyUnavailable" xml:space="preserve">
+    <value>このホットキーは使用できません。</value>
+  </data>
+  <data name="Joystick" xml:space="preserve">
+    <value>Joystick.tv</value>
+  </data>
+  <data name="LogInWithJoystick" xml:space="preserve">
+    <value>Joystick.tvでログイン</value>
+  </data>
+  <data name="LogOutOfJoystick" xml:space="preserve">
+    <value>Joystick.tvからログアウトする</value>
+  </data>
+  <data name="JoystickChannelStreamStart" xml:space="preserve">
+    <value>Joystick.tv・チャンネル・ストリーム・スタート</value>
+  </data>
+  <data name="JoystickChannelStreamStop" xml:space="preserve">
+    <value>Joystick.tv・チャンネル・ストリーム・ストップ</value>
+  </data>
+  <data name="JoystickChannelFollowed" xml:space="preserve">
+    <value>Joystick.tv チャンネルをフォローした</value>
+  </data>
+  <data name="JoystickChannelSubscribed" xml:space="preserve">
+    <value>Joystick.tv・チャンネル登録</value>
+  </data>
+  <data name="JoystickChannelResubscribed" xml:space="preserve">
+    <value>Joystick.tv・チャンネル再登録</value>
+  </data>
+  <data name="JoystickChannelSubscriptionGifted" xml:space="preserve">
+    <value>Joystick.tv・チャンネル購読プレゼント</value>
+  </data>
+  <data name="JoystickChannelMassSubscriptionsGifted" xml:space="preserve">
+    <value>Joystick.tv・チャンネル大量購読プレゼント</value>
+  </data>
+  <data name="JoystickChannelTipped" xml:space="preserve">
+    <value>Joystick.tv トークンチップ</value>
+  </data>
+  <data name="JoystickTipped" xml:space="preserve">
+    <value>Joystick.tv トークンチップ</value>
+  </data>
+  <data name="LatestJoystickTipped" xml:space="preserve">
+    <value>最新の Joystick.tv トークンチップ</value>
+  </data>
+  <data name="AltStreamChannelStreamStart" xml:space="preserve">
+    <value>AltStream・チャンネル・ストリーム・スタート</value>
+  </data>
+  <data name="AltStreamChannelStreamStop" xml:space="preserve">
+    <value>AltStream・チャンネル・ストリーム・ストップ</value>
+  </data>
+  <data name="AltStreamChannelRaided" xml:space="preserve">
+    <value>AltStreamチャンネルが襲撃されました</value>
+  </data>
+  <data name="AltStreamChannelPointsRedeemed" xml:space="preserve">
+    <value>AltStream チャンネルポイント引き換え</value>
+  </data>
+  <data name="AltStreamChannelPoints" xml:space="preserve">
+    <value>AltStream チャンネルポイント</value>
+  </data>
+  <data name="RazoChannelStreamStart" xml:space="preserve">
+    <value>Razo・チャンネル・ストリーム・スタート</value>
+  </data>
+  <data name="RazoChannelStreamStop" xml:space="preserve">
+    <value>Razo・チャンネル・ストリーム・ストップ</value>
+  </data>
+  <data name="RazoChannelFollowed" xml:space="preserve">
+    <value>Razo チャンネルをフォローした</value>
+  </data>
+  <data name="RazoChannelSubscribed" xml:space="preserve">
+    <value>Razo・チャンネル登録</value>
+  </data>
+  <data name="RazoChannelResubscribed" xml:space="preserve">
+    <value>Razo・チャンネル再登録</value>
+  </data>
+  <data name="RazoChannelMassSubscriptionsGifted" xml:space="preserve">
+    <value>Razo・チャンネル大量購読プレゼント</value>
+  </data>
+  <data name="RazoChannelRaided" xml:space="preserve">
+    <value>Razoチャンネルが襲撃されました</value>
+  </data>
+  <data name="RazoChannelClipCreated" xml:space="preserve">
+    <value>Razo チャンネルのクリップ作成</value>
+  </data>
+  <data name="Razo" xml:space="preserve">
+    <value>Razo</value>
+  </data>
+  <data name="AltStream" xml:space="preserve">
+    <value>AltStream</value>
+  </data>
+  <data name="RazoChannelGift" xml:space="preserve">
+    <value>Razos ギフト</value>
+  </data>
+  <data name="RazoGift" xml:space="preserve">
+    <value>Razos ギフト</value>
+  </data>
+  <data name="LatestRazoGift" xml:space="preserve">
+    <value>最新の Razos ギフト</value>
+  </data>
+  <data name="RazoChannelClipFeatured" xml:space="preserve">
+    <value>Razo · 注目のクリップ</value>
+  </data>
+  <data name="RazoChannelBoost" xml:space="preserve">
+    <value>Razo · チャンネルブースト</value>
+  </data>
+  <data name="RazoChannelJumpscare" xml:space="preserve">
+    <value>Razo · ジャンプスケア</value>
+  </data>
+  <data name="RazoPrivateCode" xml:space="preserve">
+    <value>プライベートコード</value>
+  </data>
+  <data name="RazoGiftedSubscriptions" xml:space="preserve">
+    <value>Razo · ギフトサブスク</value>
+  </data>
+  <data name="FulfillRedemption" xml:space="preserve">
+    <value>引き換えを完了</value>
+  </data>
+  <data name="RefundRedemption" xml:space="preserve">
+    <value>引き換えを払い戻す</value>
+  </data>
+  <data name="RedemptionIdentifier" xml:space="preserve">
+    <value>引き換え ID</value>
+  </data>
+  <data name="RestartToUpdate" xml:space="preserve">
+    <value>再起動して更新を適用</value>
+  </data>
+  <data name="ShowAltStreamChannelPoints" xml:space="preserve">
+    <value>AltStream チャンネルポイントを表示</value>
+  </data>
+  <data name="AlertAltStreamChannelPointRedeemed" xml:space="preserve">
+    <value>{0} が {1} を交換しました</value>
+    <comment>{0} is the name of the user, {1} is the name of the reward</comment>
+  </data>
+  <data name="AltStreamChannelFollowed" xml:space="preserve">
+    <value>AltStream の新規フォロワー</value>
+  </data>
+  <data name="AltStreamMessagePinned" xml:space="preserve">
+    <value>AltStream のメッセージ固定</value>
+  </data>
+  <data name="AltStreamMessageUnpinned" xml:space="preserve">
+    <value>AltStream のメッセージ固定解除</value>
+  </data>
+  <data name="AltStreamOutgoingRaidStarted" xml:space="preserve">
+    <value>AltStream の送信レイド開始</value>
+  </data>
+  <data name="AltStreamOutgoingRaidCancelled" xml:space="preserve">
+    <value>AltStream の送信レイド中止</value>
+  </data>
+  <data name="AltStreamShoutout" xml:space="preserve">
+    <value>AltStream のシャウトアウト</value>
+  </data>
+  <data name="AltStreamSystemMessage" xml:space="preserve">
+    <value>AltStream のシステムメッセージ</value>
+  </data>
+  <data name="GetChannelInfo" xml:space="preserve">
+    <value>チャンネル情報を取得</value>
+  </data>
+  <data name="GetChannelPanels" xml:space="preserve">
+    <value>チャンネルパネルを取得</value>
+  </data>
+  <data name="GetChannelRewards" xml:space="preserve">
+    <value>チャンネル報酬を取得</value>
+  </data>
+  <data name="GetChannelEmotes" xml:space="preserve">
+    <value>チャンネルのエモートを取得</value>
+  </data>
+  <data name="GetChannelTags" xml:space="preserve">
+    <value>チャンネルのタグを取得</value>
+  </data>
+  <data name="GetUserProfile" xml:space="preserve">
+    <value>ユーザープロフィールを取得</value>
+  </data>
+  <data name="GetUserSettings" xml:space="preserve">
+    <value>ユーザーの公開設定を取得</value>
+  </data>
+  <data name="GetUserAchievements" xml:space="preserve">
+    <value>ユーザーの実績を取得</value>
+  </data>
+  <data name="GetStickers" xml:space="preserve">
+    <value>ステッカーを取得</value>
+  </data>
+  <data name="GetModerators" xml:space="preserve">
+    <value>モデレーター一覧を取得</value>
+  </data>
+  <data name="GetRedemptions" xml:space="preserve">
+    <value>報酬の引き換え履歴を取得</value>
+  </data>
+  <data name="JoystickChatSendUnconfirmed" xml:space="preserve">
+    <value>Joystick.tv からチャットメッセージの配信確認がありませんでした。</value>
   </data>
 </root>

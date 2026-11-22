@@ -33,6 +33,7 @@ namespace MixItUp.Base.Model.Commands
         TwitchCustomPowerUp = 16,
         VeloraChannelPoints = 17,
         VPZoneChannelPoints = 18,
+        AltStreamChannelPoints = 19,
 
         // Specialty Command Types
         UserOnlyChat = 1000,

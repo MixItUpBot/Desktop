@@ -16,6 +16,9 @@ namespace MixItUp.WPF.Controls.Settings
     {
         public HotKeyConfiguration HotKey { get; set; }
 
+        public string TriggerName => ServiceManager.Get<IInputService>().IsHotKeyRegistered(this.HotKey)
+            ? EnumLocalizationHelper.GetLocalizedName(this.HotKey.Trigger) : Resources.HotKeyUnavailable;
+
         public CommandModelBase Command { get; set; }
 
         public string CommandName { get { return this.Command?.Name ?? Resources.Unknown; } }
@@ -70,6 +73,8 @@ namespace MixItUp.WPF.Controls.Settings
         protected override async Task InitializeInternal()
         {
             this.KeyComboBox.ItemsSource = keyboardKeys;
+            this.TriggerComboBox.ItemsSource = EnumHelper.GetEnumList<HotKeyTrigger>();
+            this.TriggerComboBox.SelectedIndex = 0;
             this.HotKeysDataGrid.ItemsSource = this.hotKeys;
 
             this.RefreshList();
@@ -141,9 +146,14 @@ namespace MixItUp.WPF.Controls.Settings
                 if (this.AltCheckBox.IsChecked.GetValueOrDefault()) { modifiers |= HotKeyModifiersEnum.Alt; }
                 HotKeyConfiguration hotKey = new HotKeyConfiguration(modifiers, (VirtualKeyEnum)this.KeyComboBox.SelectedItem, command.ID);
 
-                ChannelSession.Settings.HotKeys[hotKey.ToString()] = hotKey;
-
-                ServiceManager.Get<IInputService>().RegisterHotKey(hotKey.Modifiers, hotKey.VirtualKey);
+                hotKey.Trigger = (HotKeyTrigger)this.TriggerComboBox.SelectedItem;
+                if (!ServiceManager.Get<IInputService>().RegisterHotKey(hotKey))
+                {
+                    await DialogHelper.ShowMessage(MixItUp.Base.Resources.HotKeyUnavailable);
+                    return;
+                }
+                var previous = ChannelSession.Settings.HotKeys.FirstOrDefault(pair => pair.Value.Equals(hotKey));
+                ChannelSession.Settings.HotKeys[previous.Key ?? hotKey.ToString()] = hotKey;
 
                 this.RefreshList();
             });
@@ -155,7 +165,8 @@ namespace MixItUp.WPF.Controls.Settings
             HotKeyUI hotKey = (HotKeyUI)button.DataContext;
             if (hotKey != null)
             {
-                ChannelSession.Settings.HotKeys.Remove(hotKey.HotKey.ToString());
+                var binding = ChannelSession.Settings.HotKeys.First(pair => pair.Value.Equals(hotKey.HotKey));
+                ChannelSession.Settings.HotKeys.Remove(binding.Key);
                 ServiceManager.Get<IInputService>().UnregisterHotKey(hotKey.HotKey.Modifiers, hotKey.HotKey.VirtualKey);
             }
             this.RefreshList();

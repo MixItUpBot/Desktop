@@ -30,6 +30,53 @@ namespace MixItUp.Base.Services.Twitch.New
 {
     public class TwitchService : StreamingPlatformServiceBaseNew
     {
+        internal const string GuestStarScope = "channel:read:guest_star";
+
+        internal async Task<bool> HasGuestStarScope()
+        {
+            using var client = HttpConnectionFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("OAuth", this.OAuthToken.accessToken);
+            using var response = await client.GetAsync("https://id.twitch.tv/oauth2/validate");
+            response.EnsureSuccessStatusCode();
+            var validation = JObject.Parse(await response.Content.ReadAsStringAsync());
+            return validation["scopes"]?.Values<string>().Contains(GuestStarScope) == true;
+        }
+
+        internal async Task<string> GetSharedChatSessionID(string broadcasterID)
+        {
+            var result = await this.HttpClient.GetJObjectAsync($"shared_chat/session?broadcaster_id={broadcasterID}");
+            if (!(result?["data"] is JArray sessions)) { throw new InvalidOperationException("Missing Twitch Shared Chat session data"); }
+            return (string)sessions.FirstOrDefault()?["session_id"];
+        }
+
+        internal async Task<List<UserModel>> GetGuestStarParticipants(string host)
+        {
+            var result = await this.HttpClient.GetJObjectAsync($"guest_star/session?broadcaster_id={host}&moderator_id={host}");
+            var participants = new List<UserModel>();
+            foreach (var guest in GetGuestSlots(result, host))
+            {
+                string id = (string)guest["user_id"];
+                var user = await ServiceManager.Get<UserService>().GetUserByPlatform(StreamingPlatformTypeEnum.Twitch, platformID: id, performPlatformSearch: true);
+                var twitch = user?.GetPlatformData<MixItUp.Base.Model.User.Platform.TwitchUserPlatformV2Model>(StreamingPlatformTypeEnum.Twitch);
+                participants.Add(new UserModel
+                {
+                    id = id,
+                    login = (string)guest["user_login"] ?? twitch?.Username,
+                    display_name = (string)guest["user_display_name"] ?? twitch?.DisplayName,
+                    profile_image_url = twitch?.AvatarLink,
+                });
+            }
+            return participants;
+        }
+
+        internal static IEnumerable<JToken> GetGuestSlots(JObject response, string host)
+        {
+            var guests = response?["data"]?.SelectMany(session => session["guests"] as JArray ?? new JArray()) ?? Enumerable.Empty<JToken>();
+            var ids = new HashSet<string> { host };
+            return guests.Where(g => int.TryParse((string)g["slot_id"], out int slot) && slot >= 0 && !string.IsNullOrWhiteSpace((string)g["user_id"]))
+                .OrderBy(g => (int)g["slot_id"]).Where(g => ids.Add((string)g["user_id"])).ToArray();
+        }
+
         private const string OAuthBaseAddress = "https://id.twitch.tv/oauth2/authorize";
 
         private const string BaseAddressFormat = "https://api.twitch.tv/helix/";
@@ -73,19 +120,24 @@ namespace MixItUp.Base.Services.Twitch.New
         {
             this.IsConnected = false;
             if (string.IsNullOrWhiteSpace(token?.accessToken)) { return null; }
+            JObject validation = await GetTokenValidation(token.accessToken);
+            if (validation == null || !this.IsMigrationTokenUsable(validation, scopes, expectedUserID)) { return null; }
+            this.OAuthToken = JSONSerializerHelper.Clone<OAuthTokenModel>(token);
+            this.OAuthToken.clientID = this.ClientID;
+            this.OAuthToken.ScopeList = OAuthTokenModel.GenerateScopeList(scopes);
+            return validation;
+        }
+
+        internal virtual async Task<JObject> GetTokenValidation(string accessToken)
+        {
             using (HttpClient client = HttpConnectionFactory.CreateClient())
             {
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("OAuth", token.accessToken);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("OAuth", accessToken);
                 using (HttpResponseMessage response = await client.GetAsync("https://id.twitch.tv/oauth2/validate"))
                 {
                     if (response.StatusCode == HttpStatusCode.Unauthorized) { return null; }
                     response.EnsureSuccessStatusCode();
-                    JObject validation = JObject.Parse(await response.Content.ReadAsStringAsync());
-                    if (!this.IsMigrationTokenUsable(validation, scopes, expectedUserID)) { return null; }
-                    this.OAuthToken = JSONSerializerHelper.Clone<OAuthTokenModel>(token);
-                    this.OAuthToken.clientID = this.ClientID;
-                    this.OAuthToken.ScopeList = OAuthTokenModel.GenerateScopeList(scopes);
-                    return validation;
+                    return JObject.Parse(await response.Content.ReadAsStringAsync());
                 }
             }
         }
@@ -102,11 +154,12 @@ namespace MixItUp.Base.Services.Twitch.New
             return granted.IsSupersetOf(scopes) && validation["expires_in"]?.Type == JTokenType.Integer && (long)validation["expires_in"] >= 60;
         }
 
-        internal async Task<List<CustomChannelPointRewardModel>> GetMigrationRewards(string broadcasterID)
+        internal virtual async Task<List<CustomChannelPointRewardModel>> GetMigrationRewards(string broadcasterID, bool manageableOnly = true)
         {
             try
             {
-                JObject result = await this.HttpClient.GetJObjectAsync($"channel_points/custom_rewards?broadcaster_id={broadcasterID}&only_manageable_rewards=true");
+                string filter = manageableOnly ? "&only_manageable_rewards=true" : string.Empty;
+                JObject result = await this.HttpClient.GetJObjectAsync($"channel_points/custom_rewards?broadcaster_id={broadcasterID}{filter}");
                 if (!(result?["data"] is JArray rewards)) { throw new InvalidOperationException("Missing Twitch reward inventory"); }
                 return rewards.ToObject<List<CustomChannelPointRewardModel>>();
             }
@@ -1040,7 +1093,7 @@ namespace MixItUp.Base.Services.Twitch.New
             Dictionary<string, string> parameters = new Dictionary<string, string>()
             {
                 { "client_id", this.ClientID },
-                { "scope", ConvertClientScopesToString(scopes) },
+                { "scope", ConvertClientScopesToString(!this.useLegacyApplication && scopes.Contains("channel:manage:broadcast") ? scopes.Append(GuestStarScope) : scopes) },
                 { "response_type", "code" },
                 { "redirect_uri", LocalOAuthKestrelServer.REDIRECT_URL },
                 { "state", state },

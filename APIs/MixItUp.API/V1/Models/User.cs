@@ -20,6 +20,9 @@ namespace MixItUp.API.V1.Models
         public string VeloraID { get; set; }
         [DataMember]
         public string VPZoneID { get; set; }
+        public string JoystickID { get; set; }
+        public string RazoID { get; set; }
+        public string AltStreamID { get; set; }
 
         [DataMember]
         public string Username { get; set; }

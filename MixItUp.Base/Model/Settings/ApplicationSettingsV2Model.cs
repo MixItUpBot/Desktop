@@ -66,10 +66,11 @@ namespace MixItUp.Base.Model.Settings
             {
                 settings = new ApplicationSettingsV2Model()
                 {
+                    UpdateChannel = !settingsFileExists && BuildChannelHelper.GetReleaseChannel() == "internal" ? "Internal" : string.Empty,
                     PreviewProgram = !settingsFileExists && BuildChannelHelper.GetReleaseChannel() == "preview"
                 };
             }
-            bool settingsChanged = false;
+            bool settingsChanged = !settingsFileExists;
             if (settings.ForceResetPreviewProgram)
             {
                 settings.ForceResetPreviewProgram = false;

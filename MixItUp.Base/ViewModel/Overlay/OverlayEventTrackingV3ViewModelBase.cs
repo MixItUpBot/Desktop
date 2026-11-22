@@ -244,7 +244,40 @@ namespace MixItUp.Base.ViewModel.Overlay
                 this.NotifyPropertyChanged(nameof(this.VPZoneCheeredEquation));
             }
         }
+        public double JoystickTippedAmount
+        {
+            get { return this.joystickTippedAmount; }
+            set
+            {
+                this.joystickTippedAmount = value;
+                this.NotifyPropertyChanged();
+                this.NotifyPropertyChanged(nameof(this.JoystickTippedEquation));
+            }
+        }
+        public double RazoGiftAmount
+        {
+            get { return this.razoGiftAmount; }
+            set
+            {
+                this.razoGiftAmount = value;
+                this.NotifyPropertyChanged();
+                this.NotifyPropertyChanged(nameof(this.RazoGiftEquation));
+            }
+        }
+        public double RazoSubscriptionAmount
+        {
+            get { return this.razoSubscriptionAmount; }
+            set
+            {
+                this.razoSubscriptionAmount = value;
+                this.NotifyPropertyChanged();
+                this.NotifyPropertyChanged(nameof(this.RazoSubscriptionEquation));
+            }
+        }
         private double vpzoneCheeredAmount;
+        private double joystickTippedAmount;
+        private double razoGiftAmount;
+        private double razoSubscriptionAmount;
 
         public string VeloraCheeredEquation
         {
@@ -261,6 +294,30 @@ namespace MixItUp.Base.ViewModel.Overlay
             {
                 double total = this.VPZoneCheeredAmount * SampleIntegerAmount;
                 return $"{this.VPZoneCheeredAmount} * {SampleIntegerAmount} {Resources.VPZoneCheered} = {total} {this.EquationUnits}";
+            }
+        }
+        public string JoystickTippedEquation
+        {
+            get
+            {
+                double total = this.JoystickTippedAmount * SampleIntegerAmount;
+                return $"{this.JoystickTippedAmount} * {SampleIntegerAmount} {Resources.JoystickTipped} = {total} {this.EquationUnits}";
+            }
+        }
+        public string RazoGiftEquation
+        {
+            get
+            {
+                double total = this.RazoGiftAmount * SampleIntegerAmount;
+                return $"{this.RazoGiftAmount} * {SampleIntegerAmount} {Resources.RazoGift} = {total} {this.EquationUnits}";
+            }
+        }
+        public string RazoSubscriptionEquation
+        {
+            get
+            {
+                double total = this.RazoSubscriptionAmount * SampleIntegerAmount;
+                return $"{this.RazoSubscriptionAmount} * {SampleIntegerAmount} {Resources.RazoGiftedSubscriptions} = {total} {this.EquationUnits}";
             }
         }
 
@@ -341,6 +398,9 @@ namespace MixItUp.Base.ViewModel.Overlay
 
             this.VeloraCheeredAmount = item.VeloraCheeredAmount;
             this.VPZoneCheeredAmount = item.VPZoneCheeredAmount;
+            this.JoystickTippedAmount = item.JoystickTippedAmount;
+            this.RazoGiftAmount = item.RazoGiftAmount;
+            this.RazoSubscriptionAmount = item.RazoSubscriptionAmount;
 
             this.DonationAmount = item.DonationAmount;
 
@@ -384,6 +444,9 @@ namespace MixItUp.Base.ViewModel.Overlay
             result.VeloraCheeredAmount = this.VeloraCheeredAmount;
 
             result.VPZoneCheeredAmount = this.VPZoneCheeredAmount;
+            result.JoystickTippedAmount = this.JoystickTippedAmount;
+            result.RazoGiftAmount = this.RazoGiftAmount;
+            result.RazoSubscriptionAmount = this.RazoSubscriptionAmount;
 
             result.DonationAmount = this.DonationAmount;
         }

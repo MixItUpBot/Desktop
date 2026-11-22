@@ -36,6 +36,9 @@ namespace MixItUp.Base.ViewModel.Settings
 
         public GenericColorComboBoxSettingsOptionControlViewModel VPZoneChannelPoints { get; set; }
         public GenericColorComboBoxSettingsOptionControlViewModel VPZoneCheered { get; set; }
+        public GenericColorComboBoxSettingsOptionControlViewModel JoystickTips { get; set; }
+        public GenericColorComboBoxSettingsOptionControlViewModel AltStreamChannelPoints { get; set; }
+        public GenericColorComboBoxSettingsOptionControlViewModel RazoGifts { get; set; }
         public GenericColorComboBoxSettingsOptionControlViewModel TwitchUserWarned { get; set; }
         public GenericColorComboBoxSettingsOptionControlViewModel TwitchShoutoutReceived { get; set; }
         public GenericColorComboBoxSettingsOptionControlViewModel TwitchSuspiciousUserMessage { get; set; }
@@ -76,6 +79,9 @@ namespace MixItUp.Base.ViewModel.Settings
 
             this.VPZoneChannelPoints = new GenericToggleColorComboBoxSettingsControlViewModel(MixItUp.Base.Resources.ShowVPZoneChannelPoints, ChannelSession.Settings.AlertVPZoneChannelPointsColor, (value) => { ChannelSession.Settings.AlertVPZoneChannelPointsColor = value; });
             this.VPZoneCheered = new GenericToggleColorComboBoxSettingsControlViewModel(MixItUp.Base.Resources.ShowVPZoneCheered, ChannelSession.Settings.AlertVPZoneCheeredColor, (value) => { ChannelSession.Settings.AlertVPZoneCheeredColor = value; });
+            this.JoystickTips = new GenericToggleColorComboBoxSettingsControlViewModel(MixItUp.Base.Resources.JoystickChannelTipped, ChannelSession.Settings.AlertJoystickTipsColor, (value) => { ChannelSession.Settings.AlertJoystickTipsColor = value; });
+            this.AltStreamChannelPoints = new GenericToggleColorComboBoxSettingsControlViewModel(MixItUp.Base.Resources.ShowAltStreamChannelPoints, ChannelSession.Settings.AlertAltStreamChannelPointsColor, (value) => { ChannelSession.Settings.AlertAltStreamChannelPointsColor = value; });
+            this.RazoGifts = new GenericToggleColorComboBoxSettingsControlViewModel(MixItUp.Base.Resources.RazoChannelGift, ChannelSession.Settings.AlertRazoGiftsColor, (value) => { ChannelSession.Settings.AlertRazoGiftsColor = value; });
             this.TwitchUserWarned = new GenericToggleColorComboBoxSettingsControlViewModel(MixItUp.Base.Resources.ShowTwitchUserWarned, ChannelSession.Settings.AlertTwitchUserWarnedColor, (value) => { ChannelSession.Settings.AlertTwitchUserWarnedColor = value; });
             this.TwitchShoutoutReceived = new GenericToggleColorComboBoxSettingsControlViewModel(MixItUp.Base.Resources.ShowTwitchShoutoutReceived, ChannelSession.Settings.AlertTwitchShoutoutReceivedColor, (value) => { ChannelSession.Settings.AlertTwitchShoutoutReceivedColor = value; });
             this.TwitchSuspiciousUserMessage = new GenericToggleColorComboBoxSettingsControlViewModel(MixItUp.Base.Resources.ShowTwitchSuspiciousUserMessage, ChannelSession.Settings.AlertTwitchSuspiciousUserMessageColor, (value) => { ChannelSession.Settings.AlertTwitchSuspiciousUserMessageColor = value; });

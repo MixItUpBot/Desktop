@@ -53,6 +53,9 @@
 
             <GenericSettingsControls:GenericColorComboBoxSettingsOptionControl DataContext="{Binding VPZoneChannelPoints}" />
             <GenericSettingsControls:GenericColorComboBoxSettingsOptionControl DataContext="{Binding VPZoneCheered}" />
+            <GenericSettingsControls:GenericColorComboBoxSettingsOptionControl DataContext="{Binding JoystickTips}" />
+            <GenericSettingsControls:GenericColorComboBoxSettingsOptionControl DataContext="{Binding AltStreamChannelPoints}" />
+            <GenericSettingsControls:GenericColorComboBoxSettingsOptionControl DataContext="{Binding RazoGifts}" />
         </StackPanel>
     </Grid>
 </local:SettingsControlBase>

@@ -61,13 +61,14 @@ namespace MixItUp.Base.Util
             }
             else if (this.Type == ResetTypeEnum.Months)
             {
-                DateTimeOffset result = DateTimeOffset.Now.Date.AddMonths(this.Amount);
-                return new DateTimeOffset(result.Year, result.Month, Math.Min(this.DayOfTheMonth, DateTime.DaysInMonth(result.Year, result.Month)), 0, 0, 0, TimeSpan.Zero);
+                DateTime month = this.LastReset.Date.AddMonths(this.Amount);
+                int day = Math.Clamp(this.DayOfTheMonth, 1, DateTime.DaysInMonth(month.Year, month.Month));
+                return new DateTimeOffset(new DateTime(month.Year, month.Month, day, 0, 0, 0, DateTimeKind.Local));
             }
             return DateTimeOffset.Now.Date;
         }
 
-        public bool MustBeReset() { return this.GetEndDateTimeOffset() <= DateTimeOffset.Now.Date; }
+        public bool MustBeReset() { return this.Type != ResetTypeEnum.None && this.Amount > 0 && this.GetEndDateTimeOffset().Date <= DateTime.Today; }
 
         public void PerformReset()
         {
@@ -207,7 +208,7 @@ namespace MixItUp.Base.Util
         {
             get
             {
-                if (this.Model.Amount > 0)
+                if (this.Model.Amount > 0 && this.Model.Type != ResetTypeEnum.None)
                 {
                     return this.Model.GetEndDateTimeOffset().Date.ToShortDateString();
                 }

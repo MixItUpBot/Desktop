@@ -104,6 +104,14 @@ namespace MixItUp.WPF
             this.Close();
         }
 
+        internal void RestartForUpdate()
+        {
+            if (this.shutdownStarted) { return; }
+            this.restartApplication = true;
+            this.shutdownStarted = true;
+            _ = this.StartShutdownProcess();
+        }
+
         protected override async Task OnLoaded()
         {
             ServiceManager.Get<IInputService>().Initialize(new WindowInteropHelper(this).Handle);
@@ -112,7 +120,7 @@ namespace MixItUp.WPF
                 CommandModelBase command = ChannelSession.Settings.GetCommand(hotKeyConfiguration.CommandID);
                 if (command != null)
                 {
-                    ServiceManager.Get<IInputService>().RegisterHotKey(hotKeyConfiguration.Modifiers, hotKeyConfiguration.VirtualKey);
+                    if (!ServiceManager.Get<IInputService>().RegisterHotKey(hotKeyConfiguration)) { Logger.Log(LogLevel.Warning, MixItUp.Base.Resources.HotKeyUnavailable); }
                 }
             }
 
@@ -144,6 +152,7 @@ namespace MixItUp.WPF
             await this.MainMenu.AddMenuItem(MixItUp.Base.Resources.KickKicks, new KickKicksControl(), "https://wiki.mixitup.bot/commands/kick-kicks-commands", brand: Brands.Kick);
             await this.MainMenu.AddMenuItem(MixItUp.Base.Resources.VeloraChannelPoints, new VeloraChannelPointsControl(), "https://wiki.mixitup.bot/en/platforms/velora/channel-points", brand: Brands.Velora);
             await this.MainMenu.AddMenuItem(MixItUp.Base.Resources.VPZoneChannelPoints, new VPZoneChannelPointsControl(), "https://wiki.mixitup.bot/en/platforms/vpzone/channel-points", brand: Brands.VPZone);
+            await this.MainMenu.AddMenuItem(MixItUp.Base.Resources.ResourceManager.GetString("AltStreamChannelPoints"), new AltStreamChannelPointsControl(), "https://altstream.online/documentation?tab=api-v2", brand: Brands.AltStream);
             await this.MainMenu.AddMenuItem(MixItUp.Base.Resources.StreamlootsCards, new StreamlootsCardsControl(), "https://wiki.mixitup.bot/commands/streamloots-card-commands", brand: Brands.Streamloots);
             await this.MainMenu.AddMenuItem(MixItUp.Base.Resources.CrowdControl, new CrowdControlControl(), "https://wiki.mixitup.bot/commands/crowd-control-commands", brand: Brands.CrowdControl);
             await this.MainMenu.AddMenuItem(MixItUp.Base.Resources.StreamPass, new StreamPassControl(), "https://wiki.mixitup.bot/consumables/stream-pass", feature: Features.StreamPass);
@@ -185,6 +194,7 @@ namespace MixItUp.WPF
 
         private async Task StartShutdownProcess()
         {
+            Guid? profile = ChannelSession.Settings?.ID;
             try
             {
                 Logger.Log(LogLevel.Debug, "Starting shutdown process");
@@ -229,11 +239,11 @@ namespace MixItUp.WPF
                 Logger.Log(ex);
             }
 
-            this.Close();
             if (this.restartApplication)
             {
-                ServiceManager.Get<IProcessService>().LaunchProgram(Environment.ProcessPath);
+                Services.BackgroundUpdates.Relaunch(profile);
             }
+            this.Close();
         }
 
         private async void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)

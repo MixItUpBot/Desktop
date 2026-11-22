@@ -1,6 +1,7 @@
 ﻿using MixItUp.Base.Util;
 using System;
 using System.Diagnostics;
+using System.Linq;
 
 namespace MixItUp.WPF
 {
@@ -9,7 +10,7 @@ namespace MixItUp.WPF
         [STAThread]
         public static void Main(string[] args)
         {
-            if (args != null && args.Length > 0)
+            if (args.Any(arg => arg.StartsWith("mixitup:", StringComparison.OrdinalIgnoreCase) || (!arg.StartsWith("--") && System.IO.File.Exists(arg))))
             {
                 Process[] processes = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName);
                 if (processes.Length > 1)
@@ -19,6 +20,8 @@ namespace MixItUp.WPF
                 }
             }
 
+            // Settings and profile databases in existing 1.x installations are relative to this folder.
+            Environment.CurrentDirectory = AppContext.BaseDirectory;
             App application = new App();
             application.InitializeComponent();
             application.Run();

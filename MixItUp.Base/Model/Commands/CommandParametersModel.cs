@@ -137,6 +137,8 @@ namespace MixItUp.Base.Model.Commands
         }
 
         public bool IsTargetUserSelf { get { return this.TargetUser == this.User; } }
+        public bool HasNoTarget { get; set; }
+        public bool DisplayOnlyActor { get; set; }
 
         public void SetArguments(string arguments)
         {
@@ -156,6 +158,8 @@ namespace MixItUp.Base.Model.Commands
         {
             CommandParametersModel result = new CommandParametersModel(this.User, this.Platform, (arguments != null) ? arguments : this.Arguments, this.SpecialIdentifiers);
             result.TargetUser = this.TargetUser;
+            result.HasNoTarget = this.HasNoTarget;
+            result.DisplayOnlyActor = this.DisplayOnlyActor;
             result.TwitchRedemption = this.TwitchRedemption;
             return result;
         }
@@ -210,6 +214,7 @@ namespace MixItUp.Base.Model.Commands
 
         public async Task SetTargetUser()
         {
+            if (this.HasNoTarget) return;
             if (this.TargetUser == null)
             {
                 if (this.Arguments != null && this.Arguments.Count > 0)

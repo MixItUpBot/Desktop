@@ -91,6 +91,15 @@ namespace MixItUp.WPF
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            if (BackgroundUpdates.TryApplyAtStartup(e.Args) || !MixItUp.WPF.Windows.LicenseAgreementWindow.AcceptInstalledAgreement())
+            {
+                Shutdown();
+                return;
+            }
+            MainWindow = null;
+            StartupUri = new Uri("LoginWindow.xaml", UriKind.Relative);
+            ShutdownMode = ShutdownMode.OnMainWindowClose;
             ActivationProtocolHandler.Initialize();
 
             RegistryHelpers.RegisterFileAssociation();
@@ -148,10 +157,12 @@ namespace MixItUp.WPF
             }
 
             base.OnStartup(e);
+            BackgroundUpdates.Start();
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
+            BackgroundUpdates.Stop();
             ActivationProtocolHandler.Close();
 
             base.OnExit(e);

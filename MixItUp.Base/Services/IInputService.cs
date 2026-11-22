@@ -233,11 +233,21 @@ namespace MixItUp.Base.Services
         public override int GetHashCode() { return this.Modifiers.GetHashCode() + this.VirtualKey.GetHashCode(); }
     }
 
+    public enum HotKeyTrigger
+    {
+        HotKeyPress,
+        HotKeyDown,
+        HotKeyUp
+    }
+
     [DataContract]
     public class HotKeyConfiguration : HotKey, IEquatable<HotKeyConfiguration>, IComparable, IComparable<HotKeyConfiguration>
     {
         [DataMember]
         public Guid CommandID { get; set; }
+
+        [DataMember]
+        public HotKeyTrigger Trigger { get; set; }
 
         public HotKeyConfiguration() { }
 
@@ -291,7 +301,8 @@ namespace MixItUp.Base.Services
 
         Task WaitForKeyToRegister();
 
-        bool RegisterHotKey(HotKeyModifiersEnum modifiers, VirtualKeyEnum key);
+        bool RegisterHotKey(HotKeyConfiguration key);
+        bool IsHotKeyRegistered(HotKey key);
         bool UnregisterHotKey(HotKeyModifiersEnum modifiers, VirtualKeyEnum key);
     }
 }

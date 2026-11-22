@@ -10,6 +10,9 @@ using MixItUp.Base.Services.Kick.New;
 using MixItUp.Base.Services.Twitch.New;
 using MixItUp.Base.Services.Velora.New;
 using MixItUp.Base.Services.VPZone.New;
+using MixItUp.Base.Services.Joystick;
+using MixItUp.Base.Services.AltStream;
+using MixItUp.Base.Services.Razo;
 using MixItUp.Base.Services.YouTube.New;
 using MixItUp.Base.Util;
 using MixItUp.Base.ViewModel.User;
@@ -98,6 +101,9 @@ namespace MixItUp.Base
             ServiceManager.Add(new KickSession());
             ServiceManager.Add(new VeloraSession());
             ServiceManager.Add(new VPZoneSession());
+            ServiceManager.Add(new JoystickSession());
+            ServiceManager.Add(new AltStreamSession());
+            ServiceManager.Add(new RazoSession());
             ServiceManager.Add(new MockSession());
 
             ServiceManager.Add(new CommandService());
@@ -202,7 +208,8 @@ namespace MixItUp.Base
             {
                 await StreamingPlatforms.ForEachPlatform(async (p) =>
                 {
-                    if (ChannelSession.Settings.StreamingPlatformAuthentications.ContainsKey(p) && StreamingPlatforms.GetPlatformSession(p).IsConnected)
+                    if (StreamingPlatforms.GetPlatformSession(p) is ChannelChatSessionBase ||
+                        (ChannelSession.Settings.StreamingPlatformAuthentications.ContainsKey(p) && StreamingPlatforms.GetPlatformSession(p).IsConnected))
                     {
                         await StreamingPlatforms.GetPlatformSession(p).DisconnectBot();
                         await StreamingPlatforms.GetPlatformSession(p).DisconnectStreamer();
@@ -397,14 +404,15 @@ namespace MixItUp.Base
                     streamingPlatformSession.SaveAuthenticationSettings();
                 }
 
-                if (!StreamingPlatforms.SupportedPlatforms.Contains(ChannelSession.Settings.DefaultStreamingPlatform))
+                if (!StreamingPlatforms.SupportedPlatforms.Contains(ChannelSession.Settings.DefaultStreamingPlatform) ||
+                    StreamingPlatforms.GetPlatformSession(ChannelSession.Settings.DefaultStreamingPlatform) is ChannelChatSessionBase)
                 {
-                    ChannelSession.Settings.DefaultStreamingPlatform = StreamingPlatforms.GetConnectedPlatforms().FirstOrDefault();
+                    ChannelSession.Settings.DefaultStreamingPlatform = StreamingPlatforms.GetConnectedPlatformSessions().FirstOrDefault(p => p is not ChannelChatSessionBase)?.Platform ?? StreamingPlatformTypeEnum.None;
                 }
 
                 if (string.IsNullOrEmpty(ChannelSession.Settings.Name))
                 {
-                    if (StreamingPlatforms.GetPlatformSession(ChannelSession.Settings.DefaultStreamingPlatform).IsConnected)
+                    if (StreamingPlatforms.GetPlatformSession(ChannelSession.Settings.DefaultStreamingPlatform)?.IsConnected == true)
                     {
                         ChannelSession.Settings.Name = StreamingPlatforms.GetPlatformSession(ChannelSession.Settings.DefaultStreamingPlatform).StreamerUsername;
                     }
@@ -553,7 +561,7 @@ namespace MixItUp.Base
                     }
                 }
 
-                if (!StreamingPlatforms.GetConnectedPlatformSessions().Any())
+                if (!StreamingPlatforms.GetConnectedPlatformSessions().Any(p => p is not ChannelChatSessionBase))
                 {
                     await DialogHelper.ShowMessage(MixItUp.Base.Resources.NoStreamerAccountsConnected);
                 }
@@ -573,6 +581,12 @@ namespace MixItUp.Base
                     await ServiceManager.Get<CommandService>().Initialize();
                     await ServiceManager.Get<TimerService>().Initialize();
                     await ServiceManager.Get<ModerationService>().Initialize();
+                    foreach (var channel in StreamingPlatforms.GetPlatformSessions().OfType<ChannelChatSessionBase>())
+                    {
+                        var account = channel.GetAuthenticationSettings();
+                        if (!string.IsNullOrWhiteSpace(account?.ChannelID))
+                            _ = channel.RestoreChannel(account);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -587,6 +601,7 @@ namespace MixItUp.Base
                 await ServiceManager.Get<ModerationService>().Initialize();
                 await ServiceManager.Get<StatisticsService>().Initialize();
 
+                ServiceManager.Get<IInputService>().HotKeyPressed -= InputService_HotKeyPressed;
                 ServiceManager.Get<IInputService>().HotKeyPressed += InputService_HotKeyPressed;
 
                 foreach (RedemptionStoreProductModel product in ChannelSession.Settings.RedemptionStoreProducts.Values)
@@ -689,9 +704,9 @@ namespace MixItUp.Base
 
         private static async void InputService_HotKeyPressed(object sender, HotKey hotKey)
         {
-            if (ChannelSession.Settings.HotKeys.ContainsKey(hotKey.ToString()))
+            var hotKeyConfiguration = ChannelSession.Settings?.HotKeys.Values.FirstOrDefault(key => key.Modifiers == hotKey.Modifiers && key.VirtualKey == hotKey.VirtualKey);
+            if (hotKeyConfiguration != null)
             {
-                HotKeyConfiguration hotKeyConfiguration = ChannelSession.Settings.HotKeys[hotKey.ToString()];
                 await ServiceManager.Get<CommandService>().Queue(hotKeyConfiguration.CommandID, new CommandParametersModel(platform: StreamingPlatformTypeEnum.All));
             }
         }

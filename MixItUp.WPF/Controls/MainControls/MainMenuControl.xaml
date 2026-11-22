@@ -234,6 +234,13 @@
 
                                     <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
 
+                                        <Controls:UpdateReadyButton x:Name="UpdateIndicator" Width="40" Padding="0" Margin="0,0,5,0" Style="{StaticResource MaterialDesignRaisedButton}"
+                                            Background="{DynamicResource MaterialDesign.Brush.Secondary}" Foreground="{DynamicResource MaterialDesign.Brush.Secondary.Foreground}"
+                                            ToolTip="{x:Static resx:Resources.RestartToUpdate}" AutomationProperties.Name="{x:Static resx:Resources.RestartToUpdate}"
+                                            AutomationProperties.AutomationId="MainMenu.UpdateReadyButton">
+                                            <Controls:MaterialSymbolIcon IconName="download" FontSize="{DynamicResource MIU.IconSize.24}" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+                                        </Controls:UpdateReadyButton>
+
                                         <Controls:IconButton
                                             x:Name="DisconnectionAlertButton"
                                             Margin="0,0,5,0"

@@ -117,6 +117,21 @@ namespace MixItUp.WPF.Services.DeveloperAPI.V1
             return Ok(UserFromUserDataViewModel(user));
         }
 
+        [Route("joystick/{usernameOrID}")]
+        [HttpGet]
+        public async Task<IActionResult> GetJoystick(string usernameOrID)
+        {
+            await ServiceManager.Get<UserService>().LoadAllUserData();
+
+            UserV2ViewModel user = await UserV1Controller.GetUserData(StreamingPlatformTypeEnum.Joystick, usernameOrID);
+            if (user == null)
+            {
+                return NotFound(new Error { Message = $"Unable to find user: {usernameOrID}." });
+            }
+
+            return Ok(UserFromUserDataViewModel(user));
+        }
+
         [Route("velora/{usernameOrID}")]
         [HttpGet]
         public async Task<IActionResult> GetVelora(string usernameOrID)
@@ -249,6 +264,9 @@ namespace MixItUp.WPF.Services.DeveloperAPI.V1
                 KickID = userData.Model.GetPlatformID(StreamingPlatformTypeEnum.Kick),
                 VeloraID = userData.Model.GetPlatformID(StreamingPlatformTypeEnum.Velora),
                 VPZoneID = userData.Model.GetPlatformID(StreamingPlatformTypeEnum.VPZone),
+                JoystickID = userData.Model.GetPlatformID(StreamingPlatformTypeEnum.Joystick),
+                RazoID = userData.Model.GetPlatformID(StreamingPlatformTypeEnum.Razo),
+                AltStreamID = userData.Model.GetPlatformID(StreamingPlatformTypeEnum.AltStream),
                 Username = userData.Model.GetPlatformUsername(ChannelSession.Settings.DefaultStreamingPlatform),
                 ViewingMinutes = userData.OnlineViewingMinutes
             };

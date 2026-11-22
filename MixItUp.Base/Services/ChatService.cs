@@ -8,6 +8,9 @@ using MixItUp.Base.Services.Kick.New;
 using MixItUp.Base.Services.Twitch.New;
 using MixItUp.Base.Services.Velora.New;
 using MixItUp.Base.Services.VPZone.New;
+using MixItUp.Base.Services.Joystick;
+using MixItUp.Base.Services.AltStream;
+using MixItUp.Base.Services.Razo;
 using MixItUp.Base.Services.YouTube.New;
 using MixItUp.Base.Util;
 using MixItUp.Base.ViewModel.Chat;
@@ -36,6 +39,15 @@ namespace MixItUp.Base.Services
 
         public static event EventHandler<string> OnChatMessageDeleted = delegate { };
         public static void ChatMessageDeleted(string messageID) { OnChatMessageDeleted(null, messageID); }
+
+        public static event EventHandler<string> OnChannelChatCleared = delegate { };
+
+        public async Task ClearChannelMessages(StreamingPlatformTypeEnum platform, string prefix)
+        {
+            foreach (var row in this.Messages.ToList().Where(m => m.Platform == platform && m.ID.StartsWith(prefix, StringComparison.Ordinal)))
+                await this.DeleteMessage(row.ID);
+            OnChannelChatCleared(null, prefix);
+        }
 
         public static event EventHandler<UserV2ViewModel> OnChatUserTimedOut = delegate { };
         public static void ChatUserTimedOut(UserV2ViewModel user) { OnChatUserTimedOut(null, user); }
@@ -107,29 +119,9 @@ namespace MixItUp.Base.Services
 
         public int GetViewerCount()
         {
-            int viewerCount = 0;
-            if (ServiceManager.Get<TwitchSession>().IsConnected && ServiceManager.Get<TwitchSession>().IsLive)
-            {
-                viewerCount += ServiceManager.Get<TwitchSession>().StreamViewerCount;
-            }
-            if (ServiceManager.Get<YouTubeSession>().IsConnected && ServiceManager.Get<YouTubeSession>().IsLive)
-            {
-                viewerCount += ServiceManager.Get<YouTubeSession>().StreamViewerCount;
-            }
-            if (ServiceManager.Get<KickSession>().IsConnected && ServiceManager.Get<KickSession>().IsLive)
-            {
-                viewerCount += ServiceManager.Get<KickSession>().StreamViewerCount;
-            }
-            if (ServiceManager.Get<VeloraSession>().IsConnected && ServiceManager.Get<VeloraSession>().IsLive)
-            {
-                viewerCount += ServiceManager.Get<VeloraSession>().StreamViewerCount;
-            }
-
-            if (ServiceManager.Get<VPZoneSession>().IsConnected && ServiceManager.Get<VPZoneSession>().IsLive)
-            {
-                viewerCount += ServiceManager.Get<VPZoneSession>().StreamViewerCount;
-            }
-            return viewerCount;
+            return StreamingPlatforms.GetConnectedPlatformSessions()
+                .Where(session => session.IsLive)
+                .Sum(session => session.StreamViewerCount);
         }
 
         public async Task SendMessage(string message, bool sendAsStreamer = false, string replyMessageID = null)
@@ -185,6 +177,18 @@ namespace MixItUp.Base.Services
                     {
                         await ServiceManager.Get<VPZoneSession>().SendMessage(message, sendAsStreamer);
                     }
+                    else if (platform == StreamingPlatformTypeEnum.Joystick && ServiceManager.Get<JoystickSession>().IsConnected)
+                    {
+                        await AsyncRunner.RunAsync(ServiceManager.Get<JoystickSession>().SendMessage(message, sendAsStreamer));
+                    }
+                    else if (platform == StreamingPlatformTypeEnum.AltStream && ServiceManager.Get<AltStreamSession>().IsConnected)
+                    {
+                        await AsyncRunner.RunAsync(ServiceManager.Get<AltStreamSession>().SendChatMessage(message, replyMessageID));
+                    }
+                    else if (platform == StreamingPlatformTypeEnum.Razo && ServiceManager.Get<RazoSession>().IsConnected)
+                    {
+                        await AsyncRunner.RunAsync(ServiceManager.Get<RazoSession>().SendMessage(message, sendAsStreamer));
+                    }
                     else if (platform == StreamingPlatformTypeEnum.Mock)
                     {
                         await ServiceManager.Get<MockSession>().SendMessage(message, sendAsStreamer);
@@ -200,6 +204,10 @@ namespace MixItUp.Base.Services
                 if (user.Platform == StreamingPlatformTypeEnum.Twitch && ServiceManager.Get<TwitchSession>().IsConnected)
                 {
                     await ServiceManager.Get<TwitchSession>().SendWhisper(user, message, sendAsStreamer);
+                }
+                else if (user.Platform == StreamingPlatformTypeEnum.Joystick && ServiceManager.Get<JoystickSession>().IsConnected)
+                {
+                    await AsyncRunner.RunAsync(ServiceManager.Get<JoystickSession>().Whisper(user.Username, message));
                 }
             }
         }
@@ -224,6 +232,7 @@ namespace MixItUp.Base.Services
             {
                 await this.DeleteMessage(message, externalDeletion: true);
             }
+            else { ChatMessageDeleted(messageID); }
         }
 
         public async Task DeleteMessage(ChatMessageViewModel message, bool externalDeletion = false)
@@ -232,7 +241,6 @@ namespace MixItUp.Base.Services
             {
                 return;
             }
-
             if (externalDeletion && this.messagesLookup.TryGetValue(message.ID, out ChatMessageViewModel existingMessage) && existingMessage != null)
             {
                 message = existingMessage;
@@ -259,6 +267,14 @@ namespace MixItUp.Base.Services
                 else if (message.Platform == StreamingPlatformTypeEnum.VPZone && ServiceManager.Get<VPZoneSession>().IsConnected)
                 {
                     await ServiceManager.Get<VPZoneSession>().DeleteMessage(message);
+                }
+                else if (message.Platform == StreamingPlatformTypeEnum.Joystick && ServiceManager.Get<JoystickSession>().IsConnected)
+                {
+                    await AsyncRunner.RunAsync(ServiceManager.Get<JoystickSession>().DeleteMessage(message));
+                }
+                else if (message.Platform == StreamingPlatformTypeEnum.Razo && ServiceManager.Get<RazoSession>().CanDelete)
+                {
+                    await ServiceManager.Get<RazoSession>().DeleteMessage(message);
                 }
                 else if (message.Platform == StreamingPlatformTypeEnum.Mock)
                 {
@@ -497,6 +513,10 @@ namespace MixItUp.Base.Services
             {
                 await ServiceManager.Get<VPZoneSession>().UnbanUser(user);
             }
+            if (user.Platform == StreamingPlatformTypeEnum.Joystick && ServiceManager.Get<JoystickSession>().IsConnected)
+            {
+                await AsyncRunner.RunAsync(ServiceManager.Get<JoystickSession>().UnbanUser(user));
+            }
 
         }
 
@@ -536,6 +556,32 @@ namespace MixItUp.Base.Services
                 Logger.Log(ex);
             }
             this.ChatCommandsReprocessed(this, new EventArgs());
+        }
+
+        public void DisplayMessage(ChatMessageViewModel message, bool showMessage = true)
+        {
+            if (!(message is AlertChatMessageViewModel) || !ChannelSession.Settings.OnlyShowAlertsInDashboard)
+            {
+                this.messagesLookup[message.ID] = message;
+                if (showMessage)
+                {
+                    if (ChannelSession.Settings.LatestChatAtTop)
+                    {
+                        this.Messages.Insert(0, message);
+                    }
+                    else
+                    {
+                        this.Messages.Add(message);
+                    }
+                }
+
+                if (this.Messages.Count > ChannelSession.Settings.MaxMessagesInChat)
+                {
+                    ChatMessageViewModel removedMessage = (ChannelSession.Settings.LatestChatAtTop) ? this.Messages.Last() : this.Messages.First();
+                    this.messagesLookup.Remove(removedMessage.ID);
+                    this.Messages.Remove(removedMessage);
+                }
+            }
         }
 
         public async Task AddMessage(ChatMessageViewModel message)
@@ -590,7 +636,7 @@ namespace MixItUp.Base.Services
                 bool showMessage = true;
                 if (message.User != null && message.Platform != StreamingPlatformTypeEnum.None)
                 {
-                    if (ChannelSession.Settings.HideBotMessages && StreamingPlatforms.GetPlatformSession(message.Platform).IsBotConnected && string.Equals(message.User?.PlatformID, StreamingPlatforms.GetPlatformSession(message.Platform)?.BotID))
+                    if (ChannelSession.Settings.HideBotMessages && StreamingPlatforms.GetPlatformSession(message.Platform).IsBotUser(message.User))
                     {
                         showMessage = false;
                     }
@@ -604,28 +650,7 @@ namespace MixItUp.Base.Services
                     }
                 }
 
-                if (!(message is AlertChatMessageViewModel) || !ChannelSession.Settings.OnlyShowAlertsInDashboard)
-                {
-                    this.messagesLookup[message.ID] = message;
-                    if (showMessage)
-                    {
-                        if (ChannelSession.Settings.LatestChatAtTop)
-                        {
-                            this.Messages.Insert(0, message);
-                        }
-                        else
-                        {
-                            this.Messages.Add(message);
-                        }
-                    }
-
-                    if (this.Messages.Count > ChannelSession.Settings.MaxMessagesInChat)
-                    {
-                        ChatMessageViewModel removedMessage = (ChannelSession.Settings.LatestChatAtTop) ? this.Messages.Last() : this.Messages.First();
-                        this.messagesLookup.Remove(removedMessage.ID);
-                        this.Messages.Remove(removedMessage);
-                    }
-                }
+                this.DisplayMessage(message, showMessage);
 
                 if (message.ProcessingTime > 1000)
                 {
@@ -762,7 +787,7 @@ namespace MixItUp.Base.Services
 
                         if (ChannelSession.Settings.IgnoreBotAccountCommands && message.Platform != StreamingPlatformTypeEnum.None)
                         {
-                            if (StreamingPlatforms.GetPlatformSession(message.Platform).IsBotConnected && string.Equals(message.User?.PlatformID, StreamingPlatforms.GetPlatformSession(message.Platform)?.BotID))
+                            if (StreamingPlatforms.GetPlatformSession(message.Platform).IsBotUser(message.User))
                             {
                                 return;
                             }

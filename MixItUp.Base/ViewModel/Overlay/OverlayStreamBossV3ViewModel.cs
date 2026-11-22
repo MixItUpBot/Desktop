@@ -211,6 +211,8 @@ namespace MixItUp.Base.ViewModel.Overlay
 
             this.VeloraCheeredAmount = 0.5;
             this.VPZoneCheeredAmount = 0.5;
+            this.JoystickTippedAmount = 0.5;
+            this.RazoGiftAmount = 0.5;
 
             this.DonationAmount = 10;
 

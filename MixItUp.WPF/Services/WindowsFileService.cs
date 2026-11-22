@@ -483,19 +483,37 @@ namespace MixItUp.WPF.Services
 
         public IEnumerable<string> GetInstalledFonts()
         {
-            using (InstalledFontCollection fontsCollection = new InstalledFontCollection())
+            var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            using (var installed = new InstalledFontCollection())
             {
-                FontFamily[] fontFamilies = fontsCollection.Families;
-                List<string> fonts = new List<string>();
-                foreach (FontFamily font in fontFamilies)
+                foreach (var family in installed.Families)
                 {
-                    if (!string.IsNullOrEmpty(font.Name))
-                    {
-                        fonts.Add(font.Name);
-                    }
+                    using (family) { names.Add(family.Name); }
                 }
-                return fonts;
             }
+            var culture = System.Globalization.CultureInfo.CurrentUICulture;
+            foreach (var family in System.Windows.Media.Fonts.SystemFontFamilies)
+            {
+                foreach (var face in family.GetTypefaces())
+                {
+                    try
+                    {
+                        if (face.TryGetGlyphTypeface(out var glyph))
+                        {
+                            var localized = glyph.FamilyNames;
+                            if (!localized.TryGetValue(culture, out string name) &&
+                                !localized.TryGetValue(System.Globalization.CultureInfo.GetCultureInfo("en-US"), out name))
+                            {
+                                name = localized.Values.FirstOrDefault();
+                            }
+                            if (!string.IsNullOrWhiteSpace(name)) { names.Add(name); }
+                        }
+                    }
+                    catch (FileFormatException) { }
+                    catch (IOException) { }
+                }
+            }
+            return names.OrderBy(name => name, StringComparer.OrdinalIgnoreCase).ToList();
         }
 
         public string ExpandEnvironmentVariablesInFilePath(string path)

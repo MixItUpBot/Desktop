@@ -1,11 +1,6 @@
 ﻿using MixItUp.Base.Model;
 using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Services;
-using MixItUp.Base.Services.Kick.New;
-using MixItUp.Base.Services.Twitch.New;
-using MixItUp.Base.Services.Velora.New;
-using MixItUp.Base.Services.VPZone.New;
-using MixItUp.Base.Services.YouTube.New;
 using MixItUp.Base.Util;
 using MixItUp.Base.ViewModel.User;
 using MixItUp.Base.ViewModels;
@@ -40,11 +35,7 @@ namespace MixItUp.Base.ViewModel.Chat
             get
             {
                 List<string> results = new List<string>() { MixItUp.Base.Resources.Streamer };
-                if (ServiceManager.Get<TwitchSession>().IsBotConnected ||
-                    ServiceManager.Get<YouTubeSession>().IsBotConnected ||
-                    ServiceManager.Get<KickSession>().IsBotConnected ||
-                    ServiceManager.Get<VeloraSession>().IsBotConnected ||
-                    ServiceManager.Get<VPZoneSession>().IsBotConnected)
+                if (StreamingPlatforms.GetConnectedPlatformSessions().Any(session => session.IsBotConnected))
                 {
                     results.Add(MixItUp.Base.Resources.Bot);
                 }
@@ -190,11 +181,12 @@ namespace MixItUp.Base.ViewModel.Chat
         {
             await base.OnVisibleInternal();
 
-            this.NotifyPropertyChanged("SendAsOptions");
+            this.UpdatePlatformOptions();
         }
 
         public void UpdatePlatformOptions()
         {
+            var selected = this.SelectedPlatform?.Platform;
             PlatformOptions.Clear();
 
             PlatformOptions.Add(new PlatformOption
@@ -217,8 +209,8 @@ namespace MixItUp.Base.ViewModel.Chat
                 }
             }
 
-            if (SelectedPlatform == null || !PlatformOptions.Contains(SelectedPlatform))
-                SelectedPlatform = PlatformOptions.FirstOrDefault();
+            SelectedPlatform = PlatformOptions.FirstOrDefault(option => option.Platform == selected) ?? PlatformOptions.FirstOrDefault();
+            this.NotifyPropertyChanged(nameof(SendAsOptions));
 
             this.NotifyPropertyChanged(nameof(PlatformOptions));
             this.NotifyPropertyChanged(nameof(SelectedPlatform));

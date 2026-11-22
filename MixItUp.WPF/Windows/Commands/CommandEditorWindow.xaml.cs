@@ -111,6 +111,10 @@ namespace MixItUp.WPF.Windows.Commands
                     this.editorDetailsControl = new VPZoneChannelPointsCommandEditorDetailsControl();
                     this.viewModel = new VPZoneChannelPointsCommandEditorWindowViewModel((VPZoneChannelPointsCommandModel)existingCommand);
                     break;
+                case CommandTypeEnum.AltStreamChannelPoints:
+                    this.editorDetailsControl = new VPZoneChannelPointsCommandEditorDetailsControl();
+                    this.viewModel = new AltStreamChannelPointsCommandEditorWindowViewModel((AltStreamChannelPointsCommandModel)existingCommand);
+                    break;
             }
 
             this.importedActions = actions;
@@ -173,6 +177,10 @@ namespace MixItUp.WPF.Windows.Commands
                 case CommandTypeEnum.VPZoneChannelPoints:
                     this.editorDetailsControl = new VPZoneChannelPointsCommandEditorDetailsControl();
                     this.viewModel = new VPZoneChannelPointsCommandEditorWindowViewModel();
+                    break;
+                case CommandTypeEnum.AltStreamChannelPoints:
+                    this.editorDetailsControl = new VPZoneChannelPointsCommandEditorDetailsControl();
+                    this.viewModel = new AltStreamChannelPointsCommandEditorWindowViewModel();
                     break;
                 case CommandTypeEnum.Custom:
                     this.editorDetailsControl = new CustomCommandEditorDetailsControl();

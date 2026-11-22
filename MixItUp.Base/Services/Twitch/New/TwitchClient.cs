@@ -182,6 +182,7 @@ namespace MixItUp.Base.Services.Twitch.New
 
         public override async Task Disconnect()
         {
+            Interlocked.Increment(ref this.eventSubSessionGeneration);
             await this.webSocket.Disconnect();
         }
 
@@ -194,11 +195,13 @@ namespace MixItUp.Base.Services.Twitch.New
         {
             int generation = Interlocked.Increment(ref this.eventSubSessionGeneration);
 
+            _ = ServiceManager.Get<TwitchSession>().RefreshSharedChatSession();
+
             // Twitch closes the session if the welcome is not answered promptly, so the registration work
             // stays off the packet handler. Connect() waits on the task rather than polling for a flag
             this.eventSubRegistrationTask = AsyncRunner.RunAsyncBackground(async (cancellationToken) =>
             {
-                bool registered = await this.RegisterAllEventSubSubscriptions(message);
+                bool registered = await this.RegisterAllEventSubSubscriptions(message, generation);
 
                 if (Volatile.Read(ref this.eventSubSessionGeneration) == generation)
                 {
@@ -211,7 +214,7 @@ namespace MixItUp.Base.Services.Twitch.New
             return Task.CompletedTask;
         }
 
-        private async Task<bool> RegisterAllEventSubSubscriptions(WelcomeMessage message)
+        private async Task<bool> RegisterAllEventSubSubscriptions(WelcomeMessage message, int generation)
         {
             IEnumerable<EventSubSubscriptionModel> allSubs = await this.GetExistingEventSubSubscriptions();
             if (allSubs == null)
@@ -225,8 +228,12 @@ namespace MixItUp.Base.Services.Twitch.New
             List<Task> subscriptionDeletionTasks = new List<Task>();
 
             HashSet<string> missingSubs = new HashSet<string>(DesiredSubscriptionsAndVersions.Keys, StringComparer.OrdinalIgnoreCase);
+            var session = ServiceManager.Get<TwitchSession>();
+            var guestSubscriptions = new HashSet<string> { "channel.guest_star_session.begin", "channel.guest_star_guest.update", "channel.guest_star_session.end" };
+            session.ClearGuestRoster();
             foreach (EventSubSubscriptionModel sub in allSubs)
             {
+                if (string.Equals(sub.status, "connected", StringComparison.OrdinalIgnoreCase) && guestSubscriptions.Remove(sub.type)) { continue; }
                 if (DesiredSubscriptionsAndVersions.ContainsKey(sub.type) && string.Equals(sub.status, "connected", StringComparison.OrdinalIgnoreCase))
                 {
                     // Sub exists and is connected, remove from missing
@@ -317,7 +324,30 @@ namespace MixItUp.Base.Services.Twitch.New
                 }
             }
 
+            _ = RegisterGuestSubscriptions();
             return true;
+
+            async Task RegisterGuestSubscriptions()
+            {
+                try
+                {
+                    string host = session.StreamerID;
+                    bool granted = await session.StreamerService.HasGuestStarScope();
+                    if (generation != Volatile.Read(ref this.eventSubSessionGeneration) || session.StreamerID != host) { return; }
+                    session.CanReadGuestRoster = granted;
+                    if (!granted) { return; }
+                    foreach (string type in guestSubscriptions)
+                    {
+                        if (generation != Volatile.Read(ref this.eventSubSessionGeneration)) { return; }
+                        await this.RegisterEventSubSubscription(type, message, "beta", new Dictionary<string, string>
+                        {
+                            ["broadcaster_user_id"] = host,
+                            ["moderator_user_id"] = host,
+                        });
+                    }
+                }
+                catch (Exception ex) { Logger.Log(LogLevel.Debug, "Twitch Stream Together permissions unavailable: " + ex.GetType().Name); }
+            }
         }
 
         private async Task<IEnumerable<EventSubSubscriptionModel>> GetExistingEventSubSubscriptions()
@@ -505,6 +535,12 @@ namespace MixItUp.Base.Services.Twitch.New
                         await HandleChatUserClear(message.Payload.Event);
                         break;
 
+                    case "channel.guest_star_session.begin":
+                    case "channel.guest_star_guest.update":
+                    case "channel.guest_star_session.end":
+                        var session = ServiceManager.Get<TwitchSession>();
+                        if ((string)message.Payload.Event["broadcaster_user_id"] == session.StreamerID) { session.ClearGuestRoster(message.Metadata.SubscriptionType == "channel.guest_star_session.end"); }
+                        break;
                     case "channel.shared_chat.begin":
                         await HandleSharedChatBegin(message.Payload.Event);
                         break;
@@ -1388,7 +1424,7 @@ namespace MixItUp.Base.Services.Twitch.New
 
         private Task HandleSharedChatUpdate(JObject payload)
         {
-            Logger.Log(LogLevel.Debug, "Packet Received: " + JSONSerializerHelper.SerializeToString(payload));
+            ServiceManager.Get<TwitchSession>().SetSharedChatSession((string)payload["broadcaster_user_id"], (string)payload["session_id"], false);
             return Task.CompletedTask;
         }
 
@@ -1396,9 +1432,14 @@ namespace MixItUp.Base.Services.Twitch.New
 
         private Task HandleSharedChatEvent(JObject payload, EventTypeEnum eventType)
         {
-            if (payload["broadcaster_user_id"]?.ToString() != ServiceManager.Get<TwitchSession>().StreamerID) { return Task.CompletedTask; }
+            bool ended = eventType == EventTypeEnum.TwitchChannelSharedChatEnded;
+            if (!ServiceManager.Get<TwitchSession>().SetSharedChatSession((string)payload["broadcaster_user_id"], (string)payload["session_id"], ended))
+            {
+                return Task.CompletedTask;
+            }
             var identifiers = new Dictionary<string, string>
             {
+                ["streamissharedchat"] = (!ended).ToString(),
                 ["sharedchatsessionid"] = payload["session_id"]?.ToString() ?? string.Empty,
                 ["sharedchathostid"] = payload["host_broadcaster_user_id"]?.ToString() ?? string.Empty,
                 ["sharedchathost"] = payload["host_broadcaster_user_login"]?.ToString() ?? string.Empty,

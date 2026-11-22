@@ -213,38 +213,16 @@ namespace MixItUp.Installer
 
             if (args.Length >= 2)
             {
-                string rawArgument = args[1];
-                string sanitizedArgument = SanitizeInstallDirectoryArgument(rawArgument);
-                if (!string.IsNullOrEmpty(sanitizedArgument))
+                this.installDirectoryArgument = args[1];
+                this.installDirectory = SanitizeInstallDirectoryArgument(args[1]);
+                bool updating = this.targetChannelOverride != null || this.targetVersionOverride != null;
+                if (!Directory.Exists(this.installDirectory) || (updating && !DoesDirectoryContainExistingInstall(this.installDirectory)))
                 {
-                    this.installDirectoryArgument = sanitizedArgument;
-
-                    if (Directory.Exists(sanitizedArgument))
-                    {
-                        if (DoesDirectoryContainExistingInstall(sanitizedArgument))
-                        {
-                            this.installDirectory = sanitizedArgument;
-                        }
-                        else
-                        {
-                            this.installDirectory = DefaultInstallDirectory;
-                            this.installDirectoryResolutionNote = string.Format("Install directory argument '{0}' does not contain an existing Mix It Up installation; defaulting to '{1}'.", sanitizedArgument, DefaultInstallDirectory);
-                        }
-                    }
-                    else
-                    {
-                        this.installDirectory = DefaultInstallDirectory;
-                        this.installDirectoryResolutionNote = string.Format("Install directory argument '{0}' does not exist; defaulting to '{1}'.", sanitizedArgument, DefaultInstallDirectory);
-                    }
-                }
-                else
-                {
-                    this.installDirectory = DefaultInstallDirectory;
-                    this.installDirectoryResolutionNote = string.Format("Install directory argument '{0}' could not be parsed; defaulting to '{1}'.", rawArgument, DefaultInstallDirectory);
+                    this.installDirectoryResolutionNote = new DirectoryNotFoundException().Message;
                 }
             }
 
-            if (Directory.Exists(this.installDirectory))
+            if (DoesDirectoryContainExistingInstall(this.installDirectory))
             {
                 this.IsUpdate = true;
                 string applicationSettingsFilePath = Path.Combine(this.installDirectory, NewApplicationSettingsFileName);
@@ -287,6 +265,11 @@ namespace MixItUp.Installer
 
         public bool CheckCompatability()
         {
+            if (this.installDirectoryResolutionNote != null)
+            {
+                this.ShowError(this.installDirectoryResolutionNote, this.installDirectoryArgument);
+                return false;
+            }
             if (Environment.OSVersion.Version < minimumOSVersion)
             {
                 this.ShowError(
@@ -373,7 +356,8 @@ namespace MixItUp.Installer
                         {
                             if (this.InstallMixItUp())
                             {
-                                if (!this.CreateMixItUpShortcut())
+                                if (string.Equals(this.installDirectory.TrimEnd(Path.DirectorySeparatorChar), DefaultInstallDirectory, StringComparison.OrdinalIgnoreCase)
+                                    && !this.CreateMixItUpShortcut())
                                 {
                                     this.WriteToLogFile("Shortcut creation did not complete successfully.");
                                 }
@@ -407,29 +391,11 @@ namespace MixItUp.Installer
 
         public void Launch()
         {
-            if (Path.Equals(this.installDirectory, DefaultInstallDirectory))
+            Process.Start(new ProcessStartInfo(Path.Combine(this.installDirectory, "MixItUp.exe"))
             {
-                if (File.Exists(StartMenuShortCutFilePath))
-                {
-                    ProcessStartInfo processInfo = new ProcessStartInfo(StartMenuShortCutFilePath)
-                    {
-                        UseShellExecute = true
-                    };
-                    Process.Start(processInfo);
-                }
-                else if (File.Exists(DesktopShortCutFilePath))
-                {
-                    ProcessStartInfo processInfo = new ProcessStartInfo(DesktopShortCutFilePath)
-                    {
-                        UseShellExecute = true
-                    };
-                    Process.Start(processInfo);
-                }
-            }
-            else
-            {
-                Process.Start(Path.Combine(this.installDirectory, "MixItUp.exe"));
-            }
+                WorkingDirectory = this.installDirectory,
+                UseShellExecute = false
+            });
         }
 
         protected void NotifyPropertyChanged([CallerMemberName] string name = "")
@@ -448,7 +414,7 @@ namespace MixItUp.Installer
                 bool isRunning = false;
                 foreach (Process clsProcess in Process.GetProcesses())
                 {
-                    if (clsProcess.ProcessName.Equals(MixItUpProcessName) || clsProcess.ProcessName.Equals(AutoHosterProcessName))
+                    if ((clsProcess.ProcessName.Equals(MixItUpProcessName) || clsProcess.ProcessName.Equals(AutoHosterProcessName)) && BelongsToInstall(clsProcess))
                     {
                         isRunning = true;
                         if (i == 5)
@@ -465,6 +431,13 @@ namespace MixItUp.Installer
                 await Task.Delay(1000);
             }
             return false;
+        }
+
+        private bool BelongsToInstall(Process process)
+        {
+            try { return string.Equals(Path.GetDirectoryName(process.MainModule.FileName), this.installDirectory.TrimEnd(Path.DirectorySeparatorChar), StringComparison.OrdinalIgnoreCase); }
+            catch (InvalidOperationException) { return false; }
+            catch (System.ComponentModel.Win32Exception) { return false; }
         }
 
         private async Task<UpdateVersionManifestModel> FetchManifestAsync()

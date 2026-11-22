@@ -183,6 +183,11 @@ namespace MixItUp.WPF.Branding
         public static readonly Brand Velora = new Brand("velora", "Velora", "https://velora.tv", "#FDCB16", "#D18829", "#581012");
         public static readonly Brand VPZone = new Brand("vpzone", "VPZone", "https://vpzone.tv", "#7C3AED", "#5B21B6", "#120B1F");
 
+        public static readonly Brand Joystick = new Brand("joystick", "Joystick.tv", "https://joystick.tv", "#0AFFFF", "#09ABAB", "#182A36");
+
+        public static readonly Brand AltStream = new Brand("altstream", "AltStream", "https://altstream.online", "#FD4904", "#FFDBB8", "#2A1B05");
+        public static readonly Brand Razo = new Brand("razo", "Razo", "https://razo.tv", "#FA0C8D", "#FA0C8D", "#0A0A0B");
+
         // Streaming software
         public static readonly Brand OBSStudio = new Brand("obs", "OBS Studio", "https://obsproject.com", "#302E31", "#1F1E1F", "#000000");
         public static readonly Brand Streamlabs = new Brand("streamlabs", "Streamlabs", "https://streamlabs.com", "#80F5D2", "#31C9B0", "#0F2A3F");

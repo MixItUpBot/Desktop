@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:resx="clr-namespace:MixItUp.Base;assembly=MixItUp.Base"
+    xmlns:markdown="clr-namespace:MdXaml;assembly=MdXaml"
     Title="{x:Static resx:Resources.LicenseAgreement}"
     Width="600"
     Height="450"
@@ -22,9 +23,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <ScrollViewer Grid.Row="0">
-            <Controls:LicenseControl />
-        </ScrollViewer>
+        <markdown:MarkdownScrollViewer x:Name="AgreementContent" Grid.Row="0" />
 
         <Grid Grid.Row="2" HorizontalAlignment="Center">
             <Grid.ColumnDefinitions>
