@@ -130,7 +130,10 @@ namespace MixItUp.Base.Model.Actions
 
         public virtual async Task TestPerform(Dictionary<string, string> specialIdentifiers)
         {
-            await this.Perform(new CommandParametersModel(ChannelSession.User, StreamingPlatformTypeEnum.All, new List<string>() { "@" + ChannelSession.User.Username }, specialIdentifiers) { TargetUser = ChannelSession.User });
+            var parameters = CommandParametersModel.GetTestParameters(specialIdentifiers);
+            await parameters.SetTestUser(parameters.User.Username);
+            parameters.TargetUser = parameters.User;
+            await this.Perform(parameters);
         }
 
         public async Task Perform(CommandParametersModel parameters)

@@ -22,7 +22,46 @@ namespace MixItUp.Base.Model.Commands
     {
         public static CommandParametersModel GetTestParameters(Dictionary<string, string> specialIdentifiers)
         {
-            return new CommandParametersModel(ChannelSession.User, StreamingPlatformTypeEnum.All, new List<string>() { "@" + ChannelSession.User.Username }, specialIdentifiers);
+            var platform = StreamingPlatformTypeEnum.All;
+            if (specialIdentifiers != null && specialIdentifiers.TryGetValue(SpecialIdentifierStringBuilder.StreamingPlatformSpecialIdentifier, out string name)
+                && Enum.TryParse(name, out StreamingPlatformTypeEnum eventPlatform) && StreamingPlatforms.IsValidPlatform(eventPlatform))
+            {
+                platform = eventPlatform;
+            }
+
+            var user = GetDefaultTestUser(platform);
+            return new CommandParametersModel(user, platform, new[] { "@" + user.Username }, specialIdentifiers);
+        }
+
+        public static UserV2ViewModel GetDefaultTestUser(StreamingPlatformTypeEnum platform)
+        {
+            if (platform == StreamingPlatformTypeEnum.All)
+            {
+                return ChannelSession.User ?? UserV2ViewModel.CreateUnassociated();
+            }
+
+            var session = StreamingPlatforms.GetPlatformSession(platform);
+            if (session?.IsConnected == true)
+            {
+                if (session.Streamer != null) { return session.Streamer; }
+                // Bot-token connections identify the channel by name and have no streamer account.
+                if (session is ChannelChatSessionBase) { return UserV2ViewModel.CreateUnassociated(session.ChannelID); }
+            }
+            return UserV2ViewModel.CreateUnassociated();
+        }
+
+        public async Task SetTestUser(string username)
+        {
+            username = username?.Trim().TrimStart('@');
+            if (string.IsNullOrWhiteSpace(username)) { return; }
+
+            bool resolveChannelOwner = this.Platform != StreamingPlatformTypeEnum.All && this.User.IsUnassociated
+                && StreamingPlatforms.GetPlatformSession(this.Platform) is ChannelChatSessionBase { IsConnected: true };
+            if (resolveChannelOwner || !string.Equals(username, this.User.Username, StringComparison.OrdinalIgnoreCase))
+            {
+                var user = await ServiceManager.Get<UserService>().GetUserByPlatform(this.Platform, platformUsername: username, performPlatformSearch: true);
+                this.User = user ?? UserV2ViewModel.CreateUnassociated(username);
+            }
         }
 
         public static List<string> GenerateArguments(string arguments)

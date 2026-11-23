@@ -35,6 +35,28 @@ namespace MixItUp.Base.Model
         Joystick = 10,
         AltStream = 11,
         Razo = 12,
+        
+        //Reserved
+        StreamPlace = 13,
+        Fansly = 14,
+        BeamStream = 15, 
+        XLive = 16,
+        Rumble = 17,
+        OFLive = 18,
+        RPlay = 19,
+        Piczel = 20,
+        StrimFun = 21,
+        FacebookLive = 22,
+        TikTokLive = 23,
+        Starvios = 24,
+        Chaturbate = 25,
+        CamSoda = 26,
+        LiveJasmin = 27,
+        Bilibili = 28,
+        Dailymotion = 29,
+        InstagramLive = 30,
+        SteamTV = 31,
+        Soop = 32,
 
         All = 99999,
 

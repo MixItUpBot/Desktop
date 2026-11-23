@@ -6,8 +6,8 @@
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <OutputType>WinExe</OutputType>
     <AssemblyName>MixItUp.Bootstrapper</AssemblyName>
-    <AssemblyVersion>1.8.230.0</AssemblyVersion>
-    <FileVersion>1.8.230.0</FileVersion>
+    <AssemblyVersion>1.8.231.0</AssemblyVersion>
+    <FileVersion>1.8.231.0</FileVersion>
     <Version>1.8.213</Version>
     <Company>Blazing Cacti LLC</Company>
     <Description>Mix It Up Desktop Update Bootstrapper</Description>

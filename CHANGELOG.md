@@ -1,5 +1,18 @@
 # Mix It Up Desktop Changelog
 
+## 1.8.231 (HOTFIX)
+
+Release Date: 2026-11-22
+
+### FIXES
+
+- Fixed AltStream, Joystick.tv, and Razo events appearing as Generic on the Events page.
+- Event and action tests now use the selected platform and viewer for `$streamingplatform`, `$userdisplayname`, and `$useravatar`.
+- Fixed missing or outdated AltStream avatars in chat, redemptions, and commands, including `$useravatar`, `$targetuseravatar`, `$arg1useravatar`, and `$lookupavatarurl`.
+- AltStream follows now update the latest follower for commands and overlays, including `$latestfollowerusername`, `$latestfolloweruserdisplayname`, and `$latestfolloweruseravatar`.
+- Fixed broken image icons in overlays when an image identifier returns an empty URL.
+- Fixed the Kick Kicks Gifted label in Event List and Custom widget tests.
+
 ## 1.8.230
 
 Release Date: 2026-11-21

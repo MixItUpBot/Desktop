@@ -853,6 +853,15 @@ namespace MixItUp.Base {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} Redeemed {1}.
+        /// </summary>
+        public static string AlertAltStreamChannelPointRedeemed {
+            get {
+                return ResourceManager.GetString("AlertAltStreamChannelPointRedeemed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} Banned.
         /// </summary>
         public static string AlertBanned {
@@ -14072,15 +14081,6 @@ namespace MixItUp.Base {
                 return ResourceManager.GetString("Joystick", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Joystick.tv did not confirm delivery of the chat message..
-        /// </summary>
-        public static string JoystickChatSendUnconfirmed {
-            get {
-                return ResourceManager.GetString("JoystickChatSendUnconfirmed", resourceCulture);
-            }
-        }
         
         /// <summary>
         ///   Looks up a localized string similar to Joystick.tv Channel Followed.
@@ -14151,6 +14151,15 @@ namespace MixItUp.Base {
         public static string JoystickChannelTipped {
             get {
                 return ResourceManager.GetString("JoystickChannelTipped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Joystick.tv did not confirm delivery of the chat message..
+        /// </summary>
+        public static string JoystickChatSendUnconfirmed {
+            get {
+                return ResourceManager.GetString("JoystickChatSendUnconfirmed", resourceCulture);
             }
         }
         
@@ -14448,6 +14457,15 @@ namespace MixItUp.Base {
         public static string KickKicksCommandsAlreadyExistsDuplicateAmount {
             get {
                 return ResourceManager.GetString("KickKicksCommandsAlreadyExistsDuplicateAmount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kick Kicks Gifted.
+        /// </summary>
+        public static string KickKicksGifted {
+            get {
+                return ResourceManager.GetString("KickKicksGifted", resourceCulture);
             }
         }
         
@@ -15324,12 +15342,6 @@ namespace MixItUp.Base {
             }
         }
         
-        public static string ShowAltStreamChannelPoints => ResourceManager.GetString("ShowAltStreamChannelPoints", resourceCulture);
-
-        public static string AlertAltStreamChannelPointRedeemed => ResourceManager.GetString("AlertAltStreamChannelPointRedeemed", resourceCulture);
-
-        public static string RestartToUpdate => ResourceManager.GetString("RestartToUpdate", resourceCulture);
-
         /// <summary>
         ///   Looks up a localized string similar to Log Out.
         /// </summary>
@@ -22855,6 +22867,15 @@ namespace MixItUp.Base {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Restart to apply the update.
+        /// </summary>
+        public static string RestartToUpdate {
+            get {
+                return ResourceManager.GetString("RestartToUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Restore a Settings Backup.
         /// </summary>
         public static string RestoreASettingsBackup {
@@ -24804,6 +24825,15 @@ namespace MixItUp.Base {
         public static string ShowAllPaths {
             get {
                 return ResourceManager.GetString("ShowAllPaths", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show AltStream Channel Points.
+        /// </summary>
+        public static string ShowAltStreamChannelPoints {
+            get {
+                return ResourceManager.GetString("ShowAltStreamChannelPoints", resourceCulture);
             }
         }
         

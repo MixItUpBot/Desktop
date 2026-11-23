@@ -250,30 +250,45 @@ namespace MixItUp.Base.Services.AltStream
             var actor = GetActor(frame);
             bool fromBot = frame.Value<string>("source") == "bot" || actor?.Value<bool?>("isBot") == true || (actor?["roles"] as JObject)?.Value<bool?>("isBot") == true;
             var author = AltStreamUserPlatformV2Model.FromAuthor(actor, fromBot);
-            if (author != null && string.IsNullOrWhiteSpace(author.ID) && !fromBot && type is ("follow" or "raid_received" or "redemption"))
-            {
-                var verified = await this.FindUser(author.Username);
-                if (string.Equals(verified?.Username, author.Username, StringComparison.OrdinalIgnoreCase)) author = verified;
-            }
             if (author == null)
             {
                 if (!history) this.DisplayNotice(frame, prefix);
                 return;
+            }
+            bool hasActorID = !string.IsNullOrWhiteSpace(author.ID);
+            if (!hasActorID && !fromBot && type is ("follow" or "raid_received" or "redemption"))
+            {
+                var verified = await this.FindUser(author.Username);
+                if (string.Equals(verified?.Username, author.Username, StringComparison.OrdinalIgnoreCase))
+                {
+                    verified.AvatarLink ??= author.AvatarLink;
+                    author = verified;
+                }
             }
             if (fromBot) author.ID = "bot:" + author.Username.ToLowerInvariant();
             if (string.IsNullOrWhiteSpace(author.ID)) author.ID = "user:" + author.Username.ToLowerInvariant();
             var user = history ? new UserV2ViewModel(this.Platform, new UserV2Model(author)) :
                 await ServiceManager.Get<UserService>().CreateUser(author, matchUsername: false);
             if (user == null) return;
-            if (!history) user.GetPlatformData<AltStreamUserPlatformV2Model>(this.Platform)?.UpdateFrom(author);
+            var viewer = user.GetPlatformData<AltStreamUserPlatformV2Model>(this.Platform);
+            if (!history)
+            {
+                viewer.UpdateFrom(author);
+                if (author.AvatarLink == null && type is ("message" or "reply" or "highlight" or "follow" or "raid_received"))
+                {
+                    await viewer.RefreshAvatar(this);
+                }
+            }
             if (type == "follow" && !history)
             {
-                var profile = user.GetPlatformData<AltStreamUserPlatformV2Model>(this.Platform);
-                profile.Roles.Add(UserRoleEnum.Follower);
+                viewer.Roles.Add(UserRoleEnum.Follower);
                 if (frame.Value<long?>("sentAt") is long timestamp && timestamp >= 0 && timestamp <= 253402300799999)
-                    profile.FollowDate = DateTimeOffset.FromUnixTimeMilliseconds(timestamp);
+                    viewer.FollowDate = DateTimeOffset.FromUnixTimeMilliseconds(timestamp);
                 if (await ServiceManager.Get<EventService>().PerformEvent(EventTypeEnum.AltStreamChannelFollowed, new CommandParametersModel(user, this.Platform)))
+                {
+                    ChannelSession.Settings.LatestSpecialIdentifiersData[SpecialIdentifierStringBuilder.LatestFollowerUserData] = user.ID;
                     EventService.FollowOccurred(user);
+                }
                 return;
             }
             if (type == "redemption" && !history && frame["redemption"] is JObject reward &&
@@ -281,6 +296,10 @@ namespace MixItUp.Base.Services.AltStream
                 reward.Value<string>("rewardId") is string rewardID && reward.Value<string>("rewardName") is string name &&
                 (reward.Value<int?>("cost") ?? reward.Value<int?>("rewardCost")) is int cost && cost >= 0)
             {
+                if (author.AvatarLink == null)
+                {
+                    await viewer.RefreshAvatar(this);
+                }
                 var p = new CommandParametersModel(user, this.Platform);
                 p.SpecialIdentifiers["rewardname"] = name;
                 p.SpecialIdentifiers["rewardcost"] = cost.ToString(CultureInfo.InvariantCulture);
@@ -425,9 +444,21 @@ namespace MixItUp.Base.Services.AltStream
             try
             {
                 var profile = await this.Get("api/v2/users/" + Uri.EscapeDataString(username), this.Token, CancellationToken.None);
-                return AltStreamUserPlatformV2Model.FromAuthor(profile as JObject);
+                var user = AltStreamUserPlatformV2Model.FromAuthor(profile as JObject);
+                if (user != null) user.LastAvatarLookup = DateTimeOffset.UtcNow;
+                return user;
             }
             catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound) { return null; }
+            catch (HttpRequestException ex) when (ex.StatusCode != HttpStatusCode.Unauthorized)
+            {
+                Logger.Log(LogLevel.Warning, $"AltStream user lookup failed ({ex.StatusCode?.ToString() ?? "network error"}).");
+                return null;
+            }
+            catch (OperationCanceledException)
+            {
+                Logger.Log(LogLevel.Warning, "AltStream user lookup timed out.");
+                return null;
+            }
         }
 
         public async Task Shoutout(string target)

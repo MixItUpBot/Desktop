@@ -17,6 +17,19 @@ namespace MixItUp.Base.Model.Commands
         private static SemaphoreSlim followEventsInQueueSemaphore = new SemaphoreSlim(1);
         public static int FollowEventsInQueue = 0;
 
+        public static StreamingPlatformTypeEnum GetEventPlatform(EventTypeEnum eventType) => (int)eventType switch
+        {
+            >= 200 and < 300 => StreamingPlatformTypeEnum.Twitch,
+            >= 300 and < 400 => StreamingPlatformTypeEnum.YouTube,
+            >= 600 and < 700 => StreamingPlatformTypeEnum.Kick,
+            >= 700 and < 800 => StreamingPlatformTypeEnum.Velora,
+            >= 800 and < 900 => StreamingPlatformTypeEnum.VPZone,
+            >= 900 and < 1000 => StreamingPlatformTypeEnum.Joystick,
+            >= 12000 and < 12100 => StreamingPlatformTypeEnum.AltStream,
+            >= 12100 and < 12200 => StreamingPlatformTypeEnum.Razo,
+            _ => StreamingPlatformTypeEnum.All,
+        };
+
         public static Dictionary<string, string> GetEventTestSpecialIdentifiers(EventTypeEnum eventType)
         {
             Dictionary<string, string> specialIdentifiers = CommandModelBase.GetGeneralTestSpecialIdentifiers();
@@ -709,39 +722,7 @@ namespace MixItUp.Base.Model.Commands
                     break;
             }
 
-            int eventNumber = (int)eventType;
-            if (eventNumber >= 200 && eventNumber < 300)
-            {
-                specialIdentifiers[SpecialIdentifierStringBuilder.StreamingPlatformSpecialIdentifier] = StreamingPlatformTypeEnum.Twitch.ToString();
-            }
-            else if (eventNumber >= 300 && eventNumber < 400)
-            {
-                specialIdentifiers[SpecialIdentifierStringBuilder.StreamingPlatformSpecialIdentifier] = StreamingPlatformTypeEnum.YouTube.ToString();
-            }
-            else if (eventNumber >= 600 && eventNumber < 700)
-            {
-                specialIdentifiers[SpecialIdentifierStringBuilder.StreamingPlatformSpecialIdentifier] = StreamingPlatformTypeEnum.Kick.ToString();
-            }
-            else if (eventNumber >= 700 && eventNumber < 800)
-            {
-                specialIdentifiers[SpecialIdentifierStringBuilder.StreamingPlatformSpecialIdentifier] = StreamingPlatformTypeEnum.Velora.ToString();
-            }
-            else if (eventNumber >= 12000 && eventNumber < 12100)
-            {
-                specialIdentifiers[SpecialIdentifierStringBuilder.StreamingPlatformSpecialIdentifier] = StreamingPlatformTypeEnum.AltStream.ToString();
-            }
-            else if (eventNumber >= 900 && eventNumber < 1000)
-            {
-                specialIdentifiers[SpecialIdentifierStringBuilder.StreamingPlatformSpecialIdentifier] = StreamingPlatformTypeEnum.Joystick.ToString();
-            }
-            else if (eventNumber >= 800 && eventNumber < 900)
-            {
-                specialIdentifiers[SpecialIdentifierStringBuilder.StreamingPlatformSpecialIdentifier] = StreamingPlatformTypeEnum.VPZone.ToString();
-            }
-            else
-            {
-                specialIdentifiers[SpecialIdentifierStringBuilder.StreamingPlatformSpecialIdentifier] = ChannelSession.Settings.DefaultStreamingPlatform.ToString();
-            }
+            specialIdentifiers[SpecialIdentifierStringBuilder.StreamingPlatformSpecialIdentifier] = GetEventPlatform(eventType).ToString();
 
             return specialIdentifiers;
         }

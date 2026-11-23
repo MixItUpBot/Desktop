@@ -123,30 +123,9 @@ namespace MixItUp.Base.ViewModel.MainControls
                 {
                     return Resources.OBSStudio;
                 }
-                else if (eventNumber >= 200 && eventNumber < 300)
-                {
-                    return Resources.Twitch;
-                }
-                else if (eventNumber >= 300 && eventNumber < 400)
-                {
-                    return Resources.YouTube;
-                }
-                else if (eventNumber >= 600 && eventNumber < 700)
-                {
-                    return Resources.Kick;
-                }
-                else if (eventNumber >= 700 && eventNumber < 800)
-                {
-                    return Resources.Velora;
-                }
-                else if (eventNumber >= 800 && eventNumber < 900)
-                {
-                    return Resources.VPZone;
-                }
-                else
-                {
-                    return Resources.Generic;
-                }
+
+                var platform = EventCommandModel.GetEventPlatform(this.EventType);
+                return platform == StreamingPlatformTypeEnum.All ? Resources.Generic : EnumLocalizationHelper.GetLocalizedName(platform);
             }
         }
 

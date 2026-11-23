@@ -11647,6 +11647,9 @@ Please go to the Accounts page in the main menu to connect your streaming accoun
   <data name="KickKicks" xml:space="preserve">
     <value>Kick Kicks</value>
   </data>
+  <data name="KickKicksGifted" xml:space="preserve">
+    <value>Kick Kicks Gifted</value>
+  </data>
   <data name="KickKicksCommandsAlreadyExistsDuplicateAmount" xml:space="preserve">
     <value>There already exists another Kick Kicks command with the same amount / range as this command.</value>
   </data>

@@ -1,4 +1,5 @@
 using MixItUp.Base.Model.Commands;
+using MixItUp.Base.Model.User.Platform;
 using MixItUp.Base.Services;
 using MixItUp.Base.ViewModel.User;
 using System;
@@ -55,6 +56,10 @@ namespace MixItUp.Base.Model.Actions
                 if (user == null && TryStartPlatformSearch())
                 {
                     user = await ServiceManager.Get<UserService>().GetUserByPlatform(platform, platformID: usernameOrID, platformUsername: usernameOrID, performPlatformSearch: true);
+                }
+                if (user?.PlatformModel is AltStreamUserPlatformV2Model altStreamUser)
+                {
+                    await altStreamUser.Refresh();
                 }
             }
 

@@ -137,6 +137,12 @@ namespace MixItUp.Base.Util
                         throw new InvalidOperationException("Overlay identifiers cannot supply executable attributes.");
                     }
                     if (URLAttributes.Contains(attribute.Name)) { ValidateURL(value); }
+                    if (element is IHtmlImageElement && attribute.Name == "src" && string.IsNullOrWhiteSpace(value))
+                    {
+                        element.RemoveAttribute("src");
+                        if (!element.HasAttribute("alt")) { element.SetAttribute("alt", string.Empty); }
+                        continue;
+                    }
                     if ((element.LocalName == "iframe" || element.LocalName == "frame") && attribute.Name == "src")
                     {
                         // An embedded page must keep the origin chosen in the authored template.
