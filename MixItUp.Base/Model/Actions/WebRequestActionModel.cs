@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
@@ -82,8 +81,6 @@ namespace MixItUp.Base.Model.Actions
             {
                 using (AdvancedHttpClient httpClient = new AdvancedHttpClient())
                 {
-                    httpClient.DefaultRequestHeaders.Add("User-Agent", $"MixItUp/{Assembly.GetEntryAssembly().GetName().Version.ToString()} (Web call from Mix It Up; https://mixitup.bot; support@mixitupapp.com)");
-
                     string requestContentType = "application/json";
 
                     if (this.CustomHeaders != null)

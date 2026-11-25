@@ -8,6 +8,9 @@ namespace MixItUp.Base.ViewModel.Chat
     public class RazoChatMessage : UserChatMessageViewModel
     {
         public string ProviderID { get; }
+        // A Razo deletion can arrive after a log file has been closed.
+        internal override string LogDescription => $"{this.User?.Username} ({this.ID})";
+
         public RazoChatMessage(string channel, JObject data, UserV2ViewModel user)
             : base(LocalID(channel, data.Value<string>("id")), StreamingPlatformTypeEnum.Razo, user)
         {

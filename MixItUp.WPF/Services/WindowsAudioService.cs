@@ -1,6 +1,7 @@
 using MixItUp.Base;
 using MixItUp.Base.Services;
 using MixItUp.Base.Util;
+using NAudio;
 using NAudio.Wave;
 using NAudio.Vorbis;
 using MixItUp.Base.Web;
@@ -269,9 +270,20 @@ namespace MixItUp.WPF.Services
             try
             {
                 output = this.CreateWaveOutEvent(deviceName);
+                try
+                {
+                    output.Init(stream);
+                }
+                catch (MmException ex) when (output.DeviceNumber >= 0 &&
+                    ex.Result is MmResult.BadDeviceId or MmResult.NoDriver or MmResult.AlreadyAllocated)
+                {
+                    Logger.Log(LogLevel.Warning, $"Audio output device \"{deviceName}\" became unavailable ({ex.Result}), using the default output for this sound.");
+                    output.Dispose();
+                    output = new WaveOutEvent();
+                    output.Init(stream);
+                }
                 if (stream is AudioFileReader file) { file.Volume = this.ConvertVolumeAmount(volume); }
                 else { output.Volume = this.ConvertVolumeAmount(volume); }
-                output.Init(stream);
                 output.Play();
                 return output;
             }

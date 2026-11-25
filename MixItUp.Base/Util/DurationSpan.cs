@@ -30,18 +30,20 @@ namespace MixItUp.Base.Util
             this.Amount = amount;
         }
 
-        public DateTimeOffset GetDateTimeOffsetFromNow()
+        public DateTimeOffset GetDateTimeOffsetFromNow() => this.GetDateTimeOffsetFrom(DateTimeOffset.Now);
+
+        public DateTimeOffset GetDateTimeOffsetFrom(DateTimeOffset start)
         {
             switch (this.Type)
             {
-                case DurationSpanTypeEnum.Years: return DateTimeOffset.Now.AddMonths(this.Amount * 12);
-                case DurationSpanTypeEnum.Months: return DateTimeOffset.Now.AddMonths(this.Amount);
-                case DurationSpanTypeEnum.Days: return DateTimeOffset.Now.AddDays(this.Amount);
-                case DurationSpanTypeEnum.Hours: return DateTimeOffset.Now.AddHours(this.Amount);
-                case DurationSpanTypeEnum.Minutes: return DateTimeOffset.Now.AddMinutes(this.Amount);
-                case DurationSpanTypeEnum.Seconds: return DateTimeOffset.Now.AddSeconds(this.Amount);
+                case DurationSpanTypeEnum.Years: return start.AddMonths(this.Amount * 12);
+                case DurationSpanTypeEnum.Months: return start.AddMonths(this.Amount);
+                case DurationSpanTypeEnum.Days: return start.AddDays(this.Amount);
+                case DurationSpanTypeEnum.Hours: return start.AddHours(this.Amount);
+                case DurationSpanTypeEnum.Minutes: return start.AddMinutes(this.Amount);
+                case DurationSpanTypeEnum.Seconds: return start.AddSeconds(this.Amount);
             }
-            return DateTimeOffset.Now;
+            return start;
         }
     }
 }

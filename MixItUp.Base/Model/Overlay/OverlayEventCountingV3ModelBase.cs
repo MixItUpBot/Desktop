@@ -57,6 +57,8 @@ namespace MixItUp.Base.Model.Overlay
         [DataMember]
         public double RazoGiftAmount { get; set; }
         [DataMember]
+        public double JoystickSubscriptionAmount { get; set; }
+        [DataMember]
         public double RazoSubscriptionAmount { get; set; }
 
         [DataMember]
@@ -82,7 +84,7 @@ namespace MixItUp.Base.Model.Overlay
                 EventService.OnRaidOccurred += EventService_OnRaidOccurred;
             }
 
-            if (this.TwitchSubscriptionsAmount.Any(d => d.Value > 0) || this.YouTubeMembershipsAmount.Any(d => d.Value > 0) || this.KickSubscriptionsAmount.Any(d => d.Value > 0) || this.VeloraSubscriptionsAmount.Any(d => d.Value > 0) || this.VPZoneSubscriptionsAmount.Any(d => d.Value > 0))
+            if (this.JoystickSubscriptionAmount > 0 || this.RazoSubscriptionAmount > 0 || this.TwitchSubscriptionsAmount.Any(d => d.Value > 0) || this.YouTubeMembershipsAmount.Any(d => d.Value > 0) || this.KickSubscriptionsAmount.Any(d => d.Value > 0) || this.VeloraSubscriptionsAmount.Any(d => d.Value > 0) || this.VPZoneSubscriptionsAmount.Any(d => d.Value > 0))
             {
                 EventService.OnSubscribeOccurred += EventService_OnSubscribeOccurred;
                 EventService.OnResubscribeOccurred += EventService_OnSubscribeOccurred;
@@ -123,11 +125,9 @@ namespace MixItUp.Base.Model.Overlay
             {
                 EventService.OnJoystickChannelTippedOccurred += EventService_OnJoystickChannelTippedOccurred;
             }
-            if (this.RazoSubscriptionAmount > 0)
+            if (this.JoystickSubscriptionAmount > 0 || this.RazoSubscriptionAmount > 0)
             {
-                EventService.RazoSubscriptionsGifted += this.OnRazoSubscriptionsGifted;
-                EventService.OnSubscribeOccurred += this.OnRazoSubscription;
-                EventService.OnResubscribeOccurred += this.OnRazoSubscription;
+                EventService.SubscriptionsGiftedWithoutRecipients += this.OnSubscriptionsGiftedWithoutRecipients;
             }
             if (this.RazoGiftAmount > 0)
             {
@@ -182,6 +182,7 @@ namespace MixItUp.Base.Model.Overlay
             this.VPZoneCheeredAmount = 0;
             this.JoystickTippedAmount = 0;
             this.RazoGiftAmount = 0;
+            this.JoystickSubscriptionAmount = 0;
             this.RazoSubscriptionAmount = 0;
 
             this.DonationAmount = 0;
@@ -208,6 +209,14 @@ namespace MixItUp.Base.Model.Overlay
                 {
                     await this.ProcessEvent(subscription.User, amount);
                 }
+            }
+            else if (subscription.Platform == StreamingPlatformTypeEnum.Joystick && this.JoystickSubscriptionAmount > 0)
+            {
+                await this.ProcessEvent(subscription.User, this.JoystickSubscriptionAmount);
+            }
+            else if (subscription.Platform == StreamingPlatformTypeEnum.Razo && this.RazoSubscriptionAmount > 0)
+            {
+                await this.ProcessEvent(subscription.User, this.RazoSubscriptionAmount);
             }
             else if (subscription.Platform == StreamingPlatformTypeEnum.YouTube)
             {
@@ -253,6 +262,10 @@ namespace MixItUp.Base.Model.Overlay
                         {
                             total += amount;
                         }
+                    }
+                    else if (subscription.Platform == StreamingPlatformTypeEnum.Joystick)
+                    {
+                        total += this.JoystickSubscriptionAmount;
                     }
                     else if (subscription.Platform == StreamingPlatformTypeEnum.YouTube)
                     {
@@ -334,14 +347,10 @@ namespace MixItUp.Base.Model.Overlay
             await this.ProcessEvent(cheered.User, this.RazoGiftAmount * cheered.Amount);
         }
 
-        private async void OnRazoSubscriptionsGifted(UserV2ViewModel gifter, int count)
+        private async void OnSubscriptionsGiftedWithoutRecipients(UserV2ViewModel gifter, int count)
         {
-            await this.ProcessEvent(gifter, count * this.RazoSubscriptionAmount);
-        }
-
-        private async void OnRazoSubscription(object sender, SubscriptionDetailsModel subscription)
-        {
-            if (subscription.Platform == StreamingPlatformTypeEnum.Razo) await this.ProcessEvent(subscription.User, this.RazoSubscriptionAmount);
+            double amount = gifter.Platform == StreamingPlatformTypeEnum.Joystick ? this.JoystickSubscriptionAmount : this.RazoSubscriptionAmount;
+            if (amount > 0) await this.ProcessEvent(gifter, count * amount);
         }
 
         private void RemoveEventHandlers()
@@ -360,9 +369,7 @@ namespace MixItUp.Base.Model.Overlay
             EventService.OnVPZoneChannelCheeredOccurred -= EventService_OnVPZoneChannelCheeredOccurred;
             EventService.OnJoystickChannelTippedOccurred -= EventService_OnJoystickChannelTippedOccurred;
             EventService.OnRazoChannelGiftOccurred -= EventService_OnRazoChannelGiftOccurred;
-            EventService.RazoSubscriptionsGifted -= this.OnRazoSubscriptionsGifted;
-            EventService.OnSubscribeOccurred -= this.OnRazoSubscription;
-            EventService.OnResubscribeOccurred -= this.OnRazoSubscription;
+            EventService.SubscriptionsGiftedWithoutRecipients -= this.OnSubscriptionsGiftedWithoutRecipients;
         }
     }
 }

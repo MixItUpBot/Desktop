@@ -45,7 +45,7 @@ namespace MixItUp.Base.Model.Overlay
             properties["Platform"] = message.Platform.ToString();
 
             string messageType = ChatNotificationMessageType.text.ToString();
-            bool isHighlightedMessage = message is AltStreamChatMessage { IsHighlighted: true };
+            bool isHighlightedMessage = message is AltStreamChatMessage { IsHighlighted: true } or JoystickChatMessage { IsHighlighted: true };
             bool isFirstMessage = false;
             int bitsAmount = 0;
 
@@ -67,10 +67,18 @@ namespace MixItUp.Base.Model.Overlay
             properties["BitsAmount"] = bitsAmount;
 
             List<JObject> messageParts = new List<JObject>();
-            foreach (var messagePart in message.MessageParts)
+            for (int i = 0; i < message.MessageParts.Count; i++)
             {
+                object messagePart = message.MessageParts[i];
                 JObject part = new JObject();
-                if (messagePart is string)
+                if (message is TwitchChatMessageViewModel { GifUrlsByPart: { } gifs } && gifs.TryGetValue(i, out string gifUrl))
+                {
+                    part[MessagePartTypeProperty] = MessagePartTypeEmoteValue;
+                    part[MessagePartContentProperty] = gifUrl;
+                    part[MessagePartNameProperty] = (string)messagePart;
+                    part[MessagePartProviderProperty] = "Twitch GIF";
+                }
+                else if (messagePart is string)
                 {
                     part[MessagePartTypeProperty] = MessagePartTypeTextValue;
                     part[MessagePartContentProperty] = (string)messagePart;
@@ -122,7 +130,8 @@ namespace MixItUp.Base.Model.Overlay
         public bool ShowSpecialtyBadge { get; set; }
 
         [DataMember]
-        public HashSet<StreamingPlatformTypeEnum> ApplicableStreamingPlatforms { get; set; } = new HashSet<StreamingPlatformTypeEnum>();
+        [Newtonsoft.Json.JsonProperty(ObjectCreationHandling = Newtonsoft.Json.ObjectCreationHandling.Replace, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public HashSet<StreamingPlatformTypeEnum> ApplicableStreamingPlatforms { get; set; } = new HashSet<StreamingPlatformTypeEnum>(StreamingPlatforms.SupportedPlatforms);
 
         [DataMember]
         public OverlayAnimationV3Model MessageAddedAnimation { get; set; } = new OverlayAnimationV3Model();
@@ -138,18 +147,13 @@ namespace MixItUp.Base.Model.Overlay
         {
             await base.Initialize();
 
-            if (this.ApplicableStreamingPlatforms.Count == 0)
-            {
-                this.ApplicableStreamingPlatforms.AddRange(StreamingPlatforms.SupportedPlatforms);
-            }
-
             this.RemoveEventHandlers();
 
             ChatService.OnChatMessageReceived += ChatService_OnChatMessageReceived;
             ChatService.OnChatMessageDeleted += ChatService_OnChatMessageDeleted;
             ChatService.OnChannelChatCleared += ChatService_OnChannelChatCleared;
-            ChatService.OnChatUserTimedOut += ChatService_OnChatUserTimedOut;
-            ChatService.OnChatUserBanned += ChatService_OnChatUserBanned;
+            ChatService.OnChatUserTimedOut += ChatService_OnChatUserModerated;
+            ChatService.OnChatUserBanned += ChatService_OnChatUserModerated;
             ChatService.OnChatCleared += ChatService_OnChatCleared;
         }
 
@@ -186,17 +190,14 @@ namespace MixItUp.Base.Model.Overlay
 
         public async Task AddMessage(ChatMessageViewModel message)
         {
-            await this.CallFunction("add", OverlayChatV3Model.GetMessageProperties(message));
-        }
-
-        private async void ChatService_OnChatMessageReceived(object sender, ChatMessageViewModel message)
-        {
-            if (message.IsWhisper || message.IsDeleted || string.IsNullOrWhiteSpace(message.PlainTextMessage))
+            if (message.User == null || message.IsWhisper || message.IsDeleted ||
+                (string.IsNullOrWhiteSpace(message.PlainTextMessage) && !message.EmotesOnlyContents.Any() &&
+                 message is not TwitchChatMessageViewModel { GifUrlsByPart.Count: > 0 }))
             {
                 return;
             }
 
-            if (this.HideExclamationMessages && message.PlainTextMessage.StartsWith("!"))
+            if (this.HideExclamationMessages && message.PlainTextMessage?.StartsWith("!") == true)
             {
                 return;
             }
@@ -216,6 +217,11 @@ namespace MixItUp.Base.Model.Overlay
                 return;
             }
 
+            await this.CallFunction("add", GetMessageProperties(message));
+        }
+
+        private async void ChatService_OnChatMessageReceived(object sender, ChatMessageViewModel message)
+        {
             await this.AddMessage(message);
         }
 
@@ -231,18 +237,11 @@ namespace MixItUp.Base.Model.Overlay
             await this.CallFunction("remove", properties);
         }
 
-        private async void ChatService_OnChatUserTimedOut(object sender, UserV2ViewModel user)
+        private async void ChatService_OnChatUserModerated(object sender, UserV2ViewModel user)
         {
             Dictionary<string, object> properties = new Dictionary<string, object>();
             properties[UsernameProperty] = user.Username;
-            properties[UserProperty] = user;
-            await this.CallFunction("remove", properties);
-        }
-
-        private async void ChatService_OnChatUserBanned(object sender, UserV2ViewModel user)
-        {
-            Dictionary<string, object> properties = new Dictionary<string, object>();
-            properties[UsernameProperty] = user.Username;
+            if (StreamingPlatforms.IsValidPlatform(user.Platform)) { properties["Platform"] = user.Platform.ToString(); }
             properties[UserProperty] = user;
             await this.CallFunction("remove", properties);
         }
@@ -257,8 +256,8 @@ namespace MixItUp.Base.Model.Overlay
             ChatService.OnChatMessageReceived -= ChatService_OnChatMessageReceived;
             ChatService.OnChatMessageDeleted -= ChatService_OnChatMessageDeleted;
             ChatService.OnChannelChatCleared -= ChatService_OnChannelChatCleared;
-            ChatService.OnChatUserTimedOut -= ChatService_OnChatUserTimedOut;
-            ChatService.OnChatUserBanned -= ChatService_OnChatUserBanned;
+            ChatService.OnChatUserTimedOut -= ChatService_OnChatUserModerated;
+            ChatService.OnChatUserBanned -= ChatService_OnChatUserModerated;
             ChatService.OnChatCleared -= ChatService_OnChatCleared;
         }
     }

@@ -18,7 +18,7 @@ namespace MixItUp.WPF.Services.Diagnostics;
 
 public sealed class DesktopDiagnosticsSession : IDisposable
 {
-    private readonly HttpClient http = new(HttpConnectionFactory.CreateHandler(allowAutoRedirect: false)) { Timeout = TimeSpan.FromMinutes(3) };
+    private readonly HttpClient http = new(HttpConnectionFactory.CreateRequestHandler(allowAutoRedirect: false)) { Timeout = TimeSpan.FromMinutes(3) };
     private string? root, boundCode;
     private List<PreparedFile>? files;
     private bool needsElevation;

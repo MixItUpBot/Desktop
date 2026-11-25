@@ -683,6 +683,8 @@ namespace MixItUp.Base.ViewModel.Actions
 
         public bool ShowVIPUserSettingsGrid { get { return this.SelectedActionType == TwitchActionType.VIPUser; } }
 
+        public bool ExtendVIPRemoval { get; set; }
+
         public int VIPUserAutomaticRemovalAmount
         {
             get { return this.vipUserAutomaticRemovalAmount; }
@@ -932,6 +934,7 @@ namespace MixItUp.Base.ViewModel.Actions
             else if (this.ShowVIPUserSettingsGrid)
             {
                 this.Username = action.Username;
+                this.ExtendVIPRemoval = action.ExtendVIPRemoval;
                 if (action.VIPUserAutomaticRemovalDurationSpan != null)
                 {
                     this.SelectedVIPUserAutomaticRemovalDuration = action.VIPUserAutomaticRemovalDurationSpan.Type;
@@ -1260,7 +1263,7 @@ namespace MixItUp.Base.ViewModel.Actions
                 {
                     duration = new DurationSpan(this.SelectedVIPUserAutomaticRemovalDuration, this.VIPUserAutomaticRemovalAmount);
                 }
-                return TwitchActionModel.CreateVIPUserAction(this.Username, duration);
+                return TwitchActionModel.CreateVIPUserAction(this.Username, duration, this.ExtendVIPRemoval);
             }
             else if (this.ShowWarnUserGrid)
             {

@@ -529,7 +529,10 @@ namespace MixItUp.Base.Services
                         {
                             try
                             {
-                                Logger.Log(LogLevel.Debug, $"Joystick Gateway Event Received - {frame?.ToString(Newtonsoft.Json.Formatting.None)}");
+                                if (Logger.Level == LogLevel.Debug)
+                                {
+                                    Logger.Log(LogLevel.Debug, $"Joystick Gateway Event Received - {frame?.ToString(Newtonsoft.Json.Formatting.None)}");
+                                }
                                 await ServiceManager.Get<JoystickSession>().HandleFrame(frame);
                             }
                             catch (Exception ex) { Logger.Log(ex); }
@@ -539,7 +542,10 @@ namespace MixItUp.Base.Services
                         {
                             try
                             {
-                                Logger.Log(LogLevel.Debug, $"Kick Webhook Event Received - EventType: {eventType} - Metadata: {metadataObject?.ToString(Newtonsoft.Json.Formatting.None)} - Payload: {payload?.ToString(Newtonsoft.Json.Formatting.None)}");
+                                if (Logger.Level == LogLevel.Debug)
+                                {
+                                    Logger.Log(LogLevel.Debug, $"Kick Webhook Event Received - EventType: {eventType} - Metadata: {metadataObject?.ToString(Newtonsoft.Json.Formatting.None)} - Payload: {payload?.ToString(Newtonsoft.Json.Formatting.None)}");
+                                }
 
                                 WebhookEventModel metadata = metadataObject?.ToObject<WebhookEventModel>();
                                 var _ = ServiceManager.Get<KickSession>().Client.HandleWebhookEvent(eventType, payload, metadata);

@@ -7,7 +7,9 @@ namespace MixItUp.Base.Model.Joystick
     {
         public string Type { get; private set; }
         public string ID { get; private set; }
+        public string ChannelID { get; private set; }
         public JObject Data { get; private set; }
+        public DateTimeOffset? OccurredAt { get; private set; }
 
         public string MessageID => ReadString(this.Data["message_id"]) ?? ReadString(this.Data["id"]) ?? this.ID;
 
@@ -32,7 +34,10 @@ namespace MixItUp.Base.Model.Joystick
                 return null;
             }
 
-            return new JoystickGatewayEvent { Type = type, ID = id, Data = data };
+            var timestamp = message["occurred_at"];
+            DateTimeOffset? occurredAt = timestamp?.Type == JTokenType.Date ? timestamp.ToObject<DateTimeOffset>() :
+                DateTimeOffset.TryParse(ReadString(timestamp), out var parsed) ? parsed : null;
+            return new JoystickGatewayEvent { Type = type, ID = id, ChannelID = channelID, Data = data, OccurredAt = occurredAt };
         }
 
     }

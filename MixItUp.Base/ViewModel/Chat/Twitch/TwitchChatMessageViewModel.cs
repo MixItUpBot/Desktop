@@ -27,6 +27,9 @@ namespace MixItUp.Base.ViewModel.Chat.Twitch
         private static HashSet<string> messageEmotesHashSet = new HashSet<string>();
         private static Dictionary<string, TwitchChatEmoteViewModel> messageEmotesCache = new Dictionary<string, TwitchChatEmoteViewModel>();
 
+        public bool IsCustomRewardInput { get; }
+        public Dictionary<int, string> GifUrlsByPart { get; private set; }
+
         public bool IsSlashMe { get; set; }
 
         public bool HasBits { get; set; }
@@ -72,6 +75,7 @@ namespace MixItUp.Base.ViewModel.Chat.Twitch
                 }
             }
 
+            this.IsCustomRewardInput = message.RawPacket.Tags.TryGetValue("custom-reward-id", out string rewardID) && !string.IsNullOrEmpty(rewardID);
             this.UserBadges = message.UserBadges;
             this.UserBadgeInfo = message.UserBadgeInfo;
 
@@ -142,6 +146,7 @@ namespace MixItUp.Base.ViewModel.Chat.Twitch
             this.SourceChannelID = notification.source_broadcaster_user_id ?? notification.broadcaster_user_id;
             this.SourceChannelName = notification.source_broadcaster_user_login ?? notification.broadcaster_user_login;
 
+            this.IsCustomRewardInput = !string.IsNullOrEmpty(notification.channel_points_custom_reward_id);
             this.HasBits = notification.cheer?.bits > 0;
             this.BitsAmount = notification.cheer?.bits ?? 0;
             this.IsSlashMe = IsActionMessage(notification.message?.text);
@@ -286,6 +291,16 @@ namespace MixItUp.Base.ViewModel.Chat.Twitch
                             this.MessageParts[this.MessageParts.Count - 1] = bitCheermote;
                         }
                     }
+                }
+                else if (fragment.Type == ChatNotificationMessageFragmentType.gif)
+                {
+                    if (Uri.TryCreate(fragment.gif?.url, UriKind.Absolute, out Uri url) && url.Scheme == Uri.UriSchemeHttps)
+                    {
+                        this.GifUrlsByPart ??= new Dictionary<int, string>();
+                        this.GifUrlsByPart[this.MessageParts.Count] = fragment.gif.url;
+                    }
+                    this.AddStringMessagePart(fragment.text);
+                    messageNoCheermotes.Add(fragment.text);
                 }
                 else if (fragment.Type == ChatNotificationMessageFragmentType.mention)
                 {

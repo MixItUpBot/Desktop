@@ -21,6 +21,7 @@ namespace MixItUp.Base.ViewModel.Overlay
                 this.NotifyPropertyChanged();
                 this.NotifyPropertyChanged(nameof(this.ShowUsername));
                 this.NotifyPropertyChanged(nameof(this.ShowClipID));
+                this.NotifyPropertyChanged(nameof(this.ShowRandomClipResult));
             }
         }
         private OverlayTwitchClipV3ClipType selectedClipType = OverlayTwitchClipV3ClipType.LatestFeaturedClip;
@@ -46,6 +47,8 @@ namespace MixItUp.Base.ViewModel.Overlay
             }
         }
         private string username;
+
+        public bool ShowRandomClipResult => this.SelectedClipType == OverlayTwitchClipV3ClipType.RandomClip || this.SelectedClipType == OverlayTwitchClipV3ClipType.RandomFeaturedClip;
 
         public bool ShowClipID { get { return this.SelectedClipType == OverlayTwitchClipV3ClipType.SpecificClip; } }
 

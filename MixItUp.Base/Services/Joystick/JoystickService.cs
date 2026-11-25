@@ -17,7 +17,7 @@ namespace MixItUp.Base.Services.Joystick
     public class JoystickService : StreamingPlatformServiceBaseNew
     {
         private static readonly string[] Scopes = { "identity:read", "stream:read", "chat:read", "chat:write" };
-        private static readonly HttpClient Relay = new HttpClient(HttpConnectionFactory.CreateHandler(allowAutoRedirect: false))
+        private static readonly HttpClient Relay = new HttpClient(HttpConnectionFactory.CreateRequestHandler(allowAutoRedirect: false))
         {
             BaseAddress = new Uri(MixItUpService.MixItUpAPIEndpoint + "v2/joystick/"),
             Timeout = TimeSpan.FromSeconds(25)
@@ -78,7 +78,10 @@ namespace MixItUp.Base.Services.Joystick
             using var request = new HttpRequestMessage(method, path);
             if (authenticated) { request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", this.OAuthToken?.accessToken); }
             if (body != null) { request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json"); }
+            string endpoint = path.Split('?')[0];
+            Logger.Log(LogLevel.Debug, $"Joystick API request: {method} {endpoint}");
             using var response = await this.relay.SendAsync(request);
+            Logger.Log(LogLevel.Debug, $"Joystick API response: {method} {endpoint} ({(int)response.StatusCode})");
             response.EnsureSuccessStatusCode();
             string json = await response.Content.ReadAsStringAsync();
             return string.IsNullOrWhiteSpace(json) ? null : JObject.Parse(json);

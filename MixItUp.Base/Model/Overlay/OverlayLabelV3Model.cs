@@ -262,7 +262,7 @@ namespace MixItUp.Base.Model.Overlay
                 EventService.OnResubscribeOccurred += EventService_OnResubscribeOccurred;
                 EventService.OnSubscriptionGiftedOccurred += EventService_OnSubscriptionGiftedOccurred;
                 EventService.OnMassSubscriptionsGiftedOccurred += EventService_OnMassSubscriptionsGiftedOccurred;
-                EventService.RazoSubscriptionsGifted += OnRazoSubscriptionsGifted;
+                EventService.SubscriptionsGiftedWithoutRecipients += OnSubscriptionsGiftedWithoutRecipients;
 
                 if (this.IsDisplayEnabled(OverlayLabelDisplayV3TypeEnum.LatestSubscriber) && this.Displays[OverlayLabelDisplayV3TypeEnum.LatestSubscriber].UserID == Guid.Empty)
                 {
@@ -524,7 +524,7 @@ namespace MixItUp.Base.Model.Overlay
             }
         }
 
-        private async void OnRazoSubscriptionsGifted(UserV2ViewModel gifter, int count)
+        private async void OnSubscriptionsGiftedWithoutRecipients(UserV2ViewModel gifter, int count)
         {
             if (this.IsDisplayEnabled(OverlayLabelDisplayV3TypeEnum.LatestSubscriptionGifter))
             {
@@ -771,7 +771,7 @@ namespace MixItUp.Base.Model.Overlay
             EventService.OnResubscribeOccurred -= EventService_OnResubscribeOccurred;
             EventService.OnSubscriptionGiftedOccurred -= EventService_OnSubscriptionGiftedOccurred;
             EventService.OnMassSubscriptionsGiftedOccurred -= EventService_OnMassSubscriptionsGiftedOccurred;
-            EventService.RazoSubscriptionsGifted -= OnRazoSubscriptionsGifted;
+            EventService.SubscriptionsGiftedWithoutRecipients -= OnSubscriptionsGiftedWithoutRecipients;
             EventService.OnDonationOccurred -= EventService_OnDonationOccurred;
             EventService.OnTwitchBitsCheeredOccurred -= EventService_OnTwitchBitsCheeredOccurred;
             EventService.OnYouTubeSuperChatOccurred -= EventService_OnYouTubeSuperChatOccurred;

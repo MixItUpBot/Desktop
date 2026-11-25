@@ -3,6 +3,7 @@ using MixItUp.Base;
 using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Services;
 using MixItUp.Base.Services.External;
+using MixItUp.Base.Services.Joystick;
 using MixItUp.Base.Services.Twitch;
 using MixItUp.Base.Services.Twitch.New;
 using MixItUp.Base.Services.YouTube;
@@ -337,6 +338,15 @@ namespace MixItUp.WPF.Controls.Chat
             }
         }
 
+        private async void JoystickModerationMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.ChatList.SelectedItem is not JoystickChatMessage row || !ServiceManager.Get<JoystickSession>().CanModerateMessage(row)) { return; }
+            bool ban = ((MenuItem)sender).Name == "JoystickBanMenuItem";
+            if (ban && !await DialogHelper.ShowConfirmation(string.Format(MixItUp.Base.Resources.BanUserPrompt, row.User.FullDisplayName))) { return; }
+            try { await ServiceManager.Get<JoystickSession>().ModerateMessageAuthor(row, ban); }
+            catch (Exception ex) { await DialogHelper.ShowFailedResult(new Result(ex)); }
+        }
+
         private void ChatList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             MenuItem goToLinkMenuItem = LogicalTreeHelper.FindLogicalNode(this.ChatList.ContextMenu, "GoToLinkMenuItem") as MenuItem;
@@ -344,9 +354,16 @@ namespace MixItUp.WPF.Controls.Chat
             ChatMessageViewModel message = (e.AddedItems.Count == 0)
                 ? null
                 : e.AddedItems[0] as ChatMessageViewModel;
+            bool joystickModeration = ServiceManager.Get<JoystickSession>()?.CanModerateMessage(message) == true;
+            foreach (string name in new[] { "JoystickMuteMenuItem", "JoystickBanMenuItem" })
+            {
+                if (LogicalTreeHelper.FindLogicalNode(this.ChatList.ContextMenu, name) is MenuItem item)
+                    item.Visibility = joystickModeration ? Visibility.Visible : Visibility.Collapsed;
+            }
             if (LogicalTreeHelper.FindLogicalNode(this.ChatList.ContextMenu, "MessageDeleteMenuItem") is MenuItem delete)
             {
                 delete.IsEnabled = message != null && message.Platform != MixItUp.Base.Model.StreamingPlatformTypeEnum.AltStream &&
+                    (message.Platform != MixItUp.Base.Model.StreamingPlatformTypeEnum.Joystick || joystickModeration) &&
                     (message.Platform != MixItUp.Base.Model.StreamingPlatformTypeEnum.Razo || ServiceManager.Get<MixItUp.Base.Services.Razo.RazoSession>().CanDelete);
             }
 

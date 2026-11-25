@@ -1,27 +1,20 @@
 ﻿using MixItUp.Base.Model;
+using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Model.Overlay;
 using MixItUp.Base.Model.Overlay.Widgets;
-using MixItUp.Base.Services.YouTube;
+using MixItUp.Base.Model.User;
+using MixItUp.Base.Model.User.Platform;
 using MixItUp.Base.Services;
+using MixItUp.Base.Services.Twitch.New;
+using MixItUp.Base.Services.YouTube.New;
 using MixItUp.Base.Util;
 using MixItUp.Base.ViewModel.Chat;
-using MixItUp.Base.ViewModel.Chat.Twitch;
-using MixItUp.Base.ViewModel.Chat.YouTube;
-using MixItUp.Base.ViewModel.Chat.Kick;
-using MixItUp.Base.ViewModel.Chat.Velora;
-using MixItUp.Base.ViewModel.Chat.VPZone;
+using MixItUp.Base.ViewModel.User;
 using MixItUp.Base.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using MixItUp.Base.ViewModel.User;
-using MixItUp.Base.Services.Twitch;
-using MixItUp.Base.Services.Twitch.New;
-using MixItUp.Base.Services.YouTube.New;
-using MixItUp.Base.Services.Kick.New;
-using MixItUp.Base.Services.Velora.New;
-using MixItUp.Base.Services.VPZone.New;
 
 namespace MixItUp.Base.ViewModel.Overlay
 {
@@ -290,72 +283,42 @@ namespace MixItUp.Base.ViewModel.Overlay
         {
             OverlayChatV3Model chat = (OverlayChatV3Model)widget.Item;
 
-            foreach (StreamingPlatformTypeEnum platform in StreamingPlatforms.GetConnectedPlatforms())
+            if (chat.ApplicableStreamingPlatforms.Count == 0)
             {
-                if (platform == StreamingPlatformTypeEnum.Twitch)
-                {
-                    UserV2ViewModel user = await ServiceManager.Get<UserService>().GetUserByPlatform(StreamingPlatformTypeEnum.Twitch, platformID: ServiceManager.Get<TwitchSession>().StreamerID);
-                    if (user == null)
-                    {
-                        user = ChannelSession.User;
-                    }
-
-                    TwitchChatMessageViewModel message = new TwitchChatMessageViewModel(user, "Hello World! This is a test message from Twitch so you can see how chat looks Kappa");
-                    await chat.AddMessage(message);
-                }
-                else if (platform == StreamingPlatformTypeEnum.YouTube)
-                {
-                    UserV2ViewModel user = await ServiceManager.Get<UserService>().GetUserByPlatform(StreamingPlatformTypeEnum.YouTube, platformID: ServiceManager.Get<YouTubeSession>().StreamerID);
-                    if (user == null)
-                    {
-                        user = ChannelSession.User;
-                    }
-
-                    YouTubeChatMessageViewModel message = new YouTubeChatMessageViewModel(user, "Hello World! This is a test message from YouTube so you can see how chat looks :grinning_face:");
-                    await chat.AddMessage(message);
-                }
-                else if (platform == StreamingPlatformTypeEnum.Kick)
-                {
-                    UserV2ViewModel user = await ServiceManager.Get<UserService>().GetUserByPlatform(StreamingPlatformTypeEnum.Kick, platformID: ServiceManager.Get<KickSession>().StreamerID);
-                    if (user == null)
-                    {
-                        user = ChannelSession.User;
-                    }
-
-                    KickChatMessageViewModel message = new KickChatMessageViewModel(new Model.Kick.Webhooks.WebhookChatMessageEventModel() { Content = "Hello World! This is a test message from Kick so you can see how chat looks" }, user);
-                    await chat.AddMessage(message);
-                }
-                else if (platform == StreamingPlatformTypeEnum.Velora)
-                {
-                    UserV2ViewModel user = await ServiceManager.Get<UserService>().GetUserByPlatform(StreamingPlatformTypeEnum.Velora, platformID: ServiceManager.Get<VeloraSession>().StreamerID);
-                    if (user == null)
-                    {
-                        user = ChannelSession.User;
-                    }
-
-                    VeloraChatMessageViewModel message = new VeloraChatMessageViewModel(user, "Hello World! This is a test message from Velora so you can see how chat looks");
-                    await chat.AddMessage(message);
-                }
-                else if (platform == StreamingPlatformTypeEnum.VPZone)
-                {
-                    UserV2ViewModel user = await ServiceManager.Get<UserService>().GetUserByPlatform(StreamingPlatformTypeEnum.VPZone, platformID: ServiceManager.Get<VPZoneSession>().StreamerID);
-                    if (user == null)
-                    {
-                        user = ChannelSession.User;
-                    }
-
-                    VPZoneChatMessageViewModel message = new VPZoneChatMessageViewModel(user, "Hello World! This is a test message from VPZone so you can see how chat looks");
-                    await chat.AddMessage(message);
-                }
-                else
-                {
-                    ChatMessageViewModel message = new ChatMessageViewModel(Guid.NewGuid().ToString(), platform, ChannelSession.User);
-                    message.AddStringMessagePart("Hello World! This is a test message so you can see how chat looks");
-                    await chat.AddMessage(message);
-                }
+                return;
             }
 
-            await base.TestWidget(widget);
+            object selection = await DialogHelper.ShowEnumDropDown(chat.ApplicableStreamingPlatforms, Resources.StreamingPlatform);
+            if (selection is StreamingPlatformTypeEnum platform)
+            {
+                UserV2ViewModel user = CommandParametersModel.GetDefaultTestUser(platform);
+                if (user.Platform != platform)
+                {
+                    string name = user.Username;
+                    UserPlatformV2ModelBase profile = platform switch
+                    {
+                        StreamingPlatformTypeEnum.Twitch => new TwitchUserPlatformV2Model(name, name, name),
+                        StreamingPlatformTypeEnum.YouTube => new YouTubeUserPlatformV2Model(name, name, name),
+                        StreamingPlatformTypeEnum.Kick => new KickUserPlatformV2Model(name, name, name),
+                        StreamingPlatformTypeEnum.Velora => new VeloraUserPlatformV2Model(name, name, name),
+                        StreamingPlatformTypeEnum.VPZone => new VPZoneUserPlatformV2Model(name, name, name),
+                        StreamingPlatformTypeEnum.Joystick => new JoystickUserPlatformV2Model { ID = name, Username = name, DisplayName = name },
+                        StreamingPlatformTypeEnum.AltStream => new AltStreamUserPlatformV2Model { ID = name, Username = name, DisplayName = name },
+                        StreamingPlatformTypeEnum.Razo => new RazoUserPlatformV2Model { ID = name, Username = name, DisplayName = name },
+                        _ => null
+                    };
+                    if (profile == null) { return; }
+                    user = new UserV2ViewModel(platform, new UserV2Model(profile));
+                }
+
+                var message = new ChatMessageViewModel(Guid.NewGuid().ToString(), platform, user);
+                message.AddStringMessagePart(string.Format(Resources.OverlayChatTestMessage, EnumLocalizationHelper.GetLocalizedName(platform)));
+                if (platform == StreamingPlatformTypeEnum.Twitch && ServiceManager.Get<TwitchSession>().Emotes.TryGetValue("Kappa", out var kappa))
+                    message.MessageParts.Add(kappa);
+                else if (platform == StreamingPlatformTypeEnum.YouTube && ServiceManager.Get<YouTubeSession>().EmoteDictionary.TryGetValue(":grinning_face:", out var grin))
+                    message.MessageParts.Add(grin);
+                await chat.AddMessage(message);
+            }
         }
 
         protected override OverlayItemV3ModelBase GetItemInternal()

@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp' and '$(TargetFrameworkVersion)' == 'v8.0'">
+    <RuntimeFrameworkVersion>8.0.34</RuntimeFrameworkVersion>
+  </PropertyGroup>
+</Project>

@@ -185,7 +185,7 @@ namespace MixItUp.Base.ViewModel.Chat
             {
                 if (!ServiceManager.Get<ModerationService>().DoesUserMeetChatInteractiveParticipationRequirement(this.User, this))
                 {
-                    Logger.Log(LogLevel.Debug, string.Format("Deleting Message As User does not meet requirement - {0} - {1}", ChannelSession.Settings.ModerationChatInteractiveParticipation, this.PlainTextMessage));
+                    Logger.Log(LogLevel.Debug, string.Format("Deleting Message As User does not meet requirement - {0} - {1}", ChannelSession.Settings.ModerationChatInteractiveParticipation, this.LogDescription));
                     await this.Delete(reason: MixItUp.Base.Resources.ModerationChatParticipation);
                     await ServiceManager.Get<ModerationService>().SendChatInteractiveParticipationWhisper(this.User, isChat: true);
                     return true;
@@ -194,7 +194,7 @@ namespace MixItUp.Base.ViewModel.Chat
                 string moderationReason = await ServiceManager.Get<ModerationService>().ShouldTextBeModerated(this.User, this.PlainTextMessage, this.ContainsLink);
                 if (!string.IsNullOrEmpty(moderationReason))
                 {
-                    Logger.Log(LogLevel.Debug, string.Format("Moderation Being Performed - {0}", this.ToString()));
+                    Logger.Log(LogLevel.Debug, string.Format("Moderation Being Performed - {0}", this.LogDescription));
                     await this.Delete(reason: moderationReason);
                     return true;
                 }
@@ -263,6 +263,8 @@ namespace MixItUp.Base.ViewModel.Chat
         public bool Equals(ChatMessageViewModel other) { return this.ID.Equals(other.ID); }
 
         public override int GetHashCode() { return this.ID.GetHashCode(); }
+
+        internal virtual string LogDescription => this.ToString();
 
         public override string ToString()
         {

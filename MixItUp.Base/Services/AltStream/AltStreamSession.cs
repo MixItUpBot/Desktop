@@ -27,7 +27,7 @@ namespace MixItUp.Base.Services.AltStream
         private static readonly TimeSpan requestTimeout = TimeSpan.FromSeconds(12);
         // An idle channel can take a heartbeat interval to return the stream headers.
         private static readonly TimeSpan streamHeaderTimeout = TimeSpan.FromSeconds(45);
-        private static readonly HttpClient sharedClient = new HttpClient(HttpConnectionFactory.CreateHandler(allowAutoRedirect: false))
+        private static readonly HttpClient sharedClient = new HttpClient(HttpConnectionFactory.CreateRequestHandler(allowAutoRedirect: false))
         {
             BaseAddress = new Uri("https://altstream.online/"), Timeout = Timeout.InfiniteTimeSpan
         };
@@ -62,7 +62,10 @@ namespace MixItUp.Base.Services.AltStream
             if (body != null) request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancel);
             timeout.CancelAfter(headerTimeout ?? requestTimeout);
+            string endpoint = path.Split('?')[0];
+            Logger.Log(LogLevel.Debug, $"AltStream API request: {method} {endpoint}");
             var response = await this.client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, timeout.Token);
+            Logger.Log(LogLevel.Debug, $"AltStream API response: {method} {endpoint} ({(int)response.StatusCode})");
             if (response.StatusCode == HttpStatusCode.TooManyRequests)
             {
                 this.retryAt = response.Headers.RetryAfter?.Date ?? DateTimeOffset.UtcNow.Add(response.Headers.RetryAfter?.Delta ?? TimeSpan.FromMinutes(1));
@@ -123,6 +126,7 @@ namespace MixItUp.Base.Services.AltStream
                     if (response.Content.Headers.ContentType?.MediaType != "text/event-stream")
                         throw new HttpRequestException("Invalid AltStream chat response");
                     using var stream = await response.Content.ReadAsStreamAsync(cancel);
+                    Logger.Log(LogLevel.Debug, $"AltStream chat feed connected for {channel}.");
                     if (loadHistory)
                     {
                         loadHistory = false;
@@ -173,7 +177,11 @@ namespace MixItUp.Base.Services.AltStream
                             if (frame.Value<string>("channel") is string target && !string.Equals(target, channel, StringComparison.OrdinalIgnoreCase)) continue;
                             if (!string.IsNullOrWhiteSpace(id))
                             {
-                                if (!ids.Add(id)) continue;
+                                if (!ids.Add(id))
+                                {
+                                    Logger.Log(LogLevel.Debug, $"Skipping duplicate AltStream event: {frame["type"]} ({id})");
+                                    continue;
+                                }
                                 recent.Enqueue(id);
                                 if (recent.Count > 4096) ids.Remove(recent.Dequeue());
                             }
@@ -194,7 +202,9 @@ namespace MixItUp.Base.Services.AltStream
                 catch (Exception ex) { Logger.Log(LogLevel.Warning, $"AltStream chat disconnected ({ex.GetType().Name})"); }
                 TimeSpan backoff = TimeSpan.FromSeconds(delay);
                 TimeSpan providerDelay = this.retryAt - DateTimeOffset.UtcNow;
-                await Task.Delay(backoff > providerDelay ? backoff : providerDelay, cancel);
+                TimeSpan retryDelay = backoff > providerDelay ? backoff : providerDelay;
+                Logger.Log(LogLevel.Debug, $"AltStream chat feed reconnecting in {retryDelay.TotalSeconds:0} seconds.");
+                await Task.Delay(retryDelay, cancel);
                 delay = Math.Min(60, delay * 2);
             }
         }
@@ -202,6 +212,14 @@ namespace MixItUp.Base.Services.AltStream
         internal async Task HandleFrame(string channel, JObject frame, bool history = false)
         {
             string type = frame.Value<string>("type");
+            if (Logger.Level == LogLevel.Debug)
+            {
+                // Payment frames can include private donor and order details.
+                string details = type is "tip" or "subscription" or "shop" || frame["kofi"] != null
+                    ? $"id={frame["id"]}"
+                    : frame.ToString(Formatting.None);
+                Logger.Log(LogLevel.Debug, $"AltStream {(history ? "history" : "event")} received: {type} - {details}");
+            }
             string prefix = "altstream:" + channel.ToLowerInvariant() + ":";
             var chat = ServiceManager.Get<ChatService>();
             var message = frame["message"] as JObject;
@@ -274,6 +292,7 @@ namespace MixItUp.Base.Services.AltStream
             if (!history)
             {
                 viewer.UpdateFrom(author);
+                user.RefreshCachedProperties();
                 if (author.AvatarLink == null && type is ("message" or "reply" or "highlight" or "follow" or "raid_received"))
                 {
                     await viewer.RefreshAvatar(this);
@@ -374,13 +393,13 @@ namespace MixItUp.Base.Services.AltStream
             ServiceManager.Get<ChatService>().DisplayMessage(notice);
         }
 
-        private sealed class ChannelDetails
+        internal sealed class ChannelDetails
         {
             public string Username { get; set; }
             public StreamDetails Stream { get; set; }
         }
 
-        private sealed class StreamDetails
+        internal sealed class StreamDetails
         {
             public bool? IsLive { get; set; }
             public string Title { get; set; }
@@ -389,23 +408,28 @@ namespace MixItUp.Base.Services.AltStream
             public Category Game { get; set; }
         }
 
-        private sealed class Category
+        internal sealed class Category
         {
             public string Name { get; set; }
             public string CoverUrl { get; set; }
         }
 
+        internal async Task<ChannelDetails> GetChannelDetails(string channel)
+        {
+            if (!this.IsConnected || string.IsNullOrWhiteSpace(channel)) return null;
+            return await AsyncRunner.RunAsync(async () =>
+            {
+                var response = await this.Get("api/v1/channels/" + Uri.EscapeDataString(channel), null, CancellationToken.None);
+                var details = ((response as JObject)?["data"] as JObject)?.ToObject<ChannelDetails>();
+                return string.Equals(details?.Username, channel, StringComparison.OrdinalIgnoreCase) ? details : null;
+            });
+        }
+
         public override async Task<Result> RefreshDetails()
         {
             string channel = this.ChannelID;
-            if (!this.IsConnected || string.IsNullOrWhiteSpace(channel)) return new Result(false);
-            var details = await AsyncRunner.RunAsync(async () =>
-            {
-                var response = await this.Get("api/v1/channels/" + Uri.EscapeDataString(channel), null, CancellationToken.None);
-                return ((response as JObject)?["data"] as JObject)?.ToObject<ChannelDetails>();
-            });
-            if (channel != this.ChannelID || !string.Equals(details?.Username, channel, StringComparison.OrdinalIgnoreCase))
-                return new Result(false);
+            var details = await this.GetChannelDetails(channel);
+            if (details == null || channel != this.ChannelID) return new Result(false);
             var stream = details.Stream;
             if (stream != null && !stream.IsLive.HasValue) return new Result(false);
             bool live = stream?.IsLive == true;

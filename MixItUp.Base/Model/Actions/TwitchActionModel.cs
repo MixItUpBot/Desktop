@@ -255,11 +255,12 @@ namespace MixItUp.Base.Model.Actions
             return actionModel;
         }
 
-        public static TwitchActionModel CreateVIPUserAction(string username, DurationSpan automaticRemovalDurationSpan = null)
+        public static TwitchActionModel CreateVIPUserAction(string username, DurationSpan automaticRemovalDurationSpan = null, bool extend = false)
         {
             TwitchActionModel actionModel = new TwitchActionModel(TwitchActionType.VIPUser);
             actionModel.Username = username;
             actionModel.VIPUserAutomaticRemovalDurationSpan = automaticRemovalDurationSpan;
+            actionModel.ExtendVIPRemoval = extend;
             return actionModel;
         }
 
@@ -428,6 +429,8 @@ namespace MixItUp.Base.Model.Actions
 
         [DataMember]
         public DurationSpan VIPUserAutomaticRemovalDurationSpan = null;
+        [DataMember]
+        public bool ExtendVIPRemoval { get; set; }
 
         [DataMember]
         public string WarnReason { get; set; }
@@ -540,24 +543,13 @@ namespace MixItUp.Base.Model.Actions
                         targetUser = parameters.User;
                     }
 
-                    if (targetUser != null)
+                    if (this.ActionType == TwitchActionType.VIPUser)
                     {
-                        TwitchUserPlatformV2Model twitchUser = targetUser.GetPlatformData<TwitchUserPlatformV2Model>(StreamingPlatformTypeEnum.Twitch);
-                        if (this.ActionType == TwitchActionType.VIPUser)
-                        {
-                            targetUser.Roles.Add(User.UserRoleEnum.TwitchVIP);
-                            await ServiceManager.Get<TwitchSession>().StreamerService.VIPUser(ServiceManager.Get<TwitchSession>().StreamerModel, twitchUser.ID);
-
-                            if (this.VIPUserAutomaticRemovalDurationSpan != null)
-                            {
-                                ChannelSession.Settings.TwitchVIPAutomaticRemovals[twitchUser.ID] = this.VIPUserAutomaticRemovalDurationSpan.GetDateTimeOffsetFromNow();
-                            }
-                        }
-                        else if (this.ActionType == TwitchActionType.UnVIPUser)
-                        {
-                            targetUser.Roles.Remove(User.UserRoleEnum.TwitchVIP);
-                            await ServiceManager.Get<TwitchSession>().StreamerService.UnVIPUser(ServiceManager.Get<TwitchSession>().StreamerModel, twitchUser.ID);
-                        }
+                        await ServiceManager.Get<TwitchSession>().VIPUser(targetUser, this.VIPUserAutomaticRemovalDurationSpan, this.ExtendVIPRemoval);
+                    }
+                    else
+                    {
+                        await ServiceManager.Get<TwitchSession>().UnVIPUser(targetUser);
                     }
                 }
                 else if (this.ActionType == TwitchActionType.Clip)

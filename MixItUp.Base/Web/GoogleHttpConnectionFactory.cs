@@ -13,7 +13,7 @@ namespace MixItUp.Base.Web
             // YouTube uses JSON API responses, with the same gzip/deflate support as the SDK default.
             SocketsHttpHandler handler = HttpConnectionFactory.CreateHandler(allowAutoRedirect: false);
             handler.AutomaticDecompression = args.GZipEnabled ? DecompressionMethods.GZip | DecompressionMethods.Deflate : DecompressionMethods.None;
-            return handler;
+            return HttpConnectionFactory.CreateRequestHandler(handler);
         }
     }
 }

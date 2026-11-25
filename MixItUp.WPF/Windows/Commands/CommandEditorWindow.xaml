@@ -84,6 +84,8 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="20" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="5" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="30" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="5" />
@@ -122,6 +124,14 @@
 
                 <Controls:IconButton
                     Grid.Column="4"
+                    Command="{Binding PasteCommand}"
+                    Icon="content_paste"
+                    ToolTip="{x:Static resx:Resources.PasteAction}"
+                    AutomationProperties.AutomationId="CommandEditor.PasteActionButton"
+                    AutomationProperties.Name="{x:Static resx:Resources.PasteAction}" />
+
+                <Controls:IconButton
+                    Grid.Column="6"
                     Command="{Binding SaveCommand}"
                     Icon="save"
                     ToolTip="{x:Static resx:Resources.Save}"
@@ -129,14 +139,14 @@
                     AutomationProperties.Name="{x:Static resx:Resources.Save}" />
 
                 <Controls:IconButton
-                    Grid.Column="6"
+                    Grid.Column="8"
                     Command="{Binding TestCommand}"
                     Icon="play_arrow"
                     ToolTip="{x:Static resx:Resources.TestCommand}"
                     AutomationProperties.AutomationId="CommandEditor.TestCommandButton"
                     AutomationProperties.Name="{x:Static resx:Resources.TestCommand}" />
                 <Controls:IconButton
-                    Grid.Column="6"
+                    Grid.Column="8"
                     Icon="stop"
                     ToolTip="{x:Static resx:Resources.StopCommand}"
                     Visibility="Collapsed"
@@ -144,14 +154,14 @@
                     AutomationProperties.Name="{x:Static resx:Resources.StopCommand}" />
 
                 <Controls:IconButton
-                    Grid.Column="8"
+                    Grid.Column="10"
                     Command="{Binding ExportCommand}"
                     Icon="output"
                     ToolTip="{x:Static resx:Resources.ExportActions}"
                     AutomationProperties.AutomationId="CommandEditor.ExportActionsButton"
                     AutomationProperties.Name="{x:Static resx:Resources.ExportActions}" />
                 <Controls:IconButton
-                    Grid.Column="10"
+                    Grid.Column="12"
                     Command="{Binding ImportCommand}"
                     Icon="input"
                     ToolTip="{x:Static resx:Resources.ImportActions}"
@@ -160,7 +170,7 @@
 
                 <Button
                     x:Name="UploadCommunityCommandButton"
-                    Grid.Column="11"
+                    Grid.Column="13"
                     Margin="30,0,0,0"
                     Click="UploadCommunityCommandButton_Click"
                     Content="{x:Static resx:Resources.CommunityCommandsUploadToCommunity}"

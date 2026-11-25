@@ -21,6 +21,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="10" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0">
@@ -60,5 +61,9 @@
             <TextBlock Grid.Column="4" VerticalAlignment="Center" Text="{x:Static resx:Resources.VolumeHeader}"/>
             <Slider Value="{Binding Volume}" VerticalAlignment="Center" Grid.Column="6" Width="120" Minimum="0" Maximum="100" Style="{StaticResource MaterialDesign3.MaterialDesignDiscreteSlider}" ToolTip="{x:Static resx:Resources.Volume}" AutomationProperties.AutomationId="OverlayTwitchClipV3.VolumeSlider" AutomationProperties.Name="{x:Static resx:Resources.Volume}" />
         </Grid>
+        <StackPanel Grid.Row="3" Margin="0,10,0,0" Orientation="Horizontal" Visibility="{Binding ShowRandomClipResult, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBlock VerticalAlignment="Center" Text="{Binding Source={x:Static resx:Resources.Result}, StringFormat={x:Static resx:Resources.ColumnHeaderFormat}}" />
+            <TextBox Margin="5,0,0,0" Text="$twitchclipurl" Style="{StaticResource TextBoxReadOnlySelectable}" AutomationProperties.Name="{x:Static resx:Resources.Result}" />
+        </StackPanel>
     </Grid>
 </Controls:LoadingControlBase>

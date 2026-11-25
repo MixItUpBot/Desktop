@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -221,7 +222,7 @@ namespace MixItUp.Base.Services.External
                     payload["code"] = authorizationCode;
                     payload["redirect_uri"] = OAuthExternalServiceBase.DEFAULT_OAUTH_LOCALHOST_URL;
 
-                    this.token = await this.PostAsync<OAuthTokenModel>("https://v5api.tiltify.com/oauth/token", AdvancedHttpClient.CreateContentFromObject(payload), autoRefreshToken: false);
+                    this.token = await this.RequestOAuthToken(payload);
                     if (this.token != null)
                     {
 
@@ -338,8 +339,37 @@ namespace MixItUp.Base.Services.External
                 payload["refresh_token"] = this.token.refreshToken;
                 payload["scope"] = "public";
 
-                this.token = await this.PostAsync<OAuthTokenModel>("https://v5api.tiltify.com/oauth/token", AdvancedHttpClient.CreateContentFromObject(payload), autoRefreshToken: false);
+                this.token = await this.RequestOAuthToken(payload);
             }
+        }
+
+        private async Task<OAuthTokenModel> RequestOAuthToken(JObject payload)
+        {
+            // Both sides of the token exchange contain credentials. Keep their bodies out of HTTP logs.
+            using var client = await this.GetHttpClient(autoRefreshToken: false);
+            using var request = new HttpRequestMessage(HttpMethod.Post, "oauth/token") { Content = AdvancedHttpClient.CreateContentFromObject(payload) };
+            using var response = await client.SendAsync(request);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw RequestFailed(response);
+            }
+
+            Logger.Log(LogLevel.Debug, $"Tiltify OAuth token request returned HTTP {(int)response.StatusCode}.");
+            try
+            {
+                return JsonConvert.DeserializeObject<OAuthTokenModel>(await response.Content.ReadAsStringAsync());
+            }
+            catch (JsonException)
+            {
+                throw new JsonSerializationException("Tiltify returned an invalid OAuth token response.");
+            }
+        }
+
+        private static HttpRequestException RequestFailed(HttpResponseMessage response)
+        {
+            string ray = response.GetHeaderValue("CF-Ray") ?? "none";
+            string mediaType = response.Content.Headers.ContentType?.MediaType ?? "unknown";
+            return new HttpRequestException($"Tiltify {response.RequestMessage.Method} {response.RequestMessage.RequestUri.AbsolutePath} returned HTTP {(int)response.StatusCode} (content type: {mediaType}, CF-Ray: {ray}).", null, response.StatusCode);
         }
 
         protected override void DisposeInternal()
@@ -517,16 +547,26 @@ namespace MixItUp.Base.Services.External
             catch (Exception ex) { Logger.Log(ex); }
             return results;
         }
+        private async Task<JObject> GetTiltifyResponse(string url)
+        {
+            using var response = await this.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw RequestFailed(response);
+            }
+            return await response.ProcessJObjectResponse();
+        }
+
         private async Task<JObject> GetJObjectWith401RefreshRetry(string url)
         {
             try
             {
-                return await this.GetJObjectAsync(url);
+                return await this.GetTiltifyResponse(url);
             }
-            catch (HttpRestRequestException ex) when (ex.Response?.StatusCode == HttpStatusCode.Unauthorized)
+            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
             {
                 await this.RefreshOAuthToken();
-                return await this.GetJObjectAsync(url);
+                return await this.GetTiltifyResponse(url);
             }
         }
     }

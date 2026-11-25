@@ -189,7 +189,10 @@ namespace MixItUp.Base.Services.Velora.New
 
             // Log the raw frame at Debug: the live newMessage shape is unverified (role/badge fields
             // vary across Velora's delivery channels) and this is the only capture point for it.
-            Logger.Log(LogLevel.Debug, $"Velora newMessage: {payload.ToString(Newtonsoft.Json.Formatting.None)}");
+            if (Logger.Level == LogLevel.Debug)
+            {
+                Logger.Log(LogLevel.Debug, $"Velora newMessage: {payload.ToString(Newtonsoft.Json.Formatting.None)}");
+            }
 
             WebhookChatMessageEventModel messageEvent = payload.ToObject<WebhookChatMessageEventModel>();
             if (messageEvent == null)
@@ -216,7 +219,10 @@ namespace MixItUp.Base.Services.Velora.New
             // Log the raw payload: the live shape is unverified, and the duration Velora actually applied
             // matters because the /timeout slash-command fallback has to assume a unit for its bare duration
             // argument - this is the only place the platform reports it back.
-            Logger.Log(LogLevel.Debug, $"Velora userTimedOut: {payload.ToString(Newtonsoft.Json.Formatting.None)}");
+            if (Logger.Level == LogLevel.Debug)
+            {
+                Logger.Log(LogLevel.Debug, $"Velora userTimedOut: {payload.ToString(Newtonsoft.Json.Formatting.None)}");
+            }
 
             await this.HandleBan(payload);
         }
@@ -230,7 +236,10 @@ namespace MixItUp.Base.Services.Velora.New
             }
 
             // Log the raw payload: the live shape is unverified (VERIFY-LIVE in the migration spec).
-            Logger.Log(LogLevel.Debug, $"Velora userBanned: {payload.ToString(Newtonsoft.Json.Formatting.None)}");
+            if (Logger.Level == LogLevel.Debug)
+            {
+                Logger.Log(LogLevel.Debug, $"Velora userBanned: {payload.ToString(Newtonsoft.Json.Formatting.None)}");
+            }
 
             await this.HandleBan(payload);
         }
@@ -243,6 +252,11 @@ namespace MixItUp.Base.Services.Velora.New
                 return;
             }
 
+            if (Logger.Level == LogLevel.Debug)
+            {
+                Logger.Log(LogLevel.Debug, $"Velora chatCleared: {payload?.ToString(Newtonsoft.Json.Formatting.None)}");
+            }
+
             await ServiceManager.Get<AlertsService>().AddAlert(new AlertChatMessageViewModel(StreamingPlatformTypeEnum.Velora, MixItUp.Base.Resources.ChatCleared, ChannelSession.Settings.AlertModerationColor));
             ChatService.ChatCleared();
         }
@@ -250,7 +264,10 @@ namespace MixItUp.Base.Services.Velora.New
         /// <summary>Chat WS <c>moderationNotice</c> - targeted ban/timeout notice to the affected user.</summary>
         public Task HandleChatSocketModerationNotice(JObject payload)
         {
-            Logger.Log(LogLevel.Debug, $"Velora moderation notice: {payload?.ToString(Newtonsoft.Json.Formatting.None)}");
+            if (Logger.Level == LogLevel.Debug)
+            {
+                Logger.Log(LogLevel.Debug, $"Velora moderation notice: {payload?.ToString(Newtonsoft.Json.Formatting.None)}");
+            }
             return Task.CompletedTask;
         }
 
@@ -259,6 +276,11 @@ namespace MixItUp.Base.Services.Velora.New
         {
             if (this.IsConnected && payload != null)
             {
+                if (Logger.Level == LogLevel.Debug)
+                {
+                    Logger.Log(LogLevel.Debug, $"Velora viewer_count_update: {payload.ToString(Newtonsoft.Json.Formatting.None)}");
+                }
+
                 int? count = payload.GetValueOrDefault<int?>("count", null)
                     ?? payload.GetValueOrDefault<int?>("viewers", null)
                     ?? payload.GetValueOrDefault<int?>("viewerCount", null);

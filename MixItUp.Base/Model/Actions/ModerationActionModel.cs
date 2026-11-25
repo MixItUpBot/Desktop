@@ -100,7 +100,7 @@ namespace MixItUp.Base.Model.Actions
                     }
                     else if (this.ActionType == ModerationActionTypeEnum.BanUser)
                     {
-                        await ServiceManager.Get<ChatService>().BanUser(targetUser, moderationReason);
+                        await ServiceManager.Get<ChatService>().BanUser(targetUser, moderationReason, parameters.TriggeringChatMessageID);
                     }
                     else if (this.ActionType == ModerationActionTypeEnum.UnbanUser)
                     {

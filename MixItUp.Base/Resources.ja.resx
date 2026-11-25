@@ -4353,7 +4353,7 @@
     <comment>Manual</comment>
   </data>
   <data name="GameCommandHangmanGameLostExample" xml:space="preserve">
-    <value>推測に失敗しすぎるとゲームに負けます。正解は「$gamehangmananswer」でした。 $gametotalmount {0} が残ります!</value>
+    <value>推測に失敗しすぎるとゲームに負けます。正解は「$gamehangmananswer」でした。 $gametotalamount {0} が残ります!</value>
     <comment>Manual</comment>
   </data>
   <data name="GameCommandHangmanGameWonExample" xml:space="preserve">
@@ -4369,7 +4369,7 @@
     <comment>Manual</comment>
   </data>
   <data name="GameCommandHangmanStatusExample" xml:space="preserve">
-    <value>これまでのところ、$gamehangmancurrent は正しく、$gamehangmanfailedguess は間違っていると推測しました。ポットの中を覗くと、中に $gametotalamount {0} が入っていることがわかります。</value>
+    <value>これまでのところ、$gamehangmancurrent は正しく、$gamehangmanfailedguesses は間違っていると推測しました。ポットの中を覗くと、中に $gametotalamount {0} が入っていることがわかります。</value>
     <comment>Manual</comment>
   </data>
   <data name="GameCommandHangmanSuccessfulGuess" xml:space="preserve">
@@ -4412,7 +4412,7 @@
     <comment>Manual</comment>
   </data>
   <data name="GameCommandRouletteGameCompleteExample" xml:space="preserve">
-    <value>ホイールの速度が低下し、$gamewiningbettype が勝ちのベットとして表示されます。総支払い額: $gameallpayout {0}</value>
+    <value>ホイールの速度が低下し、$gamewinningbettype が勝ちのベットとして表示されます。総支払い額: $gameallpayout {0}</value>
     <comment>Manual</comment>
   </data>
   <data name="GameCommandRouletteStartedExample" xml:space="preserve">
@@ -4488,7 +4488,7 @@
     <comment>Manual</comment>
   </data>
   <data name="GameCommandBetGameCompleteExample" xml:space="preserve">
-    <value>$gamebetwiningoption が勝利の選択肢でした!</value>
+    <value>$gamebetwinningoption が勝利の選択肢でした!</value>
     <comment>Manual</comment>
   </data>
   <data name="GameCommandBetStartedExample" xml:space="preserve">
@@ -11482,6 +11482,9 @@ Mix It Upを使用するには、少なくとも1つのストリーミング・�
   <data name="KickKicks" xml:space="preserve">
     <value>Kick Kicks</value>
   </data>
+  <data name="KickKicksGifted" xml:space="preserve">
+    <value>Kickで贈られたKicks</value>
+  </data>
   <data name="KickKicksCommandsAlreadyExistsDuplicateAmount" xml:space="preserve">
     <value>このコマンドと同じ量/範囲を持つ別の Kick Kicks コマンドがすでに存在します。</value>
   </data>
@@ -12095,6 +12098,430 @@ Mix It Upを使用するには、少なくとも1つのストリーミング・�
   <data name="ResetThemeAndFontSettingsConfirmation" xml:space="preserve">
     <value>配色、背景、前景、フルテーマ、UI フォント、全体のフォントサイズ、チャットウィンドウのフォントサイズを既定値に戻します。よろしいですか?</value>
     <comment>Confirmation prompt shown before resetting the Theme settings page</comment>
+  </data>
+  <data name="ChatUserList" xml:space="preserve">
+    <value>チャットのユーザー一覧</value>
+    <comment>Screen reader label for the user list beside the chat window</comment>
+  </data>
+  <data name="ResizeChatUserList" xml:space="preserve">
+    <value>チャットのユーザー一覧のサイズを変更</value>
+    <comment>Screen reader label for the splitter between the chat window and the user list</comment>
+  </data>
+  <data name="ShowHideChatActionButtons" xml:space="preserve">
+    <value>チャットの操作ボタンを表示または非表示</value>
+    <comment>Screen reader label for the small toggle that collapses the row of buttons above chat</comment>
+  </data>
+  <data name="UsernameSuggestions" xml:space="preserve">
+    <value>ユーザー名の候補</value>
+    <comment>Screen reader label for the username suggestion list that opens while typing in chat</comment>
+  </data>
+  <data name="EmoteSuggestions" xml:space="preserve">
+    <value>エモートの候補</value>
+    <comment>Screen reader label for the emote suggestion list that opens while typing in chat</comment>
+  </data>
+  <data name="NavigationMenu" xml:space="preserve">
+    <value>ナビゲーションメニュー</value>
+    <comment>Screen reader label for the main navigation menu and the button that opens it</comment>
+  </data>
+  <data name="CloseNavigationMenu" xml:space="preserve">
+    <value>ナビゲーションメニューを閉じる</value>
+    <comment>Screen reader label for the button that closes the navigation drawer</comment>
+  </data>
+  <data name="EditNavigationMenu" xml:space="preserve">
+    <value>ナビゲーションメニューを編集</value>
+    <comment>Screen reader label for the toggle that switches the navigation menu into reorder and hide mode</comment>
+  </data>
+  <data name="ShowMenuItemFormat" xml:space="preserve">
+    <value>{0}を表示</value>
+    <comment>Format for the screen reader label on each navigation menu visibility checkbox, filled with the menu entry name</comment>
+  </data>
+  <data name="ConnectionLost" xml:space="preserve">
+    <value>接続が切断されました</value>
+    <comment>Screen reader label for the alert button shown when a platform connection drops</comment>
+  </data>
+  <data name="SourceCode" xml:space="preserve">
+    <value>ソースコード</value>
+    <comment>Screen reader label for links and buttons that open the project's source repository</comment>
+  </data>
+  <data name="Wiki" xml:space="preserve">
+    <value>Wiki</value>
+    <comment>Screen reader label for the button that opens the help wiki</comment>
+  </data>
+  <data name="EnableDisableFormat" xml:space="preserve">
+    <value>{0}の有効・無効を切り替え</value>
+    <comment>Format for the screen reader label on a per-item enable switch, filled with the item name</comment>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>すべて選択</value>
+    <comment>Screen reader label for the checkbox in a table header that selects every row</comment>
+  </data>
+  <data name="OpenStream" xml:space="preserve">
+    <value>配信を開く</value>
+    <comment>Screen reader label for the button that opens a broadcast in the browser</comment>
+  </data>
+  <data name="GiveawayRequireClaim" xml:space="preserve">
+    <value>当選者による賞品の受け取り申請を必須にする</value>
+    <comment>Screen reader label for the giveaway option that makes winners claim their prize in chat</comment>
+  </data>
+  <data name="GiveawayAllowPastWinners" xml:space="preserve">
+    <value>過去の当選者も参加可能にする</value>
+    <comment>Screen reader label for the giveaway option that lets previous winners enter again</comment>
+  </data>
+  <data name="UseCommunityBannedWordsList" xml:space="preserve">
+    <value>コミュニティの禁止ワードリストを使用</value>
+    <comment>Screen reader label for the moderation toggle that adopts the shared community banned word list</comment>
+  </data>
+  <data name="FilteredWords" xml:space="preserve">
+    <value>フィルター対象の単語</value>
+    <comment>Screen reader label for the moderation box listing words to filter, one per line</comment>
+  </data>
+  <data name="MaxCapsType" xml:space="preserve">
+    <value>大文字の上限の計算方法</value>
+    <comment>Screen reader label for the selector that chooses how the max caps limit is counted</comment>
+  </data>
+  <data name="MaxPunctuationSymbolsEmotes" xml:space="preserve">
+    <value>句読点・記号・エモートの上限</value>
+    <comment>Screen reader label for the moderation limit on punctuation, symbols and emotes</comment>
+  </data>
+  <data name="MaxPunctuationSymbolsEmotesType" xml:space="preserve">
+    <value>句読点・記号・エモートの上限の計算方法</value>
+    <comment>Screen reader label for the selector that chooses how the punctuation, symbols and emotes limit is counted</comment>
+  </data>
+  <data name="BlockLinks" xml:space="preserve">
+    <value>リンクをブロック</value>
+    <comment>Screen reader label for the moderation toggle that blocks links in chat</comment>
+  </data>
+  <data name="MusicPlayerTrackPosition" xml:space="preserve">
+    <value>曲の再生位置</value>
+    <comment>Screen reader label for the music player scrubber</comment>
+  </data>
+  <data name="MusicPlayerPreviousTrack" xml:space="preserve">
+    <value>前の曲</value>
+    <comment>Screen reader label for the music player previous track button</comment>
+  </data>
+  <data name="MusicPlayerPlayPause" xml:space="preserve">
+    <value>再生／一時停止</value>
+    <comment>Screen reader label for the music player play and pause button</comment>
+  </data>
+  <data name="MusicPlayerNextTrack" xml:space="preserve">
+    <value>次の曲</value>
+    <comment>Screen reader label for the music player next track button</comment>
+  </data>
+  <data name="EnableQuotes" xml:space="preserve">
+    <value>引用を有効にする</value>
+    <comment>Screen reader label for the toggle that turns the quote system on</comment>
+  </data>
+  <data name="QuotesLatestAtTop" xml:space="preserve">
+    <value>新しい引用から表示</value>
+    <comment>Screen reader label for the button that flips the quote list sort order</comment>
+  </data>
+  <data name="EnableRedemptionStore" xml:space="preserve">
+    <value>引き換えストアを有効にする</value>
+    <comment>Screen reader label for the toggle that turns the redemption store on</comment>
+  </data>
+  <data name="TimersRandomize" xml:space="preserve">
+    <value>タイマーの順序をランダムにする</value>
+    <comment>Screen reader label for the toggle that randomises timer order</comment>
+  </data>
+  <data name="TimersDisableAll" xml:space="preserve">
+    <value>すべてのタイマーを無効にする</value>
+    <comment>Screen reader label for the toggle that disables every timer</comment>
+  </data>
+  <data name="CommunityCommandsSeeMore" xml:space="preserve">
+    <value>このカテゴリのコマンドをもっと見る</value>
+    <comment>Screen reader label for the arrow that opens a full community command category</comment>
+  </data>
+  <data name="SearchResults" xml:space="preserve">
+    <value>検索結果</value>
+    <comment>Screen reader label for a list of search results</comment>
+  </data>
+  <data name="CommunityCommandsRatingsAndReviews" xml:space="preserve">
+    <value>評価とレビュー</value>
+    <comment>Screen reader label for the review list on a community command's detail page</comment>
+  </data>
+  <data name="ConditionalClauses" xml:space="preserve">
+    <value>条件節</value>
+    <comment>Screen reader label for the list of clauses in a conditional action</comment>
+  </data>
+  <data name="OverlayHtml" xml:space="preserve">
+    <value>オーバーレイのHTML</value>
+    <comment>Screen reader label for the HTML editor on a custom overlay item</comment>
+  </data>
+  <data name="OverlayCss" xml:space="preserve">
+    <value>オーバーレイのCSS</value>
+    <comment>Screen reader label for the CSS editor on a custom overlay item</comment>
+  </data>
+  <data name="OverlayJavascript" xml:space="preserve">
+    <value>オーバーレイのJavaScript</value>
+    <comment>Screen reader label for the Javascript editor on a custom overlay item</comment>
+  </data>
+  <data name="Parameters" xml:space="preserve">
+    <value>パラメーター</value>
+    <comment>Screen reader label for a list of parameters</comment>
+  </data>
+  <data name="Variables" xml:space="preserve">
+    <value>変数</value>
+    <comment>Screen reader label for a list of variables</comment>
+  </data>
+  <data name="RequestHeaders" xml:space="preserve">
+    <value>リクエストヘッダー</value>
+    <comment>Screen reader label for the header list on a web request action</comment>
+  </data>
+  <data name="JSONValues" xml:space="preserve">
+    <value>JSONの値</value>
+    <comment>Screen reader label for the list mapping JSON values to special identifiers</comment>
+  </data>
+  <data name="Bold" xml:space="preserve">
+    <value>太字</value>
+    <comment>Screen reader label for the bold text style toggle</comment>
+  </data>
+  <data name="Italics" xml:space="preserve">
+    <value>斜体</value>
+    <comment>Screen reader label for the italic text style toggle</comment>
+  </data>
+  <data name="Underline" xml:space="preserve">
+    <value>下線</value>
+    <comment>Screen reader label for the underline text style toggle</comment>
+  </data>
+  <data name="LeftAlignment" xml:space="preserve">
+    <value>左揃え</value>
+    <comment>Screen reader label for the left text alignment toggle</comment>
+  </data>
+  <data name="CenterAlignment" xml:space="preserve">
+    <value>中央揃え</value>
+    <comment>Screen reader label for the center text alignment toggle</comment>
+  </data>
+  <data name="RightAlignment" xml:space="preserve">
+    <value>右揃え</value>
+    <comment>Screen reader label for the right text alignment toggle</comment>
+  </data>
+  <data name="JustifyAlignment" xml:space="preserve">
+    <value>両端揃え</value>
+    <comment>Screen reader label for the justified text alignment toggle</comment>
+  </data>
+  <data name="FontStyle" xml:space="preserve">
+    <value>フォントスタイル</value>
+    <comment>Screen reader label for the group of bold, italic and underline toggles</comment>
+  </data>
+  <data name="TextAlignment" xml:space="preserve">
+    <value>テキストの配置</value>
+    <comment>Screen reader label for the group of text alignment toggles</comment>
+  </data>
+  <data name="Rating" xml:space="preserve">
+    <value>評価</value>
+    <comment>Screen reader label for a star rating control</comment>
+  </data>
+  <data name="ResizePanels" xml:space="preserve">
+    <value>パネルのサイズを変更</value>
+    <comment>Screen reader label for the splitter between two resizable panels</comment>
+  </data>
+  <data name="Tags" xml:space="preserve">
+    <value>タグ</value>
+    <comment>Screen reader label for a list of channel tags</comment>
+  </data>
+  <data name="Answers" xml:space="preserve">
+    <value>回答</value>
+    <comment>Screen reader label for the list of answers on a trivia game</comment>
+  </data>
+  <data name="WordWrap" xml:space="preserve">
+    <value>行の折り返し</value>
+    <comment>Screen reader label for the word wrap toggle in a code editor</comment>
+  </data>
+  <data name="ShowWhitespace" xml:space="preserve">
+    <value>空白文字を表示</value>
+    <comment>Screen reader label for the whitespace toggle in a code editor</comment>
+  </data>
+  <data name="Metrics" xml:space="preserve">
+    <value>指標</value>
+    <comment>Screen reader label for a list of user metrics</comment>
+  </data>
+  <data name="ColorHexValue" xml:space="preserve">
+    <value>16進数の値</value>
+    <comment>Screen reader label for the hex entry in the color picker</comment>
+  </data>
+  <data name="ScanForMissingFiles" xml:space="preserve">
+    <value>見つからないファイルを検索</value>
+    <comment>Screen reader label for the button that starts the missing file scan</comment>
+  </data>
+  <data name="MissingFiles" xml:space="preserve">
+    <value>見つからないファイル</value>
+    <comment>Screen reader label for the table of missing files</comment>
+  </data>
+  <data name="Ranks" xml:space="preserve">
+    <value>ランク</value>
+    <comment>Screen reader label for the list of ranks on a currency</comment>
+  </data>
+  <data name="InventoryItems" xml:space="preserve">
+    <value>インベントリのアイテム</value>
+    <comment>Screen reader label for the list of items in an inventory</comment>
+  </data>
+  <data name="Prizes" xml:space="preserve">
+    <value>賞品</value>
+    <comment>Screen reader label for the list of prizes on a wheel</comment>
+  </data>
+  <data name="ContentClassificationLabels" xml:space="preserve">
+    <value>コンテンツ分類ラベル</value>
+    <comment>Screen reader label for the list of Twitch content classification labels</comment>
+  </data>
+  <data name="ColorSpectrum" xml:space="preserve">
+    <value>カラースペクトル</value>
+    <comment>Screen reader label for the two-dimensional color picker</comment>
+  </data>
+  <data name="PickColor" xml:space="preserve">
+    <value>色を選択</value>
+    <comment>Screen reader label for the button that opens the color picker</comment>
+  </data>
+  <data name="ChatCommandTriggers" xml:space="preserve">
+    <value>コマンドのトリガー</value>
+    <comment>Screen reader label for the box listing a chat command's triggers</comment>
+  </data>
+  <data name="GoalSegments" xml:space="preserve">
+    <value>目標の区分</value>
+    <comment>Screen reader label for the list of segments on a goal widget</comment>
+  </data>
+  <data name="EndCreditsSections" xml:space="preserve">
+    <value>エンドクレジットのセクション</value>
+    <comment>Screen reader label for the list of sections in the end credits widget</comment>
+  </data>
+  <data name="EventTypes" xml:space="preserve">
+    <value>イベントの種類</value>
+    <comment>Screen reader label for the list of event types a widget reacts to</comment>
+  </data>
+  <data name="SimplePosition" xml:space="preserve">
+    <value>簡易位置指定</value>
+    <comment>Screen reader label for the grid of nine preset position buttons</comment>
+  </data>
+  <data name="TestParameterValue" xml:space="preserve">
+    <value>テスト用パラメーター値</value>
+    <comment>Screen reader label for a value entered when testing a command</comment>
+  </data>
+  <data name="ModifierShift" xml:space="preserve">
+    <value>Shift キー</value>
+    <comment>Screen reader label for the Shift modifier checkbox in the hotkey editor</comment>
+  </data>
+  <data name="ModifierControl" xml:space="preserve">
+    <value>Ctrl キー</value>
+    <comment>Screen reader label for the Ctrl modifier checkbox in the hotkey editor</comment>
+  </data>
+  <data name="ModifierAlt" xml:space="preserve">
+    <value>Alt キー</value>
+    <comment>Screen reader label for the Alt modifier checkbox in the hotkey editor</comment>
+  </data>
+  <data name="CommandGroups" xml:space="preserve">
+    <value>コマンドグループ</value>
+    <comment>Screen reader label for the list of command groups on a commands screen</comment>
+  </data>
+  <data name="Categories" xml:space="preserve">
+    <value>カテゴリ</value>
+    <comment>Screen reader label for a list of categories</comment>
+  </data>
+  <data name="Icons" xml:space="preserve">
+    <value>アイコン</value>
+    <comment>Screen reader label for the icon list on the icon map screen</comment>
+  </data>
+  <data name="IconAlternates" xml:space="preserve">
+    <value>アイコンの別名</value>
+    <comment>Screen reader label for the alternate icon names shown beside an icon</comment>
+  </data>
+  <data name="CurrenciesRanksAndInventories" xml:space="preserve">
+    <value>通貨・ランク・インベントリ</value>
+    <comment>Screen reader label for the table listing every currency, rank and inventory</comment>
+  </data>
+  <data name="TestCommandFormat" xml:space="preserve">
+    <value>{0}をテスト</value>
+    <comment>Format for the screen reader label on a row's test button, filled with the command name</comment>
+  </data>
+  <data name="StopCommandFormat" xml:space="preserve">
+    <value>{0}を停止</value>
+    <comment>Format for the screen reader label on a row's stop button, filled with the command name</comment>
+  </data>
+  <data name="EditCommandFormat" xml:space="preserve">
+    <value>{0}を編集</value>
+    <comment>Format for the screen reader label on a row's edit button, filled with the item name</comment>
+  </data>
+  <data name="DeleteCommandFormat" xml:space="preserve">
+    <value>{0}を削除</value>
+    <comment>Format for the screen reader label on a row's delete button, filled with the item name</comment>
+  </data>
+  <data name="EnableDisableCommandFormat" xml:space="preserve">
+    <value>{0}の有効・無効を切り替え</value>
+    <comment>Format for the screen reader label on a row's enable switch, filled with the command name</comment>
+  </data>
+  <data name="CopyFormat" xml:space="preserve">
+    <value>{0}をコピー</value>
+    <comment>Format for the screen reader label on a row's copy button, filled with the item name</comment>
+  </data>
+  <data name="MoveUpFormat" xml:space="preserve">
+    <value>{0}を上に移動</value>
+    <comment>Format for the screen reader label on a row's move up button, filled with the item name</comment>
+  </data>
+  <data name="MoveDownFormat" xml:space="preserve">
+    <value>{0}を下に移動</value>
+    <comment>Format for the screen reader label on a row's move down button, filled with the item name</comment>
+  </data>
+  <data name="RemoveFormat" xml:space="preserve">
+    <value>{0}を取り除く</value>
+    <comment>Format for the screen reader label on a row's remove button, filled with the item name</comment>
+  </data>
+  <data name="OpenFormat" xml:space="preserve">
+    <value>{0}を開く</value>
+    <comment>Format for the screen reader label on a row's open button, filled with the item name</comment>
+  </data>
+  <data name="RaidFormat" xml:space="preserve">
+    <value>{0}にレイドする</value>
+    <comment>Format for the screen reader label on a row's raid button, filled with the channel name</comment>
+  </data>
+  <data name="CancelFormat" xml:space="preserve">
+    <value>{0}をキャンセル</value>
+    <comment>Format for the screen reader label on a row's cancel button, filled with the command name</comment>
+  </data>
+  <data name="ReplayFormat" xml:space="preserve">
+    <value>{0}を再生し直す</value>
+    <comment>Format for the screen reader label on a row's replay button, filled with the command name</comment>
+  </data>
+  <data name="SelectFormat" xml:space="preserve">
+    <value>{0}を選択</value>
+    <comment>Format for the screen reader label on a row's selection checkbox, filled with the item name</comment>
+  </data>
+  <data name="RefundFormat" xml:space="preserve">
+    <value>{0}を払い戻す</value>
+    <comment>Format for the screen reader label on a row's refund button, filled with the product name</comment>
+  </data>
+  <data name="ManualRedeemFormat" xml:space="preserve">
+    <value>{0}を手動で引き換える</value>
+    <comment>Format for the screen reader label on a row's manual redeem button, filled with the product name</comment>
+  </data>
+  <data name="ResetFormat" xml:space="preserve">
+    <value>{0}をリセット</value>
+    <comment>Format for the screen reader label on a row's reset button, filled with the widget name</comment>
+  </data>
+  <data name="CopyLinkFormat" xml:space="preserve">
+    <value>{0}のリンクをコピー</value>
+    <comment>Format for the screen reader label on a row's copy link button, filled with the widget name</comment>
+  </data>
+  <data name="SeeMoreCategoryFormat" xml:space="preserve">
+    <value>{0}のコマンドをもっと見る</value>
+    <comment>Format for the screen reader label on a category's see more arrow, filled with the category name</comment>
+  </data>
+  <data name="LaunchFormat" xml:space="preserve">
+    <value>{0}を起動</value>
+    <comment>Format for the screen reader label on a row's launch button, filled with the endpoint name</comment>
+  </data>
+  <data name="EditDateFormat" xml:space="preserve">
+    <value>{0}の日付を編集</value>
+    <comment>Format for the screen reader label on a row's date button, filled with the quote text</comment>
+  </data>
+  <data name="EditTimeFormat" xml:space="preserve">
+    <value>{0}の時刻を編集</value>
+    <comment>Format for the screen reader label on a row's time button, filled with the quote text</comment>
+  </data>
+  <data name="OptionalArgumentFormat" xml:space="preserve">
+    <value>{0}は省略可能</value>
+    <comment>Format for the screen reader label on an argument row's optional checkbox, filled with the argument name</comment>
+  </data>
+  <data name="AnyOrderFormat" xml:space="preserve">
+    <value>{0}を含む並びは順不同</value>
+    <comment>Format for the screen reader label on a slot outcome's any order toggle, filled with the first symbol</comment>
   </data>
   <data name="Veadotube" xml:space="preserve">
     <value>veadotube</value>
@@ -12841,5 +13268,29 @@ Mix It Upを使用するには、少なくとも1つのストリーミング・�
   </data>
   <data name="JoystickChatSendUnconfirmed" xml:space="preserve">
     <value>Joystick.tv からチャットメッセージの配信確認がありませんでした。</value>
+  </data>
+  <data name="TwitchIgnoreRewardInputCommands" xml:space="preserve">
+    <value>Twitchのチャンネルポイント報酬の入力欄にあるチャットコマンドを無視する</value>
+  </data>
+  <data name="PasteAction" xml:space="preserve">
+    <value>アクションを貼り付け</value>
+  </data>
+  <data name="OverlayChatTestMessage" xml:space="preserve">
+    <value>こんにちは！これは{0}からのテストメッセージです。</value>
+  </data>
+  <data name="CopyActionFirst" xml:space="preserve">
+    <value>先にコマンドエディターでアクションをコピーしてください。</value>
+  </data>
+  <data name="ExtendVIPRemoval" xml:space="preserve">
+    <value>現在のVIP期間を延長</value>
+  </data>
+  <data name="VIPTimeRemainingHelp" xml:space="preserve">
+    <value>$uservipremainingseconds は、TwitchのVIPステータスが解除されるまでの残り秒数です。解除予定がない場合は0になります。</value>
+  </data>
+  <data name="JoystickSubscriptions" xml:space="preserve">
+    <value>Joystickのサブスクリプション</value>
+  </data>
+  <data name="RazoSubscriptions" xml:space="preserve">
+    <value>Razoのサブスクリプション</value>
   </data>
 </root>

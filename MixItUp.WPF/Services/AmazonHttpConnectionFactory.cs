@@ -19,7 +19,7 @@ namespace MixItUp.WPF.Services
             {
                 handler.Proxy.Credentials = clientConfig.ProxyCredentials;
             }
-            var client = new HttpClient(handler);
+            var client = new HttpClient(HttpConnectionFactory.CreateRequestHandler(handler));
             if (clientConfig.Timeout.HasValue)
             {
                 client.Timeout = clientConfig.Timeout.Value;

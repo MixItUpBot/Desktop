@@ -36,6 +36,7 @@
             <GenericSettingsControls:GenericToggleSettingsOptionControl DataContext="{Binding TwitchReplyToCommandChatMessages}" />
             <GenericSettingsControls:GenericToggleSettingsOptionControl DataContext="{Binding TwitchSlashMeForAllChatMessages}" />
             <GenericSettingsControls:GenericNumberSettingsOptionControl DataContext="{Binding TwitchUpcomingAdCommandTriggerAmount}" />
+            <GenericSettingsControls:GenericToggleSettingsOptionControl DataContext="{Binding TwitchIgnoreRewardInputCommands}" />
             <GenericSettingsControls:GenericToggleSettingsOptionControl DataContext="{Binding TwitchAllowSharedChatEvents}" />
 
             <Separator Margin="10" />

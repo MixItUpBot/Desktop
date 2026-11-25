@@ -37,7 +37,6 @@ namespace MixItUp.Base.Model.Commands
             {
                 // Generic
                 case EventTypeEnum.ChannelRaided:
-                case EventTypeEnum.AltStreamChannelRaided:
                     specialIdentifiers["raidviewercount"] = "123";
                     break;
                 case EventTypeEnum.ChannelSubscribed:
@@ -66,6 +65,8 @@ namespace MixItUp.Base.Model.Commands
                     break;
 
                 // Twitch
+                case EventTypeEnum.RazoChannelRaided:
+                case EventTypeEnum.AltStreamChannelRaided:
                 case EventTypeEnum.TwitchChannelRaided:
                 case EventTypeEnum.TwitchChannelOutgoingRaidCompleted:
                     specialIdentifiers["hostviewercount"] = "123";
@@ -387,6 +388,30 @@ namespace MixItUp.Base.Model.Commands
                     specialIdentifiers["usersubmonths"] = "1";
                     break;
                 case EventTypeEnum.JoystickChannelMassSubscriptionsGifted:
+                    specialIdentifiers["subsgiftedlifetimeamount"] = "100";
+                    specialIdentifiers["subsgiftedamount"] = "5";
+                    break;
+                case EventTypeEnum.RazoChannelSubscribed:
+                case EventTypeEnum.RazoChannelResubscribed:
+                    specialIdentifiers["usersubmonths"] = "5";
+                    break;
+                case EventTypeEnum.RazoChannelGift:
+                    specialIdentifiers["cheeramount"] = specialIdentifiers["razosamount"] = "100";
+                    specialIdentifiers["razogift"] = "Test Gift";
+                    break;
+                case EventTypeEnum.RazoChannelBoost:
+                    specialIdentifiers["razoboostminutes"] = "5";
+                    break;
+                case EventTypeEnum.RazoChannelClipCreated:
+                case EventTypeEnum.RazoChannelClipFeatured:
+                    specialIdentifiers["clipid"] = "test-clip";
+                    specialIdentifiers["cliptitle"] = "Test Clip";
+                    specialIdentifiers["clipurl"] = "https://example.com/clip";
+                    specialIdentifiers["clipthumbnail"] = "https://example.com/thumbnail.png";
+                    specialIdentifiers["clipduration"] = "30";
+                    specialIdentifiers["clipfeaturedrank"] = eventType == EventTypeEnum.RazoChannelClipFeatured ? "1" : string.Empty;
+                    break;
+                case EventTypeEnum.RazoChannelMassSubscriptionsGifted:
                     specialIdentifiers["subsgiftedamount"] = "5";
                     break;
 
@@ -722,6 +747,13 @@ namespace MixItUp.Base.Model.Commands
                     break;
             }
 
+            if (eventType is EventTypeEnum.RazoChannelSubscribed or EventTypeEnum.RazoChannelResubscribed or EventTypeEnum.RazoChannelMassSubscriptionsGifted
+                or EventTypeEnum.RazoChannelRaided or EventTypeEnum.RazoChannelGift or EventTypeEnum.RazoChannelClipCreated or EventTypeEnum.RazoChannelClipFeatured
+                or EventTypeEnum.RazoChannelBoost or EventTypeEnum.RazoChannelJumpscare)
+            {
+                specialIdentifiers["razoeventid"] = "test-event";
+                specialIdentifiers["razotest"] = "true";
+            }
             specialIdentifiers[SpecialIdentifierStringBuilder.StreamingPlatformSpecialIdentifier] = GetEventPlatform(eventType).ToString();
 
             return specialIdentifiers;
@@ -787,7 +819,7 @@ namespace MixItUp.Base.Model.Commands
                 {
                     return true;
                 }
-                else if (this.EventType == EventTypeEnum.VPZoneChannelFollowed || this.EventType == EventTypeEnum.JoystickChannelFollowed || this.EventType == EventTypeEnum.AltStreamChannelFollowed)
+                else if (this.EventType == EventTypeEnum.VPZoneChannelFollowed || this.EventType == EventTypeEnum.JoystickChannelFollowed || this.EventType == EventTypeEnum.AltStreamChannelFollowed || this.EventType == EventTypeEnum.RazoChannelFollowed)
                 {
                     return true;
                 }

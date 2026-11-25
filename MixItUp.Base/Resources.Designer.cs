@@ -4741,6 +4741,15 @@ namespace MixItUp.Base {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copy an action from a command editor first..
+        /// </summary>
+        public static string CopyActionFirst {
+            get {
+                return ResourceManager.GetString("CopyActionFirst", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Copy {0}.
         /// </summary>
         public static string CopyFormat {
@@ -8115,6 +8124,15 @@ namespace MixItUp.Base {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Extend existing VIP time.
+        /// </summary>
+        public static string ExtendVIPRemoval {
+            get {
+                return ResourceManager.GetString("ExtendVIPRemoval", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to External Program.
         /// </summary>
@@ -14164,6 +14182,15 @@ namespace MixItUp.Base {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Joystick Subscriptions.
+        /// </summary>
+        public static string JoystickSubscriptions {
+            get {
+                return ResourceManager.GetString("JoystickSubscriptions", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Joystick.tv Token Tip.
         /// </summary>
         public static string JoystickTipped {
@@ -18646,6 +18673,15 @@ namespace MixItUp.Base {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hello World! This is a test message from {0}..
+        /// </summary>
+        public static string OverlayChatTestMessage {
+            get {
+                return ResourceManager.GetString("OverlayChatTestMessage", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Overlay connection test failed, please ensure you have the Mix It Up Overlay page visible and running in your streaming software..
         /// </summary>
         public static string OverlayConnectionFailed1 {
@@ -19662,6 +19698,15 @@ namespace MixItUp.Base {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Paste Action.
+        /// </summary>
+        public static string PasteAction {
+            get {
+                return ResourceManager.GetString("PasteAction", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Patreon.
         /// </summary>
@@ -21876,6 +21921,15 @@ namespace MixItUp.Base {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Razo Subscriptions.
+        /// </summary>
+        public static string RazoSubscriptions {
+            get {
+                return ResourceManager.GetString("RazoSubscriptions", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Read Each Line From File.
         /// </summary>
@@ -30319,6 +30373,15 @@ namespace MixItUp.Base {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ignore chat commands in Twitch Channel Points reward input.
+        /// </summary>
+        public static string TwitchIgnoreRewardInputCommands {
+            get {
+                return ResourceManager.GetString("TwitchIgnoreRewardInputCommands", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Twitch Integrated Throwing System (T.I.T.S.).
         /// </summary>
         public static string TwitchIntegratedThrowingSystem {
@@ -32802,6 +32865,15 @@ namespace MixItUp.Base {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to $uservipremainingseconds gives the seconds until scheduled Twitch VIP removal, or 0 when none remain..
+        /// </summary>
+        public static string VIPTimeRemainingHelp {
+            get {
+                return ResourceManager.GetString("VIPTimeRemainingHelp", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to VIP User.
         /// </summary>

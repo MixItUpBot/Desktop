@@ -687,7 +687,10 @@ namespace MixItUp.Base.Services.YouTube.New
         {
             try
             {
-                Logger.Log(LogLevel.Debug, string.Format("YouTube Chat Packet Received: {0}", JSONSerializerHelper.SerializeToString(liveChatMessage)));
+                if (Logger.Level == LogLevel.Debug)
+                {
+                    Logger.Log(LogLevel.Debug, string.Format("YouTube Chat Packet Received: {0}", JSONSerializerHelper.SerializeToString(liveChatMessage)));
+                }
 
                 if (liveChatMessage.AuthorDetails?.ChannelId != null)
                 {

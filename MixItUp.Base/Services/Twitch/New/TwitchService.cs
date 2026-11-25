@@ -446,19 +446,19 @@ namespace MixItUp.Base.Services.Twitch.New
             });
         }
 
-        public async Task VIPUser(UserModel channel, string user_id)
+        public Task<bool> SetVIPStatus(UserModel channel, string userID, bool vip)
         {
-            await AsyncRunner.RunAsync(async () =>
+            return AsyncRunner.RunAsync(async () =>
             {
-                await this.HttpClient.PostAsync("channels/vips?broadcaster_id=" + channel.id + "&user_id=" + user_id);
-            });
-        }
+                string path = $"channels/vips?broadcaster_id={channel.id}&user_id={userID}";
+                using var response = vip ? await this.HttpClient.PostAsync(path, AdvancedHttpClient.CreateEmptyContent())
+                    : await this.HttpClient.DeleteAsyncWithResponse(path);
+                if (response.StatusCode == HttpStatusCode.NoContent) { return true; }
+                if (response.StatusCode != HttpStatusCode.UnprocessableEntity) { return false; }
 
-        public async Task UnVIPUser(UserModel channel, string user_id)
-        {
-            await AsyncRunner.RunAsync(async () =>
-            {
-                await this.HttpClient.DeleteAsync("channels/vips?broadcaster_id=" + channel.id + "&user_id=" + user_id);
+                // A repeated grant and an ineligible moderator both return 422.
+                var status = await this.HttpClient.GetJObjectAsync(path);
+                return status?["data"] is JArray users && users.Any(u => (string)u["user_id"] == userID) == vip;
             });
         }
 

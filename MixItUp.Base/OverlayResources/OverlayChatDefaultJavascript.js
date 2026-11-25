@@ -61,6 +61,7 @@ function add(data)
 
     let container = document.createElement("div");
     container.id = data.MessageID;
+    container.dataset.platform = data.Platform;
     container.setAttribute('username', data.User.Username);
     container.appendChild(message);
     
@@ -87,7 +88,8 @@ function remove(data)
             return;
         }
         else if ((data.MessageIDPrefix && pendingMessage[i].id.startsWith(data.MessageIDPrefix)) ||
-                 (data.Username && pendingMessage[i].getAttribute("username") == data.Username))
+                 (data.Username && pendingMessage[i].getAttribute("username") == data.Username &&
+                  (!data.Platform || pendingMessage[i].dataset.platform === data.Platform)))
         {
             pendingMessage.splice(i, 1);
             i--;
@@ -102,7 +104,8 @@ function remove(data)
             return;
         }
         else if ((data.MessageIDPrefix && list.children[i].id.startsWith(data.MessageIDPrefix)) ||
-                 (data.Username && list.children[i].getAttribute("username") == data.Username))
+                 (data.Username && list.children[i].getAttribute("username") == data.Username &&
+                  (!data.Platform || list.children[i].dataset.platform === data.Platform)))
         {
             list.removeChild(list.children[i]);
             i--;

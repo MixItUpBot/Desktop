@@ -187,7 +187,10 @@ namespace MixItUp.Base.Services.Velora.New
             // case matches (or an unexpected shape) otherwise falls through invisibly. This is the pipe to
             // watch to confirm whether Velora emits channel-point redemptions here at all, and under what
             // name. Mirrors the Chat WS newMessage raw-frame log.
-            Logger.Log(LogLevel.Debug, $"Velora event: {envelope.ToString(Newtonsoft.Json.Formatting.None)}");
+            if (Logger.Level == LogLevel.Debug)
+            {
+                Logger.Log(LogLevel.Debug, $"Velora event: {envelope.ToString(Newtonsoft.Json.Formatting.None)}");
+            }
 
             // Envelope: { event, timestamp, data }.
             string eventType = envelope.GetValueOrDefault<string>("event", null);

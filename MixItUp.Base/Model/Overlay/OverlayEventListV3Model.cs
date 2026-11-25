@@ -98,6 +98,10 @@ namespace MixItUp.Base.Model.Overlay
         [DataMember]
         public string VPZoneCheeredDetailsTemplate { get; set; }
         [DataMember]
+        public string JoystickSubscriptionsDetailsTemplate { get; set; } = "{Event}";
+        [DataMember]
+        public string RazoSubscriptionsDetailsTemplate { get; set; } = "{Event}";
+        [DataMember]
         public string JoystickTippedDetailsTemplate { get; set; }
         [DataMember]
         public string RazoGiftDetailsTemplate { get; set; }
@@ -141,6 +145,13 @@ namespace MixItUp.Base.Model.Overlay
 
         public override async void OnSubscribe(object sender, SubscriptionDetailsModel subscription)
         {
+            if (!this.TracksSubscriptions(subscription.Platform)) { return; }
+            if (subscription.Platform is StreamingPlatformTypeEnum.Joystick or StreamingPlatformTypeEnum.Razo)
+            {
+                string name = subscription.Gifter != null ? Resources.GiftedSubscription : subscription.Months > 1 ? Resources.Resubscribed : Resources.Subscribed;
+                await this.AddPlatformSubscription(subscription.Gifter ?? subscription.User, subscription.Platform, name, subscription.Months);
+                return;
+            }
             if (subscription.Gifter != null)
             {
                 if (subscription.Platform == StreamingPlatformTypeEnum.Twitch)
@@ -246,6 +257,12 @@ namespace MixItUp.Base.Model.Overlay
             int tier = firstSubscription.Tier;
             string membershipName = firstSubscription.YouTubeMembershipTier;
             int amount = subscriptionList.Count;
+            if (!this.TracksSubscriptions(platform)) { return; }
+            if (platform is StreamingPlatformTypeEnum.Joystick or StreamingPlatformTypeEnum.Razo)
+            {
+                await this.AddPlatformSubscription(gifter, platform, Resources.GiftedSubscription, amount);
+                return;
+            }
 
             if (platform == StreamingPlatformTypeEnum.Twitch)
             {
@@ -287,6 +304,32 @@ namespace MixItUp.Base.Model.Overlay
                     { DetailsAmountPropertyName, amount.ToString() }
                 });
             }
+        }
+
+        private bool TracksSubscriptions(StreamingPlatformTypeEnum platform) => platform switch
+        {
+            StreamingPlatformTypeEnum.Twitch => this.TwitchSubscriptions,
+            StreamingPlatformTypeEnum.YouTube => this.YouTubeMemberships,
+            StreamingPlatformTypeEnum.Kick => this.KickSubscriptions,
+            StreamingPlatformTypeEnum.Velora => this.VeloraSubscriptions,
+            StreamingPlatformTypeEnum.VPZone => this.VPZoneSubscriptions,
+            StreamingPlatformTypeEnum.Joystick => this.JoystickSubscriptions,
+            StreamingPlatformTypeEnum.Razo => this.RazoSubscriptions,
+            _ => false
+        };
+
+        private Task AddPlatformSubscription(UserV2ViewModel user, StreamingPlatformTypeEnum platform, string name, int amount)
+        {
+            bool joystick = platform == StreamingPlatformTypeEnum.Joystick;
+            return this.AddEvent(user, joystick ? nameof(this.JoystickSubscriptions) : nameof(this.RazoSubscriptions),
+                joystick ? this.JoystickSubscriptionsDetailsTemplate : this.RazoSubscriptionsDetailsTemplate,
+                new Dictionary<string, string> { ["Event"] = name, [DetailsAmountPropertyName] = amount.ToString() });
+        }
+
+        public override async void OnSubscriptionsGiftedWithoutRecipients(UserV2ViewModel gifter, int count)
+        {
+            if (this.TracksSubscriptions(gifter.Platform))
+                await this.AddPlatformSubscription(gifter, gifter.Platform, Resources.GiftedSubscription, count);
         }
 
         public override async void OnDonation(object sender, UserDonationModel donation)
@@ -464,6 +507,14 @@ namespace MixItUp.Base.Model.Overlay
                 {
                     this.OnVPZoneCheered(this, new VPZoneCheeredEventModel(ChannelSession.User, 100, "Great stream!"));
                     await Task.Delay(3000);
+                }
+                foreach (var platform in new[] { StreamingPlatformTypeEnum.Joystick, StreamingPlatformTypeEnum.Razo })
+                {
+                    if (this.TracksSubscriptions(platform))
+                    {
+                        this.OnSubscribe(this, new SubscriptionDetailsModel(platform, CommandParametersModel.GetDefaultTestUser(platform), months: 1));
+                        await Task.Delay(3000);
+                    }
                 }
                 if (this.JoystickTipped)
                 {

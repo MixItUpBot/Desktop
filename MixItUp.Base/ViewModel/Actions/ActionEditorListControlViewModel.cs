@@ -2,6 +2,7 @@ using MixItUp.Base.Model.Actions;
 using MixItUp.Base.Model.Commands;
 using MixItUp.Base.Util;
 using MixItUp.Base.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -25,6 +26,9 @@ namespace MixItUp.Base.ViewModel.Actions
         private ActionTypeEnum selectedActionType;
 
         public ICommand AddCommand { get; private set; }
+        public ICommand PasteCommand { get; private set; }
+
+        private static string copiedAction;
 
         public BulkObservableCollection<ActionEditorControlViewModelBase> Actions { get; set; } = new BulkObservableCollection<ActionEditorControlViewModelBase>();
 
@@ -42,6 +46,7 @@ namespace MixItUp.Base.ViewModel.Actions
 
             this.ActionTypes.AddRange(actionTypes.OrderBy(a => a.ToString()));
 
+            this.PasteCommand = this.CreateCommand(this.PasteAction);
             this.AddCommand = this.CreateCommand(async () =>
             {
                 if (this.ActionTypes.Contains(this.SelectedActionType))
@@ -134,6 +139,40 @@ namespace MixItUp.Base.ViewModel.Actions
             if (action != null)
             {
                 await this.AddAction(action);
+            }
+        }
+
+        public async Task CopyAction(ActionEditorControlViewModelBase actionViewModel)
+        {
+            ActionModelBase action = await actionViewModel.ValidateAndGetAction();
+            if (action != null)
+            {
+                copiedAction = JSONSerializerHelper.SerializeToString(action);
+            }
+        }
+
+        public async Task PasteAction()
+        {
+            if (copiedAction == null)
+            {
+                await DialogHelper.ShowMessage(Resources.CopyActionFirst);
+                return;
+            }
+
+            ActionModelBase action = JSONSerializerHelper.DeserializeFromString<ActionModelBase>(copiedAction);
+            AssignNewIDs(action);
+            await this.AddAction(action);
+        }
+
+        private static void AssignNewIDs(ActionModelBase action)
+        {
+            action.ID = Guid.NewGuid();
+            if (action is GroupActionModel group)
+            {
+                foreach (ActionModelBase child in group.Actions)
+                {
+                    AssignNewIDs(child);
+                }
             }
         }
 

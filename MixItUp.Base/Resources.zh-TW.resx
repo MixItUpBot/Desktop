@@ -4349,11 +4349,11 @@
     <value>猜測失敗</value>
   </data>
   <data name="GameCommandHangmanFailedGuessExample" xml:space="preserve">
-    <value>@$username 將他們的硬幣放入鍋中並猜測“$arg1text”...但這是錯誤的！ $gamehangman當前</value>
+    <value>@$username 將他們的硬幣放入鍋中並猜測“$arg1text”...但這是錯誤的！ $gamehangmancurrent</value>
     <comment>Manual</comment>
   </data>
   <data name="GameCommandHangmanGameLostExample" xml:space="preserve">
-    <value>猜錯次數太多，遊戲就輸了；正確答案是“$gamehangmananswer”。 $gametotalmount {0} 消失！</value>
+    <value>猜錯次數太多，遊戲就輸了；正確答案是“$gamehangmananswer”。 $gametotalamount {0} 消失！</value>
     <comment>Manual</comment>
   </data>
   <data name="GameCommandHangmanGameWonExample" xml:space="preserve">
@@ -4369,14 +4369,14 @@
     <comment>Manual</comment>
   </data>
   <data name="GameCommandHangmanStatusExample" xml:space="preserve">
-    <value>到目前為止，你已經得到了 $gamehangmancurrent 正確的結果，並且猜測了 $gamehangmanfailedguesess 錯誤的結果。查看彩池，您會看到裡面有 $gametotalamount {0}。</value>
+    <value>到目前為止，你已經得到了 $gamehangmancurrent 正確的結果，並且猜測了 $gamehangmanfailedguesses 錯誤的結果。查看彩池，您會看到裡面有 $gametotalamount {0}。</value>
     <comment>Manual</comment>
   </data>
   <data name="GameCommandHangmanSuccessfulGuess" xml:space="preserve">
     <value>猜中成功</value>
   </data>
   <data name="GameCommandHangmanSuccessfulGuessExample" xml:space="preserve">
-    <value>@$username 將他們的硬幣放入鍋中並猜測 $arg1text...並且猜對了！ $gamehangman當前</value>
+    <value>@$username 將他們的硬幣放入鍋中並猜測 $arg1text...並且猜對了！ $gamehangmancurrent</value>
     <comment>Manual</comment>
   </data>
   <data name="GameCommandHitmanAppearsExample" xml:space="preserve">
@@ -4412,7 +4412,7 @@
     <comment>Manual</comment>
   </data>
   <data name="GameCommandRouletteGameCompleteExample" xml:space="preserve">
-    <value>輪盤速度減慢，顯示 $gamewiningbettype 為獲勝賭注！總支出：$gameallpayout {0}</value>
+    <value>輪盤速度減慢，顯示 $gamewinningbettype 為獲勝賭注！總支出：$gameallpayout {0}</value>
     <comment>Manual</comment>
   </data>
   <data name="GameCommandRouletteStartedExample" xml:space="preserve">
@@ -4488,7 +4488,7 @@
     <comment>Manual</comment>
   </data>
   <data name="GameCommandBetGameCompleteExample" xml:space="preserve">
-    <value>$gamebetwiningoption 是獲勝的選擇！</value>
+    <value>$gamebetwinningoption 是獲勝的選擇！</value>
     <comment>Manual</comment>
   </data>
   <data name="GameCommandBetStartedExample" xml:space="preserve">
@@ -4581,7 +4581,7 @@
     <value>騎士精選</value>
   </data>
   <data name="GameCommandTreasureDefenseKnightSelectedExample" xml:space="preserve">
-    <value>King @$username 選擇了 @$targetusername 來保衛寶藏…他們是騎士！他們保衛了寶藏，為國王和騎士每人提供了 $gamepay{0}！</value>
+    <value>King @$username 選擇了 @$targetusername 來保衛寶藏…他們是騎士！他們保衛了寶藏，為國王和騎士每人提供了 $gamepayout {0}！</value>
     <comment>Manual</comment>
   </data>
   <data name="GameCommandTreasureDefenseKnightUser" xml:space="preserve">
@@ -4608,7 +4608,7 @@
     <value>小偷選定</value>
   </data>
   <data name="GameCommandTreasureDefenseThiefSelectedExample" xml:space="preserve">
-    <value>King @$username 選擇了 @$targetusername 來保衛寶藏…而他們是小偷！他們偷走了寶藏，給所有盜賊每人 $gamepay{0}！</value>
+    <value>King @$username 選擇了 @$targetusername 來保衛寶藏…而他們是小偷！他們偷走了寶藏，給所有盜賊每人 $gamepayout {0}！</value>
     <comment>Manual</comment>
   </data>
   <data name="GameCommandTreasureDefenseThiefUser" xml:space="preserve">
@@ -4706,7 +4706,7 @@
     <comment>Manual</comment>
   </data>
   <data name="GameCommandVolcanoStage1StatusExample" xml:space="preserve">
-    <value>往裡面看去，幾乎看不到裡面有東西。總金額：$gametotalmount</value>
+    <value>往裡面看去，幾乎看不到裡面有東西。總金額：$gametotalamount</value>
   </data>
   <data name="GameCommandVolcanoStage2" xml:space="preserve">
     <value>第二階段</value>
@@ -4716,7 +4716,7 @@
     <comment>Manual</comment>
   </data>
   <data name="GameCommandVolcanoStage2StatusExample" xml:space="preserve">
-    <value>往裡面看，你會發現火山口的一半已經填滿了。總金額：$gametotalmount</value>
+    <value>往裡面看，你會發現火山口的一半已經填滿了。總金額：$gametotalamount</value>
     <comment>Manual</comment>
   </data>
   <data name="GameCommandVolcanoStage3" xml:space="preserve">
@@ -4727,7 +4727,7 @@
     <comment>Manual</comment>
   </data>
   <data name="GameCommandVolcanoStage3StatusExample" xml:space="preserve">
-    <value>東西開始從火山頂部溢出。總金額：$gametotalmount</value>
+    <value>東西開始從火山頂部溢出。總金額：$gametotalamount</value>
     <comment>Manual</comment>
   </data>
   <data name="GameCommandVolcanoStageMinimumAmountsMustBePositiveNumbers" xml:space="preserve">
@@ -4757,7 +4757,7 @@
     <comment>Manual</comment>
   </data>
   <data name="ModerationStrikeExample" xml:space="preserve">
-    <value>$適度的原因。您已收到審核警示，目前有 $usermoderationstrikes 警示</value>
+    <value>$moderationreason。您已收到審核警示，目前有 $usermoderationstrikes 警示</value>
     <comment>Manual</comment>
   </data>
   <data name="RedemptionStoreDefaultRedemptionExample" xml:space="preserve">
@@ -5151,7 +5151,7 @@
     <comment>Manual</comment>
   </data>
   <data name="GameCommandTriviaCorrectAnswerExample" xml:space="preserve">
-    <value>正確答案是 $game Correctanswer！每個猜對的人都贏了 $gamepayout {0}！</value>
+    <value>正確答案是 $gamecorrectanswer！每個猜對的人都贏了 $gamepayout {0}！</value>
     <comment>Manual</comment>
   </data>
   <data name="GameCommandTriviaStartedExample" xml:space="preserve">
@@ -8596,7 +8596,7 @@ ID 與現有報價相符的匯入報價將變更為下一個最大數量。匯�
     <comment>{0} is the list of failed services</comment>
   </data>
   <data name="ConsumablesCurrencyCommandDefault" xml:space="preserve">
-    <value>@$用戶名有${0} {1}</value>
+    <value>@$username 有 ${0} {1}</value>
     <comment>{0} is the amount of currency
 {1} is the name of the currency</comment>
   </data>
@@ -11482,6 +11482,9 @@ sendParentMessage({ 型別: "ScriptComplete", ID: "{ID}", 結果: 結果 });</va
   <data name="KickKicks" xml:space="preserve">
     <value>Kick Kicks</value>
   </data>
+  <data name="KickKicksGifted" xml:space="preserve">
+    <value>在 Kick 上贈送的 Kicks</value>
+  </data>
   <data name="KickKicksCommandsAlreadyExistsDuplicateAmount" xml:space="preserve">
     <value>已經存在另一個具有相同數量/範圍的 Kick Kicks 命令。</value>
   </data>
@@ -12126,6 +12129,430 @@ sendParentMessage({ 型別: "ScriptComplete", ID: "{ID}", 結果: 結果 });</va
   <data name="ResetThemeAndFontSettingsConfirmation" xml:space="preserve">
     <value>這會將色彩配置、背景、前景、完整佈景主題、介面字型、整體字型大小和聊天視窗字型大小重設為預設值。確定要繼續嗎?</value>
     <comment>Confirmation prompt shown before resetting the Theme settings page</comment>
+  </data>
+  <data name="ChatUserList" xml:space="preserve">
+    <value>聊天室使用者清單</value>
+    <comment>Screen reader label for the user list beside the chat window</comment>
+  </data>
+  <data name="ResizeChatUserList" xml:space="preserve">
+    <value>調整聊天室使用者清單大小</value>
+    <comment>Screen reader label for the splitter between the chat window and the user list</comment>
+  </data>
+  <data name="ShowHideChatActionButtons" xml:space="preserve">
+    <value>顯示或隱藏聊天室動作按鈕</value>
+    <comment>Screen reader label for the small toggle that collapses the row of buttons above chat</comment>
+  </data>
+  <data name="UsernameSuggestions" xml:space="preserve">
+    <value>使用者名稱建議</value>
+    <comment>Screen reader label for the username suggestion list that opens while typing in chat</comment>
+  </data>
+  <data name="EmoteSuggestions" xml:space="preserve">
+    <value>表情符號建議</value>
+    <comment>Screen reader label for the emote suggestion list that opens while typing in chat</comment>
+  </data>
+  <data name="NavigationMenu" xml:space="preserve">
+    <value>導覽選單</value>
+    <comment>Screen reader label for the main navigation menu and the button that opens it</comment>
+  </data>
+  <data name="CloseNavigationMenu" xml:space="preserve">
+    <value>關閉導覽選單</value>
+    <comment>Screen reader label for the button that closes the navigation drawer</comment>
+  </data>
+  <data name="EditNavigationMenu" xml:space="preserve">
+    <value>編輯導覽選單</value>
+    <comment>Screen reader label for the toggle that switches the navigation menu into reorder and hide mode</comment>
+  </data>
+  <data name="ShowMenuItemFormat" xml:space="preserve">
+    <value>顯示 {0}</value>
+    <comment>Format for the screen reader label on each navigation menu visibility checkbox, filled with the menu entry name</comment>
+  </data>
+  <data name="ConnectionLost" xml:space="preserve">
+    <value>連線中斷</value>
+    <comment>Screen reader label for the alert button shown when a platform connection drops</comment>
+  </data>
+  <data name="SourceCode" xml:space="preserve">
+    <value>原始碼</value>
+    <comment>Screen reader label for links and buttons that open the project's source repository</comment>
+  </data>
+  <data name="Wiki" xml:space="preserve">
+    <value>Wiki</value>
+    <comment>Screen reader label for the button that opens the help wiki</comment>
+  </data>
+  <data name="EnableDisableFormat" xml:space="preserve">
+    <value>啟用或停用 {0}</value>
+    <comment>Format for the screen reader label on a per-item enable switch, filled with the item name</comment>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>全選</value>
+    <comment>Screen reader label for the checkbox in a table header that selects every row</comment>
+  </data>
+  <data name="OpenStream" xml:space="preserve">
+    <value>開啟直播</value>
+    <comment>Screen reader label for the button that opens a broadcast in the browser</comment>
+  </data>
+  <data name="GiveawayRequireClaim" xml:space="preserve">
+    <value>要求得獎者領獎</value>
+    <comment>Screen reader label for the giveaway option that makes winners claim their prize in chat</comment>
+  </data>
+  <data name="GiveawayAllowPastWinners" xml:space="preserve">
+    <value>允許過去的得獎者參加</value>
+    <comment>Screen reader label for the giveaway option that lets previous winners enter again</comment>
+  </data>
+  <data name="UseCommunityBannedWordsList" xml:space="preserve">
+    <value>使用社群禁用詞清單</value>
+    <comment>Screen reader label for the moderation toggle that adopts the shared community banned word list</comment>
+  </data>
+  <data name="FilteredWords" xml:space="preserve">
+    <value>篩選的詞語</value>
+    <comment>Screen reader label for the moderation box listing words to filter, one per line</comment>
+  </data>
+  <data name="MaxCapsType" xml:space="preserve">
+    <value>大寫字母上限的計算方式</value>
+    <comment>Screen reader label for the selector that chooses how the max caps limit is counted</comment>
+  </data>
+  <data name="MaxPunctuationSymbolsEmotes" xml:space="preserve">
+    <value>標點符號、特殊符號與表情符號上限</value>
+    <comment>Screen reader label for the moderation limit on punctuation, symbols and emotes</comment>
+  </data>
+  <data name="MaxPunctuationSymbolsEmotesType" xml:space="preserve">
+    <value>標點符號、特殊符號與表情符號上限的計算方式</value>
+    <comment>Screen reader label for the selector that chooses how the punctuation, symbols and emotes limit is counted</comment>
+  </data>
+  <data name="BlockLinks" xml:space="preserve">
+    <value>封鎖連結</value>
+    <comment>Screen reader label for the moderation toggle that blocks links in chat</comment>
+  </data>
+  <data name="MusicPlayerTrackPosition" xml:space="preserve">
+    <value>曲目播放位置</value>
+    <comment>Screen reader label for the music player scrubber</comment>
+  </data>
+  <data name="MusicPlayerPreviousTrack" xml:space="preserve">
+    <value>上一首</value>
+    <comment>Screen reader label for the music player previous track button</comment>
+  </data>
+  <data name="MusicPlayerPlayPause" xml:space="preserve">
+    <value>播放或暫停</value>
+    <comment>Screen reader label for the music player play and pause button</comment>
+  </data>
+  <data name="MusicPlayerNextTrack" xml:space="preserve">
+    <value>下一首</value>
+    <comment>Screen reader label for the music player next track button</comment>
+  </data>
+  <data name="EnableQuotes" xml:space="preserve">
+    <value>啟用引言</value>
+    <comment>Screen reader label for the toggle that turns the quote system on</comment>
+  </data>
+  <data name="QuotesLatestAtTop" xml:space="preserve">
+    <value>優先顯示最新引言</value>
+    <comment>Screen reader label for the button that flips the quote list sort order</comment>
+  </data>
+  <data name="EnableRedemptionStore" xml:space="preserve">
+    <value>啟用兌換商店</value>
+    <comment>Screen reader label for the toggle that turns the redemption store on</comment>
+  </data>
+  <data name="TimersRandomize" xml:space="preserve">
+    <value>隨機排列計時器</value>
+    <comment>Screen reader label for the toggle that randomises timer order</comment>
+  </data>
+  <data name="TimersDisableAll" xml:space="preserve">
+    <value>停用所有計時器</value>
+    <comment>Screen reader label for the toggle that disables every timer</comment>
+  </data>
+  <data name="CommunityCommandsSeeMore" xml:space="preserve">
+    <value>查看更多此類別的命令</value>
+    <comment>Screen reader label for the arrow that opens a full community command category</comment>
+  </data>
+  <data name="SearchResults" xml:space="preserve">
+    <value>搜尋結果</value>
+    <comment>Screen reader label for a list of search results</comment>
+  </data>
+  <data name="CommunityCommandsRatingsAndReviews" xml:space="preserve">
+    <value>評分與評論</value>
+    <comment>Screen reader label for the review list on a community command's detail page</comment>
+  </data>
+  <data name="ConditionalClauses" xml:space="preserve">
+    <value>條件子句</value>
+    <comment>Screen reader label for the list of clauses in a conditional action</comment>
+  </data>
+  <data name="OverlayHtml" xml:space="preserve">
+    <value>疊加層 HTML</value>
+    <comment>Screen reader label for the HTML editor on a custom overlay item</comment>
+  </data>
+  <data name="OverlayCss" xml:space="preserve">
+    <value>疊加層 CSS</value>
+    <comment>Screen reader label for the CSS editor on a custom overlay item</comment>
+  </data>
+  <data name="OverlayJavascript" xml:space="preserve">
+    <value>疊加層 JavaScript</value>
+    <comment>Screen reader label for the Javascript editor on a custom overlay item</comment>
+  </data>
+  <data name="Parameters" xml:space="preserve">
+    <value>參數</value>
+    <comment>Screen reader label for a list of parameters</comment>
+  </data>
+  <data name="Variables" xml:space="preserve">
+    <value>變數</value>
+    <comment>Screen reader label for a list of variables</comment>
+  </data>
+  <data name="RequestHeaders" xml:space="preserve">
+    <value>請求標頭</value>
+    <comment>Screen reader label for the header list on a web request action</comment>
+  </data>
+  <data name="JSONValues" xml:space="preserve">
+    <value>JSON 值</value>
+    <comment>Screen reader label for the list mapping JSON values to special identifiers</comment>
+  </data>
+  <data name="Bold" xml:space="preserve">
+    <value>粗體</value>
+    <comment>Screen reader label for the bold text style toggle</comment>
+  </data>
+  <data name="Italics" xml:space="preserve">
+    <value>斜體</value>
+    <comment>Screen reader label for the italic text style toggle</comment>
+  </data>
+  <data name="Underline" xml:space="preserve">
+    <value>底線</value>
+    <comment>Screen reader label for the underline text style toggle</comment>
+  </data>
+  <data name="LeftAlignment" xml:space="preserve">
+    <value>靠左對齊</value>
+    <comment>Screen reader label for the left text alignment toggle</comment>
+  </data>
+  <data name="CenterAlignment" xml:space="preserve">
+    <value>置中對齊</value>
+    <comment>Screen reader label for the center text alignment toggle</comment>
+  </data>
+  <data name="RightAlignment" xml:space="preserve">
+    <value>靠右對齊</value>
+    <comment>Screen reader label for the right text alignment toggle</comment>
+  </data>
+  <data name="JustifyAlignment" xml:space="preserve">
+    <value>左右對齊</value>
+    <comment>Screen reader label for the justified text alignment toggle</comment>
+  </data>
+  <data name="FontStyle" xml:space="preserve">
+    <value>字型樣式</value>
+    <comment>Screen reader label for the group of bold, italic and underline toggles</comment>
+  </data>
+  <data name="TextAlignment" xml:space="preserve">
+    <value>文字對齊</value>
+    <comment>Screen reader label for the group of text alignment toggles</comment>
+  </data>
+  <data name="Rating" xml:space="preserve">
+    <value>評分</value>
+    <comment>Screen reader label for a star rating control</comment>
+  </data>
+  <data name="ResizePanels" xml:space="preserve">
+    <value>調整面板大小</value>
+    <comment>Screen reader label for the splitter between two resizable panels</comment>
+  </data>
+  <data name="Tags" xml:space="preserve">
+    <value>標籤</value>
+    <comment>Screen reader label for a list of channel tags</comment>
+  </data>
+  <data name="Answers" xml:space="preserve">
+    <value>答案</value>
+    <comment>Screen reader label for the list of answers on a trivia game</comment>
+  </data>
+  <data name="WordWrap" xml:space="preserve">
+    <value>自動換行</value>
+    <comment>Screen reader label for the word wrap toggle in a code editor</comment>
+  </data>
+  <data name="ShowWhitespace" xml:space="preserve">
+    <value>顯示空白字元</value>
+    <comment>Screen reader label for the whitespace toggle in a code editor</comment>
+  </data>
+  <data name="Metrics" xml:space="preserve">
+    <value>指標</value>
+    <comment>Screen reader label for a list of user metrics</comment>
+  </data>
+  <data name="ColorHexValue" xml:space="preserve">
+    <value>十六進位值</value>
+    <comment>Screen reader label for the hex entry in the color picker</comment>
+  </data>
+  <data name="ScanForMissingFiles" xml:space="preserve">
+    <value>掃描遺失的檔案</value>
+    <comment>Screen reader label for the button that starts the missing file scan</comment>
+  </data>
+  <data name="MissingFiles" xml:space="preserve">
+    <value>遺失的檔案</value>
+    <comment>Screen reader label for the table of missing files</comment>
+  </data>
+  <data name="Ranks" xml:space="preserve">
+    <value>階級</value>
+    <comment>Screen reader label for the list of ranks on a currency</comment>
+  </data>
+  <data name="InventoryItems" xml:space="preserve">
+    <value>物品欄中的物品</value>
+    <comment>Screen reader label for the list of items in an inventory</comment>
+  </data>
+  <data name="Prizes" xml:space="preserve">
+    <value>獎品</value>
+    <comment>Screen reader label for the list of prizes on a wheel</comment>
+  </data>
+  <data name="ContentClassificationLabels" xml:space="preserve">
+    <value>內容分類標籤</value>
+    <comment>Screen reader label for the list of Twitch content classification labels</comment>
+  </data>
+  <data name="ColorSpectrum" xml:space="preserve">
+    <value>色譜</value>
+    <comment>Screen reader label for the two-dimensional color picker</comment>
+  </data>
+  <data name="PickColor" xml:space="preserve">
+    <value>選取顏色</value>
+    <comment>Screen reader label for the button that opens the color picker</comment>
+  </data>
+  <data name="ChatCommandTriggers" xml:space="preserve">
+    <value>命令觸發詞</value>
+    <comment>Screen reader label for the box listing a chat command's triggers</comment>
+  </data>
+  <data name="GoalSegments" xml:space="preserve">
+    <value>目標區段</value>
+    <comment>Screen reader label for the list of segments on a goal widget</comment>
+  </data>
+  <data name="EndCreditsSections" xml:space="preserve">
+    <value>片尾名單區段</value>
+    <comment>Screen reader label for the list of sections in the end credits widget</comment>
+  </data>
+  <data name="EventTypes" xml:space="preserve">
+    <value>事件類型</value>
+    <comment>Screen reader label for the list of event types a widget reacts to</comment>
+  </data>
+  <data name="SimplePosition" xml:space="preserve">
+    <value>簡易位置</value>
+    <comment>Screen reader label for the grid of nine preset position buttons</comment>
+  </data>
+  <data name="TestParameterValue" xml:space="preserve">
+    <value>測試參數值</value>
+    <comment>Screen reader label for a value entered when testing a command</comment>
+  </data>
+  <data name="ModifierShift" xml:space="preserve">
+    <value>Shift 鍵</value>
+    <comment>Screen reader label for the Shift modifier checkbox in the hotkey editor</comment>
+  </data>
+  <data name="ModifierControl" xml:space="preserve">
+    <value>Ctrl 鍵</value>
+    <comment>Screen reader label for the Ctrl modifier checkbox in the hotkey editor</comment>
+  </data>
+  <data name="ModifierAlt" xml:space="preserve">
+    <value>Alt 鍵</value>
+    <comment>Screen reader label for the Alt modifier checkbox in the hotkey editor</comment>
+  </data>
+  <data name="CommandGroups" xml:space="preserve">
+    <value>命令群組</value>
+    <comment>Screen reader label for the list of command groups on a commands screen</comment>
+  </data>
+  <data name="Categories" xml:space="preserve">
+    <value>類別</value>
+    <comment>Screen reader label for a list of categories</comment>
+  </data>
+  <data name="Icons" xml:space="preserve">
+    <value>圖示</value>
+    <comment>Screen reader label for the icon list on the icon map screen</comment>
+  </data>
+  <data name="IconAlternates" xml:space="preserve">
+    <value>圖示別名</value>
+    <comment>Screen reader label for the alternate icon names shown beside an icon</comment>
+  </data>
+  <data name="CurrenciesRanksAndInventories" xml:space="preserve">
+    <value>貨幣、階級與物品欄</value>
+    <comment>Screen reader label for the table listing every currency, rank and inventory</comment>
+  </data>
+  <data name="TestCommandFormat" xml:space="preserve">
+    <value>測試 {0}</value>
+    <comment>Format for the screen reader label on a row's test button, filled with the command name</comment>
+  </data>
+  <data name="StopCommandFormat" xml:space="preserve">
+    <value>停止 {0}</value>
+    <comment>Format for the screen reader label on a row's stop button, filled with the command name</comment>
+  </data>
+  <data name="EditCommandFormat" xml:space="preserve">
+    <value>編輯 {0}</value>
+    <comment>Format for the screen reader label on a row's edit button, filled with the item name</comment>
+  </data>
+  <data name="DeleteCommandFormat" xml:space="preserve">
+    <value>刪除 {0}</value>
+    <comment>Format for the screen reader label on a row's delete button, filled with the item name</comment>
+  </data>
+  <data name="EnableDisableCommandFormat" xml:space="preserve">
+    <value>啟用或停用 {0}</value>
+    <comment>Format for the screen reader label on a row's enable switch, filled with the command name</comment>
+  </data>
+  <data name="CopyFormat" xml:space="preserve">
+    <value>複製 {0}</value>
+    <comment>Format for the screen reader label on a row's copy button, filled with the item name</comment>
+  </data>
+  <data name="MoveUpFormat" xml:space="preserve">
+    <value>上移 {0}</value>
+    <comment>Format for the screen reader label on a row's move up button, filled with the item name</comment>
+  </data>
+  <data name="MoveDownFormat" xml:space="preserve">
+    <value>下移 {0}</value>
+    <comment>Format for the screen reader label on a row's move down button, filled with the item name</comment>
+  </data>
+  <data name="RemoveFormat" xml:space="preserve">
+    <value>移除 {0}</value>
+    <comment>Format for the screen reader label on a row's remove button, filled with the item name</comment>
+  </data>
+  <data name="OpenFormat" xml:space="preserve">
+    <value>開啟 {0}</value>
+    <comment>Format for the screen reader label on a row's open button, filled with the item name</comment>
+  </data>
+  <data name="RaidFormat" xml:space="preserve">
+    <value>向 {0} 發起揪團</value>
+    <comment>Format for the screen reader label on a row's raid button, filled with the channel name</comment>
+  </data>
+  <data name="CancelFormat" xml:space="preserve">
+    <value>取消 {0}</value>
+    <comment>Format for the screen reader label on a row's cancel button, filled with the command name</comment>
+  </data>
+  <data name="ReplayFormat" xml:space="preserve">
+    <value>重新播放 {0}</value>
+    <comment>Format for the screen reader label on a row's replay button, filled with the command name</comment>
+  </data>
+  <data name="SelectFormat" xml:space="preserve">
+    <value>選取 {0}</value>
+    <comment>Format for the screen reader label on a row's selection checkbox, filled with the item name</comment>
+  </data>
+  <data name="RefundFormat" xml:space="preserve">
+    <value>退還 {0} 的費用</value>
+    <comment>Format for the screen reader label on a row's refund button, filled with the product name</comment>
+  </data>
+  <data name="ManualRedeemFormat" xml:space="preserve">
+    <value>手動兌換 {0}</value>
+    <comment>Format for the screen reader label on a row's manual redeem button, filled with the product name</comment>
+  </data>
+  <data name="ResetFormat" xml:space="preserve">
+    <value>重設 {0}</value>
+    <comment>Format for the screen reader label on a row's reset button, filled with the widget name</comment>
+  </data>
+  <data name="CopyLinkFormat" xml:space="preserve">
+    <value>複製 {0} 的連結</value>
+    <comment>Format for the screen reader label on a row's copy link button, filled with the widget name</comment>
+  </data>
+  <data name="SeeMoreCategoryFormat" xml:space="preserve">
+    <value>查看更多「{0}」類別的命令</value>
+    <comment>Format for the screen reader label on a category's see more arrow, filled with the category name</comment>
+  </data>
+  <data name="LaunchFormat" xml:space="preserve">
+    <value>啟動 {0}</value>
+    <comment>Format for the screen reader label on a row's launch button, filled with the endpoint name</comment>
+  </data>
+  <data name="EditDateFormat" xml:space="preserve">
+    <value>編輯 {0} 的日期</value>
+    <comment>Format for the screen reader label on a row's date button, filled with the quote text</comment>
+  </data>
+  <data name="EditTimeFormat" xml:space="preserve">
+    <value>編輯 {0} 的時間</value>
+    <comment>Format for the screen reader label on a row's time button, filled with the quote text</comment>
+  </data>
+  <data name="OptionalArgumentFormat" xml:space="preserve">
+    <value>{0} 為選填</value>
+    <comment>Format for the screen reader label on an argument row's optional checkbox, filled with the argument name</comment>
+  </data>
+  <data name="AnyOrderFormat" xml:space="preserve">
+    <value>{0} 不限順序</value>
+    <comment>Format for the screen reader label on a slot outcome's any order toggle, filled with the first symbol</comment>
   </data>
   <data name="Veadotube" xml:space="preserve">
     <value>veadotube</value>
@@ -12872,5 +13299,29 @@ sendParentMessage({ 型別: "ScriptComplete", ID: "{ID}", 結果: 結果 });</va
   </data>
   <data name="JoystickChatSendUnconfirmed" xml:space="preserve">
     <value>Joystick.tv 未確認聊天訊息已送達。</value>
+  </data>
+  <data name="TwitchIgnoreRewardInputCommands" xml:space="preserve">
+    <value>忽略 Twitch 頻道點數獎勵輸入欄中的聊天室命令</value>
+  </data>
+  <data name="PasteAction" xml:space="preserve">
+    <value>貼上動作</value>
+  </data>
+  <data name="OverlayChatTestMessage" xml:space="preserve">
+    <value>哈囉，世界！這是來自 {0} 的測試訊息。</value>
+  </data>
+  <data name="CopyActionFirst" xml:space="preserve">
+    <value>請先從命令編輯器複製一個動作。</value>
+  </data>
+  <data name="ExtendVIPRemoval" xml:space="preserve">
+    <value>延長現有 VIP 期限</value>
+  </data>
+  <data name="VIPTimeRemainingHelp" xml:space="preserve">
+    <value>$uservipremainingseconds 會傳回距離預定移除 Twitch VIP 身分的剩餘秒數。若未排定移除，則傳回 0。</value>
+  </data>
+  <data name="JoystickSubscriptions" xml:space="preserve">
+    <value>Joystick 訂閱</value>
+  </data>
+  <data name="RazoSubscriptions" xml:space="preserve">
+    <value>Razo 訂閱</value>
   </data>
 </root>

@@ -13337,4 +13337,28 @@ This can be done by clicking on Create Channel Point Reward on the Kick Channel 
   <data name="JoystickChatSendUnconfirmed" xml:space="preserve">
     <value>Joystick.tv did not confirm delivery of the chat message.</value>
   </data>
+  <data name="TwitchIgnoreRewardInputCommands" xml:space="preserve">
+    <value>Ignore chat commands in Twitch Channel Points reward input</value>
+  </data>
+  <data name="PasteAction" xml:space="preserve">
+    <value>Paste Action</value>
+  </data>
+  <data name="OverlayChatTestMessage" xml:space="preserve">
+    <value>Hello World! This is a test message from {0}.</value>
+  </data>
+  <data name="CopyActionFirst" xml:space="preserve">
+    <value>Copy an action from a command editor first.</value>
+  </data>
+  <data name="ExtendVIPRemoval" xml:space="preserve">
+    <value>Extend existing VIP time</value>
+  </data>
+  <data name="VIPTimeRemainingHelp" xml:space="preserve">
+    <value>$uservipremainingseconds gives the seconds until scheduled Twitch VIP removal, or 0 when none remain.</value>
+  </data>
+  <data name="JoystickSubscriptions" xml:space="preserve">
+    <value>Joystick Subscriptions</value>
+  </data>
+  <data name="RazoSubscriptions" xml:space="preserve">
+    <value>Razo Subscriptions</value>
+  </data>
 </root>

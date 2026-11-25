@@ -1,4 +1,6 @@
-﻿using MixItUp.Base.Model.Joystick;
+﻿using MixItUp.Base.Model;
+using MixItUp.Base.Model.Commands;
+using MixItUp.Base.Model.Joystick;
 using MixItUp.Base.Model.Razo;
 using Google.Apis.YouTube.v3.Data;
 using MixItUp.Base.Model.Kick.Kicks;
@@ -43,6 +45,8 @@ namespace MixItUp.Base.ViewModel.Overlay
         VPZoneCheered,
         JoystickTipped,
         RazoGift,
+        JoystickSubscriptions,
+        RazoSubscriptions,
 
     }
 
@@ -438,6 +442,26 @@ namespace MixItUp.Base.ViewModel.Overlay
                 this.NotifyPropertyChanged();
             }
         }
+        public bool RazoSubscriptions
+        {
+            get { return this.razoSubscriptions; }
+            set
+            {
+                this.razoSubscriptions = value;
+                this.NotifyPropertyChanged();
+            }
+        }
+        private bool razoSubscriptions;
+        public bool JoystickSubscriptions
+        {
+            get { return this.joystickSubscriptions; }
+            set
+            {
+                this.joystickSubscriptions = value;
+                this.NotifyPropertyChanged();
+            }
+        }
+        private bool joystickSubscriptions;
         public bool RazoGift
         {
             get { return this.razoGift; }
@@ -480,6 +504,26 @@ namespace MixItUp.Base.ViewModel.Overlay
                 this.NotifyPropertyChanged();
             }
         }
+        public string RazoSubscriptionsDetailsTemplate
+        {
+            get { return this.razoSubscriptionsDetailsTemplate; }
+            set
+            {
+                this.razoSubscriptionsDetailsTemplate = value;
+                this.NotifyPropertyChanged();
+            }
+        }
+        private string razoSubscriptionsDetailsTemplate;
+        public string JoystickSubscriptionsDetailsTemplate
+        {
+            get { return this.joystickSubscriptionsDetailsTemplate; }
+            set
+            {
+                this.joystickSubscriptionsDetailsTemplate = value;
+                this.NotifyPropertyChanged();
+            }
+        }
+        private string joystickSubscriptionsDetailsTemplate;
         public string RazoGiftDetailsTemplate
         {
             get { return this.razoGiftDetailsTemplate; }
@@ -670,6 +714,8 @@ namespace MixItUp.Base.ViewModel.Overlay
             this.VeloraCheeredDetailsTemplate = $"{{Amount}} {Resources.VeloraCheered}";
             this.VPZoneCheeredDetailsTemplate = $"{{Amount}} {Resources.VPZoneCheered}";
             this.JoystickTippedDetailsTemplate = $"{{Amount}} {Resources.JoystickTipped}";
+            this.RazoSubscriptionsDetailsTemplate = "{Event}";
+            this.JoystickSubscriptionsDetailsTemplate = "{Event}";
             this.RazoGiftDetailsTemplate = $"{{Amount}} {Resources.RazoGift}";
 
             this.VeloraSubscriptionsDetailsTemplate = $"{Resources.Subscribed} - {Resources.Tier} {{Tier}}";
@@ -738,10 +784,14 @@ namespace MixItUp.Base.ViewModel.Overlay
             this.VeloraCheered = item.VeloraCheered;
             this.VPZoneCheered = item.VPZoneCheered;
             this.JoystickTipped = item.JoystickTipped;
+            this.RazoSubscriptions = item.RazoSubscriptions;
+            this.JoystickSubscriptions = item.JoystickSubscriptions;
             this.RazoGift = item.RazoGift;
             this.VeloraCheeredDetailsTemplate = item.VeloraCheeredDetailsTemplate;
             this.VPZoneCheeredDetailsTemplate = item.VPZoneCheeredDetailsTemplate;
             this.JoystickTippedDetailsTemplate = item.JoystickTippedDetailsTemplate;
+            this.RazoSubscriptionsDetailsTemplate = item.RazoSubscriptionsDetailsTemplate;
+            this.JoystickSubscriptionsDetailsTemplate = item.JoystickSubscriptionsDetailsTemplate;
             this.RazoGiftDetailsTemplate = item.RazoGiftDetailsTemplate;
 
             this.VeloraSubscriptions = item.VeloraSubscriptions;
@@ -841,6 +891,11 @@ namespace MixItUp.Base.ViewModel.Overlay
                 {
                     eventList.OnVPZoneCheered(this, new VPZoneCheeredEventModel(ChannelSession.User, 100, "Great stream!"));
                 }
+                else if (type is OverlayEventListV3TestTypeEnum.JoystickSubscriptions or OverlayEventListV3TestTypeEnum.RazoSubscriptions)
+                {
+                    var platform = type == OverlayEventListV3TestTypeEnum.JoystickSubscriptions ? StreamingPlatformTypeEnum.Joystick : StreamingPlatformTypeEnum.Razo;
+                    eventList.OnSubscribe(this, new SubscriptionDetailsModel(platform, CommandParametersModel.GetDefaultTestUser(platform), months: 1));
+                }
                 else if (type == OverlayEventListV3TestTypeEnum.JoystickTipped)
                 {
                     eventList.OnJoystickTipped(this, new JoystickTippedEventModel(ChannelSession.User, 100, "Great stream!"));
@@ -902,10 +957,14 @@ namespace MixItUp.Base.ViewModel.Overlay
                 VeloraCheered = this.VeloraCheered,
                 VPZoneCheered = this.VPZoneCheered,
                 JoystickTipped = this.JoystickTipped,
+                RazoSubscriptions = this.RazoSubscriptions,
+                JoystickSubscriptions = this.JoystickSubscriptions,
                 RazoGift = this.RazoGift,
                 VeloraCheeredDetailsTemplate = this.VeloraCheeredDetailsTemplate,
                 VPZoneCheeredDetailsTemplate = this.VPZoneCheeredDetailsTemplate,
                 JoystickTippedDetailsTemplate = this.JoystickTippedDetailsTemplate,
+                RazoSubscriptionsDetailsTemplate = this.RazoSubscriptionsDetailsTemplate,
+                JoystickSubscriptionsDetailsTemplate = this.JoystickSubscriptionsDetailsTemplate,
                 RazoGiftDetailsTemplate = this.RazoGiftDetailsTemplate,
 
                 VeloraSubscriptions = this.VeloraSubscriptions,

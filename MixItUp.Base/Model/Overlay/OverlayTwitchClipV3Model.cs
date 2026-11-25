@@ -53,12 +53,10 @@ namespace MixItUp.Base.Model.Overlay
         [DataMember]
         public double Volume { get; set; }
 
-        [JsonIgnore]
-        public string ClipID { get; set; }
-        [JsonIgnore]
-        public float ClipDuration { get; set; }
-        [JsonIgnore]
-        public string ClipDirectLink { get; set; }
+        public const string ClipIDProperty = "ClipID";
+        public const string ClipDirectLinkProperty = "ClipDirectLink";
+
+        public bool SelectsRandomClip => this.ClipType == OverlayTwitchClipV3ClipType.RandomClip || this.ClipType == OverlayTwitchClipV3ClipType.RandomFeaturedClip;
 
         [JsonIgnore]
         public string ClipHeight { get { return (this.Height > 0) ? $"{this.Height}px" : "100%"; } }
@@ -70,23 +68,22 @@ namespace MixItUp.Base.Model.Overlay
         public override Dictionary<string, object> GetGenerationProperties()
         {
             Dictionary<string, object> properties = base.GetGenerationProperties();
-            properties[nameof(this.ClipID)] = this.ClipID;
-            properties[nameof(this.ClipDirectLink)] = this.ClipDirectLink;
             properties[nameof(this.Volume)] = this.Volume.ToInvariantNumberString();
             properties[nameof(this.ClipHeight)] = this.ClipHeight;
             properties[nameof(this.ClipWidth)] = this.ClipWidth;
             return properties;
         }
 
-        public async Task<bool> ProcessClip(CommandParametersModel parameters)
+        internal async Task<ClipModel> SelectClip(CommandParametersModel parameters)
         {
-            this.ClipID = null;
-            this.ClipDuration = 0;
-            this.ClipDirectLink = null;
-
             if (ServiceManager.Get<TwitchSession>().IsConnected)
             {
                 string clipReferenceID = await SpecialIdentifierStringBuilder.ProcessSpecialIdentifiers(this.ClipReferenceID, parameters);
+
+                if (this.SelectsRandomClip && !string.IsNullOrWhiteSpace(this.ClipReferenceID) && string.IsNullOrWhiteSpace(clipReferenceID))
+                {
+                    return null;
+                }
 
                 UserModel twitchUser = ServiceManager.Get<TwitchSession>().StreamerModel;
                 if (!string.IsNullOrEmpty(clipReferenceID))
@@ -99,13 +96,13 @@ namespace MixItUp.Base.Model.Overlay
                         {
                             // No valid user found, fail out and send an error message
                             await ServiceManager.Get<ChatService>().SendMessage(Resources.OverlayTwitchClipErrorUnableToFindValidClip, StreamingPlatformTypeEnum.Twitch);
-                            return false;
+                            return null;
                         }
                     }
                 }
 
                 ClipModel clip = null;
-                if (this.ClipType == OverlayTwitchClipV3ClipType.RandomClip || this.ClipType == OverlayTwitchClipV3ClipType.RandomFeaturedClip)
+                if (this.SelectsRandomClip)
                 {
                     bool featured = this.ClipType == OverlayTwitchClipV3ClipType.RandomFeaturedClip;
                     IEnumerable<ClipModel> clips = await ServiceManager.Get<TwitchSession>().StreamerService.GetClips(twitchUser, featured: featured, maxResults: 500);
@@ -166,23 +163,13 @@ namespace MixItUp.Base.Model.Overlay
                 {
                     // No valid clip found, fail out and send an error message
                     await ServiceManager.Get<ChatService>().SendMessage(Resources.OverlayTwitchClipErrorUnableToFindValidClip, StreamingPlatformTypeEnum.Twitch);
-                    return false;
+                    return null;
                 }
 
-                this.ClipID = clip.id;
-                this.ClipDuration = clip.duration;
-
-                this.ClipDirectLink = await ServiceManager.Get<MixItUpService>().GetTwitchClipUrl(clip.id);
-                if (!string.IsNullOrEmpty(this.ClipDirectLink))
-                {
-                    return true;
-                }
-
-                await ServiceManager.Get<ChatService>().SendMessage(Resources.OverlayTwitchClipErrorUnableToFindValidClip, StreamingPlatformTypeEnum.Twitch);
-                return false;
+                return clip;
             }
 
-            return false;
+            return null;
         }
     }
 }

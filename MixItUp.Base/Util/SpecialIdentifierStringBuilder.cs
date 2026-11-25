@@ -13,6 +13,7 @@ using MixItUp.Base.Model.Twitch.Games;
 using MixItUp.Base.Model.User;
 using MixItUp.Base.Model.User.Platform;
 using MixItUp.Base.Services;
+using MixItUp.Base.Services.AltStream;
 using MixItUp.Base.Services.External;
 using MixItUp.Base.Services.Kick.New;
 using MixItUp.Base.Services.Twitch.New;
@@ -20,6 +21,7 @@ using MixItUp.Base.Services.YouTube.New;
 using MixItUp.Base.ViewModel.User;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -1442,6 +1444,14 @@ namespace MixItUp.Base.Util
                 this.ReplaceSpecialIdentifier(identifierHeader + UserSpecialIdentifierHeader + "isregular", user.IsRegular.ToString());
                 this.ReplaceSpecialIdentifier(identifierHeader + UserSpecialIdentifierHeader + "issubscriber", user.IsPlatformSubscriber.ToString());
                 this.ReplaceSpecialIdentifier(identifierHeader + UserSpecialIdentifierHeader + "isvip", (user.HasRole(UserRoleEnum.TwitchVIP) || user.HasRole(UserRoleEnum.KickVIP) || user.HasRole(UserRoleEnum.VeloraVIP)).ToString());
+                string vipRemaining = identifierHeader + UserSpecialIdentifierHeader + "vipremainingseconds";
+                if (this.ContainsSpecialIdentifier(vipRemaining))
+                {
+                    string twitchID = user.Model.GetPlatformID(StreamingPlatformTypeEnum.Twitch);
+                    double seconds = twitchID != null && ChannelSession.Settings.TwitchVIPAutomaticRemovals.TryGetValue(twitchID, out DateTimeOffset expiry)
+                        ? Math.Max(0, Math.Ceiling((expiry - DateTimeOffset.Now).TotalSeconds)) : 0;
+                    this.ReplaceSpecialIdentifier(vipRemaining, seconds.ToString(CultureInfo.InvariantCulture));
+                }
                 this.ReplaceSpecialIdentifier(identifierHeader + UserSpecialIdentifierHeader + "ismod", user.MeetsRole(UserRoleEnum.Moderator).ToString());
                 this.ReplaceSpecialIdentifier(identifierHeader + UserSpecialIdentifierHeader + "isspecialtyexcluded", user.IsSpecialtyExcluded.ToString());
                 this.ReplaceSpecialIdentifier(identifierHeader + UserSpecialIdentifierHeader + "notes", user.Notes);
@@ -1572,6 +1582,16 @@ namespace MixItUp.Base.Util
                                 this.ReplaceSpecialIdentifier(userStreamHeader + "islive", (kChannel.Stream?.IsLive ?? false).ToString());
                             }
                         }
+                    }
+                    else if (user.Platform == StreamingPlatformTypeEnum.AltStream)
+                    {
+                        var channel = await ServiceManager.Get<AltStreamSession>().GetChannelDetails(user.Username);
+                        var stream = channel?.Stream;
+                        this.ReplaceSpecialIdentifier(userStreamHeader + "title", stream?.Title);
+                        this.ReplaceSpecialIdentifier(userStreamHeader + "gameimage", stream?.Game?.CoverUrl);
+                        this.ReplaceSpecialIdentifier(userStreamHeader + "gamename", stream?.Game?.Name);
+                        this.ReplaceSpecialIdentifier(userStreamHeader + "game", stream?.Game?.Name);
+                        this.ReplaceSpecialIdentifier(userStreamHeader + "islive", (stream?.IsLive ?? false).ToString());
                     }
                     else if (user.Platform == StreamingPlatformTypeEnum.Velora && ServiceManager.Get<MixItUp.Base.Services.Velora.New.VeloraSession>().IsConnected)
                     {

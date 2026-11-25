@@ -155,7 +155,7 @@ namespace MixItUp.Base.Services.External
         protected override Task<Result> InitializeInternal()
         {
             cancellationTokenSource = new CancellationTokenSource();
-            httpClient = new HttpClient(HttpConnectionFactory.CreateHandler())
+            httpClient = new HttpClient(HttpConnectionFactory.CreateRequestHandler())
             {
                 Timeout = Timeout.InfiniteTimeSpan
             };

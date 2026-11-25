@@ -3359,7 +3359,7 @@ Sobald der Vulkan Stufe 3 erreicht, hat jede nachfolgende Ablagerung die Chance,
     <value>Die Kombinationslänge muss größer als 0 sein</value>
   </data>
   <data name="GameCommandLockBoxFailureExample" xml:space="preserve">
-    <value>@$username wirft ihre Münzen hinein und versucht ihre Kombo $arg 1text... Aber die Box lässt sich nicht entriegeln. Ihre Vermutung war zu $gamelockboxhint.</value>
+    <value>@$username wirft ihre Münzen hinein und versucht ihre Kombo $arg1text... Aber die Box lässt sich nicht entriegeln. Ihre Vermutung war zu $gamelockboxhint.</value>
   </data>
   <data name="GameCommandLockBoxInspectionArgmentExample" xml:space="preserve">
     <value>Inspizieren</value>
@@ -3383,7 +3383,7 @@ Sobald der Vulkan Stufe 3 erreicht, hat jede nachfolgende Ablagerung die Chance,
     <value>Nach einem kurzen Schütteln der Schachtel schätzt man, dass etwa $gametotalamount {0} darin ist.</value>
   </data>
   <data name="GameCommandLockBoxSuccessfulExample" xml:space="preserve">
-    <value>@$username wirft ihre Münzen hinein und versucht ihre Kombo $arg 1text... und öffnet die Box! Sie rennen schnell mit dem $gamepayout {0} davon!</value>
+    <value>@$username wirft ihre Münzen hinein und versucht ihre Kombo $arg1text... und öffnet die Box! Sie rennen schnell mit dem $gamepayout {0} davon!</value>
   </data>
   <data name="GameCommandLowerTimeLimit" xml:space="preserve">
     <value>Unteres Zeitlimit</value>
@@ -3443,7 +3443,7 @@ Sobald der Vulkan Stufe 3 erreicht, hat jede nachfolgende Ablagerung die Chance,
     <value>Fehlgeschlagener Tipp</value>
   </data>
   <data name="GameCommandHangmanFailedGuessExample" xml:space="preserve">
-    <value>@$username wirft ihre Münzen in den Topf und rät "$arg 1text"... Aber es war falsch! $gamehangmancurrent</value>
+    <value>@$username wirft ihre Münzen in den Topf und rät "$arg1text"... Aber es war falsch! $gamehangmancurrent</value>
   </data>
   <data name="GameCommandHangmanGameLostExample" xml:space="preserve">
     <value>Das Spiel geht verloren, da es zu viele fehlgeschlagene Vermutungen gibt; Die richtige Antwort war "$gamehangmananswer". Da geht $gametotalamount {0}!</value>
@@ -3464,7 +3464,7 @@ Sobald der Vulkan Stufe 3 erreicht, hat jede nachfolgende Ablagerung die Chance,
     <value>Erfolgreiche Vermutung</value>
   </data>
   <data name="GameCommandHangmanSuccessfulGuessExample" xml:space="preserve">
-    <value>@$username wirft ihre Münzen in den Topf und rät $arg 1text... und macht es richtig! $gamehangmancurrent</value>
+    <value>@$username wirft ihre Münzen in den Topf und rät $arg1text... und macht es richtig! $gamehangmancurrent</value>
   </data>
   <data name="GameCommandHitmanAppearsExample" xml:space="preserve">
     <value>Es ist Auftragskiller $gamehitmanname! Schnell, tippe $gamehitmanname im Chat!</value>
@@ -7353,25 +7353,25 @@ Wir werden versuchen, sobald möglich, wieder Kontakt zum Dienst aufzunehmen. We
     <value>@$username hat ${0} {1}</value>
   </data>
   <data name="ConsumablesCurrencyRankAddAllCommandDefault" xml:space="preserve">
-    <value>Alle haben $arg 1 SMS {0}!</value>
+    <value>Alle haben $arg1text {0}!</value>
   </data>
   <data name="ConsumablesCurrencyRankAddCommandDefault" xml:space="preserve">
-    <value>@$targetusername erhielt $arg 2text {0}</value>
+    <value>@$targetusername erhielt $arg2text {0}</value>
   </data>
   <data name="ConsumablesCurrencyRankGiveCommandDefault" xml:space="preserve">
-    <value>@$username @$targetusername $arg 2text {0}</value>
+    <value>@$username gab @$targetusername $arg2text {0}</value>
   </data>
   <data name="ConsumablesRankCommandDefault" xml:space="preserve">
     <value>@$username ist ein ${0} mit ${1} {2}</value>
   </data>
   <data name="ConsumablesStreamPassAddAllCommandDefault" xml:space="preserve">
-    <value>Alle haben $arg 1 Textpunkte für {0} bekommen!</value>
+    <value>Alle haben $arg1text Punkte für {0} bekommen!</value>
   </data>
   <data name="ConsumablesStreamPassAddCommandDefault" xml:space="preserve">
-    <value>@$targetusername erhielt $arg 2 Textpunkte für {0}</value>
+    <value>@$targetusername erhielt $arg2text Punkte für {0}</value>
   </data>
   <data name="ConsumablesStreamPassCommandDefault" xml:space="preserve">
-    <value>@$username ist auf Level {0} $ mit {1} Punkten!</value>
+    <value>@$username ist auf Stufe ${0} mit ${1} Punkten!</value>
   </data>
   <data name="FailedToInitializeSession" xml:space="preserve">
     <value>Sitzung wurde nicht gestartet. Wenn das so weitergeht, besuchen Sie bitte den Mix It Up Discord für Unterstützung.</value>
@@ -10200,6 +10200,9 @@ Bitte gehen Sie auf die Seite Konten im Hauptmenü, um Ihr Streaming-Konto zu ve
   <data name="KickKicks" xml:space="preserve">
     <value>Kick Kicks</value>
   </data>
+  <data name="KickKicksGifted" xml:space="preserve">
+    <value>Verschenkte Kicks auf Kick</value>
+  </data>
   <data name="KickKicksCommandsAlreadyExistsDuplicateAmount" xml:space="preserve">
     <value>Es gibt bereits einen anderen Kick Kicks-Befehl mit der gleichen Menge/Bereich wie dieser Befehl.</value>
   </data>
@@ -10804,6 +10807,430 @@ Dies kann gemacht werden, indem Sie auf der Seite Channel Points in Mix It Up au
   <data name="ResetThemeAndFontSettingsConfirmation" xml:space="preserve">
     <value>Dadurch werden Farbschema, Hintergrund, Vordergrund, vollständiges Design, UI-Schriftart, Gesamtschriftgröße und Chatfenster-Schriftgröße auf die Standardwerte zurückgesetzt. Sind Sie sicher?</value>
     <comment>Confirmation prompt shown before resetting the Theme settings page</comment>
+  </data>
+  <data name="ChatUserList" xml:space="preserve">
+    <value>Nutzerliste im Chat</value>
+    <comment>Screen reader label for the user list beside the chat window</comment>
+  </data>
+  <data name="ResizeChatUserList" xml:space="preserve">
+    <value>Größe der Chat-Nutzerliste ändern</value>
+    <comment>Screen reader label for the splitter between the chat window and the user list</comment>
+  </data>
+  <data name="ShowHideChatActionButtons" xml:space="preserve">
+    <value>Chat-Aktionsschaltflächen ein- oder ausblenden</value>
+    <comment>Screen reader label for the small toggle that collapses the row of buttons above chat</comment>
+  </data>
+  <data name="UsernameSuggestions" xml:space="preserve">
+    <value>Vorschläge für Nutzernamen</value>
+    <comment>Screen reader label for the username suggestion list that opens while typing in chat</comment>
+  </data>
+  <data name="EmoteSuggestions" xml:space="preserve">
+    <value>Emote-Vorschläge</value>
+    <comment>Screen reader label for the emote suggestion list that opens while typing in chat</comment>
+  </data>
+  <data name="NavigationMenu" xml:space="preserve">
+    <value>Navigationsmenü</value>
+    <comment>Screen reader label for the main navigation menu and the button that opens it</comment>
+  </data>
+  <data name="CloseNavigationMenu" xml:space="preserve">
+    <value>Navigationsmenü schließen</value>
+    <comment>Screen reader label for the button that closes the navigation drawer</comment>
+  </data>
+  <data name="EditNavigationMenu" xml:space="preserve">
+    <value>Navigationsmenü bearbeiten</value>
+    <comment>Screen reader label for the toggle that switches the navigation menu into reorder and hide mode</comment>
+  </data>
+  <data name="ShowMenuItemFormat" xml:space="preserve">
+    <value>{0} anzeigen</value>
+    <comment>Format for the screen reader label on each navigation menu visibility checkbox, filled with the menu entry name</comment>
+  </data>
+  <data name="ConnectionLost" xml:space="preserve">
+    <value>Verbindung unterbrochen</value>
+    <comment>Screen reader label for the alert button shown when a platform connection drops</comment>
+  </data>
+  <data name="SourceCode" xml:space="preserve">
+    <value>Quellcode</value>
+    <comment>Screen reader label for links and buttons that open the project's source repository</comment>
+  </data>
+  <data name="Wiki" xml:space="preserve">
+    <value>Wiki</value>
+    <comment>Screen reader label for the button that opens the help wiki</comment>
+  </data>
+  <data name="EnableDisableFormat" xml:space="preserve">
+    <value>{0} aktivieren oder deaktivieren</value>
+    <comment>Format for the screen reader label on a per-item enable switch, filled with the item name</comment>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Alle auswählen</value>
+    <comment>Screen reader label for the checkbox in a table header that selects every row</comment>
+  </data>
+  <data name="OpenStream" xml:space="preserve">
+    <value>Stream öffnen</value>
+    <comment>Screen reader label for the button that opens a broadcast in the browser</comment>
+  </data>
+  <data name="GiveawayRequireClaim" xml:space="preserve">
+    <value>Gewinn muss eingefordert werden</value>
+    <comment>Screen reader label for the giveaway option that makes winners claim their prize in chat</comment>
+  </data>
+  <data name="GiveawayAllowPastWinners" xml:space="preserve">
+    <value>Frühere Gewinner zulassen</value>
+    <comment>Screen reader label for the giveaway option that lets previous winners enter again</comment>
+  </data>
+  <data name="UseCommunityBannedWordsList" xml:space="preserve">
+    <value>Sperrwortliste der Community verwenden</value>
+    <comment>Screen reader label for the moderation toggle that adopts the shared community banned word list</comment>
+  </data>
+  <data name="FilteredWords" xml:space="preserve">
+    <value>Gefilterte Wörter</value>
+    <comment>Screen reader label for the moderation box listing words to filter, one per line</comment>
+  </data>
+  <data name="MaxCapsType" xml:space="preserve">
+    <value>Zählweise für das Großbuchstabenlimit</value>
+    <comment>Screen reader label for the selector that chooses how the max caps limit is counted</comment>
+  </data>
+  <data name="MaxPunctuationSymbolsEmotes" xml:space="preserve">
+    <value>Höchstzahl an Satzzeichen, Symbolen und Emotes</value>
+    <comment>Screen reader label for the moderation limit on punctuation, symbols and emotes</comment>
+  </data>
+  <data name="MaxPunctuationSymbolsEmotesType" xml:space="preserve">
+    <value>Zählweise für das Limit an Satzzeichen, Symbolen und Emotes</value>
+    <comment>Screen reader label for the selector that chooses how the punctuation, symbols and emotes limit is counted</comment>
+  </data>
+  <data name="BlockLinks" xml:space="preserve">
+    <value>Links blockieren</value>
+    <comment>Screen reader label for the moderation toggle that blocks links in chat</comment>
+  </data>
+  <data name="MusicPlayerTrackPosition" xml:space="preserve">
+    <value>Wiedergabeposition</value>
+    <comment>Screen reader label for the music player scrubber</comment>
+  </data>
+  <data name="MusicPlayerPreviousTrack" xml:space="preserve">
+    <value>Vorheriger Titel</value>
+    <comment>Screen reader label for the music player previous track button</comment>
+  </data>
+  <data name="MusicPlayerPlayPause" xml:space="preserve">
+    <value>Wiedergabe/Pause</value>
+    <comment>Screen reader label for the music player play and pause button</comment>
+  </data>
+  <data name="MusicPlayerNextTrack" xml:space="preserve">
+    <value>Nächster Titel</value>
+    <comment>Screen reader label for the music player next track button</comment>
+  </data>
+  <data name="EnableQuotes" xml:space="preserve">
+    <value>Zitate aktivieren</value>
+    <comment>Screen reader label for the toggle that turns the quote system on</comment>
+  </data>
+  <data name="QuotesLatestAtTop" xml:space="preserve">
+    <value>Neueste Zitate zuerst anzeigen</value>
+    <comment>Screen reader label for the button that flips the quote list sort order</comment>
+  </data>
+  <data name="EnableRedemptionStore" xml:space="preserve">
+    <value>Einlösungsladen aktivieren</value>
+    <comment>Screen reader label for the toggle that turns the redemption store on</comment>
+  </data>
+  <data name="TimersRandomize" xml:space="preserve">
+    <value>Timer in zufälliger Reihenfolge ausführen</value>
+    <comment>Screen reader label for the toggle that randomises timer order</comment>
+  </data>
+  <data name="TimersDisableAll" xml:space="preserve">
+    <value>Alle Timer deaktivieren</value>
+    <comment>Screen reader label for the toggle that disables every timer</comment>
+  </data>
+  <data name="CommunityCommandsSeeMore" xml:space="preserve">
+    <value>Weitere Kommandos in dieser Kategorie anzeigen</value>
+    <comment>Screen reader label for the arrow that opens a full community command category</comment>
+  </data>
+  <data name="SearchResults" xml:space="preserve">
+    <value>Suchergebnisse</value>
+    <comment>Screen reader label for a list of search results</comment>
+  </data>
+  <data name="CommunityCommandsRatingsAndReviews" xml:space="preserve">
+    <value>Bewertungen und Rezensionen</value>
+    <comment>Screen reader label for the review list on a community command's detail page</comment>
+  </data>
+  <data name="ConditionalClauses" xml:space="preserve">
+    <value>Bedingungsklauseln</value>
+    <comment>Screen reader label for the list of clauses in a conditional action</comment>
+  </data>
+  <data name="OverlayHtml" xml:space="preserve">
+    <value>Overlay-HTML</value>
+    <comment>Screen reader label for the HTML editor on a custom overlay item</comment>
+  </data>
+  <data name="OverlayCss" xml:space="preserve">
+    <value>Overlay-CSS</value>
+    <comment>Screen reader label for the CSS editor on a custom overlay item</comment>
+  </data>
+  <data name="OverlayJavascript" xml:space="preserve">
+    <value>Overlay-JavaScript</value>
+    <comment>Screen reader label for the Javascript editor on a custom overlay item</comment>
+  </data>
+  <data name="Parameters" xml:space="preserve">
+    <value>Parameter</value>
+    <comment>Screen reader label for a list of parameters</comment>
+  </data>
+  <data name="Variables" xml:space="preserve">
+    <value>Variablen</value>
+    <comment>Screen reader label for a list of variables</comment>
+  </data>
+  <data name="RequestHeaders" xml:space="preserve">
+    <value>Anfrageheader</value>
+    <comment>Screen reader label for the header list on a web request action</comment>
+  </data>
+  <data name="JSONValues" xml:space="preserve">
+    <value>JSON-Werte</value>
+    <comment>Screen reader label for the list mapping JSON values to special identifiers</comment>
+  </data>
+  <data name="Bold" xml:space="preserve">
+    <value>Fett</value>
+    <comment>Screen reader label for the bold text style toggle</comment>
+  </data>
+  <data name="Italics" xml:space="preserve">
+    <value>Kursiv</value>
+    <comment>Screen reader label for the italic text style toggle</comment>
+  </data>
+  <data name="Underline" xml:space="preserve">
+    <value>Unterstrichen</value>
+    <comment>Screen reader label for the underline text style toggle</comment>
+  </data>
+  <data name="LeftAlignment" xml:space="preserve">
+    <value>Linksbündig ausrichten</value>
+    <comment>Screen reader label for the left text alignment toggle</comment>
+  </data>
+  <data name="CenterAlignment" xml:space="preserve">
+    <value>Zentrieren</value>
+    <comment>Screen reader label for the center text alignment toggle</comment>
+  </data>
+  <data name="RightAlignment" xml:space="preserve">
+    <value>Rechtsbündig ausrichten</value>
+    <comment>Screen reader label for the right text alignment toggle</comment>
+  </data>
+  <data name="JustifyAlignment" xml:space="preserve">
+    <value>Blocksatz</value>
+    <comment>Screen reader label for the justified text alignment toggle</comment>
+  </data>
+  <data name="FontStyle" xml:space="preserve">
+    <value>Schriftstil</value>
+    <comment>Screen reader label for the group of bold, italic and underline toggles</comment>
+  </data>
+  <data name="TextAlignment" xml:space="preserve">
+    <value>Textausrichtung</value>
+    <comment>Screen reader label for the group of text alignment toggles</comment>
+  </data>
+  <data name="Rating" xml:space="preserve">
+    <value>Bewertung</value>
+    <comment>Screen reader label for a star rating control</comment>
+  </data>
+  <data name="ResizePanels" xml:space="preserve">
+    <value>Größe der Bereiche ändern</value>
+    <comment>Screen reader label for the splitter between two resizable panels</comment>
+  </data>
+  <data name="Tags" xml:space="preserve">
+    <value>Tags</value>
+    <comment>Screen reader label for a list of channel tags</comment>
+  </data>
+  <data name="Answers" xml:space="preserve">
+    <value>Antworten</value>
+    <comment>Screen reader label for the list of answers on a trivia game</comment>
+  </data>
+  <data name="WordWrap" xml:space="preserve">
+    <value>Zeilenumbruch</value>
+    <comment>Screen reader label for the word wrap toggle in a code editor</comment>
+  </data>
+  <data name="ShowWhitespace" xml:space="preserve">
+    <value>Leerraumzeichen anzeigen</value>
+    <comment>Screen reader label for the whitespace toggle in a code editor</comment>
+  </data>
+  <data name="Metrics" xml:space="preserve">
+    <value>Messwerte</value>
+    <comment>Screen reader label for a list of user metrics</comment>
+  </data>
+  <data name="ColorHexValue" xml:space="preserve">
+    <value>Hexadezimalwert</value>
+    <comment>Screen reader label for the hex entry in the color picker</comment>
+  </data>
+  <data name="ScanForMissingFiles" xml:space="preserve">
+    <value>Nach fehlenden Dateien suchen</value>
+    <comment>Screen reader label for the button that starts the missing file scan</comment>
+  </data>
+  <data name="MissingFiles" xml:space="preserve">
+    <value>Fehlende Dateien</value>
+    <comment>Screen reader label for the table of missing files</comment>
+  </data>
+  <data name="Ranks" xml:space="preserve">
+    <value>Ränge</value>
+    <comment>Screen reader label for the list of ranks on a currency</comment>
+  </data>
+  <data name="InventoryItems" xml:space="preserve">
+    <value>Inventargegenstände</value>
+    <comment>Screen reader label for the list of items in an inventory</comment>
+  </data>
+  <data name="Prizes" xml:space="preserve">
+    <value>Preise</value>
+    <comment>Screen reader label for the list of prizes on a wheel</comment>
+  </data>
+  <data name="ContentClassificationLabels" xml:space="preserve">
+    <value>Inhaltskennzeichnungen</value>
+    <comment>Screen reader label for the list of Twitch content classification labels</comment>
+  </data>
+  <data name="ColorSpectrum" xml:space="preserve">
+    <value>Farbspektrum</value>
+    <comment>Screen reader label for the two-dimensional color picker</comment>
+  </data>
+  <data name="PickColor" xml:space="preserve">
+    <value>Farbe auswählen</value>
+    <comment>Screen reader label for the button that opens the color picker</comment>
+  </data>
+  <data name="ChatCommandTriggers" xml:space="preserve">
+    <value>Kommandoauslöser</value>
+    <comment>Screen reader label for the box listing a chat command's triggers</comment>
+  </data>
+  <data name="GoalSegments" xml:space="preserve">
+    <value>Zielabschnitte</value>
+    <comment>Screen reader label for the list of segments on a goal widget</comment>
+  </data>
+  <data name="EndCreditsSections" xml:space="preserve">
+    <value>Abspannabschnitte</value>
+    <comment>Screen reader label for the list of sections in the end credits widget</comment>
+  </data>
+  <data name="EventTypes" xml:space="preserve">
+    <value>Ereignistypen</value>
+    <comment>Screen reader label for the list of event types a widget reacts to</comment>
+  </data>
+  <data name="SimplePosition" xml:space="preserve">
+    <value>Einfache Positionierung</value>
+    <comment>Screen reader label for the grid of nine preset position buttons</comment>
+  </data>
+  <data name="TestParameterValue" xml:space="preserve">
+    <value>Testwert für den Parameter</value>
+    <comment>Screen reader label for a value entered when testing a command</comment>
+  </data>
+  <data name="ModifierShift" xml:space="preserve">
+    <value>Umschalttaste</value>
+    <comment>Screen reader label for the Shift modifier checkbox in the hotkey editor</comment>
+  </data>
+  <data name="ModifierControl" xml:space="preserve">
+    <value>Strg</value>
+    <comment>Screen reader label for the Ctrl modifier checkbox in the hotkey editor</comment>
+  </data>
+  <data name="ModifierAlt" xml:space="preserve">
+    <value>Alt</value>
+    <comment>Screen reader label for the Alt modifier checkbox in the hotkey editor</comment>
+  </data>
+  <data name="CommandGroups" xml:space="preserve">
+    <value>Kommandogruppen</value>
+    <comment>Screen reader label for the list of command groups on a commands screen</comment>
+  </data>
+  <data name="Categories" xml:space="preserve">
+    <value>Kategorien</value>
+    <comment>Screen reader label for a list of categories</comment>
+  </data>
+  <data name="Icons" xml:space="preserve">
+    <value>Symbole</value>
+    <comment>Screen reader label for the icon list on the icon map screen</comment>
+  </data>
+  <data name="IconAlternates" xml:space="preserve">
+    <value>Alternative Symbolnamen</value>
+    <comment>Screen reader label for the alternate icon names shown beside an icon</comment>
+  </data>
+  <data name="CurrenciesRanksAndInventories" xml:space="preserve">
+    <value>Währungen, Ränge und Inventare</value>
+    <comment>Screen reader label for the table listing every currency, rank and inventory</comment>
+  </data>
+  <data name="TestCommandFormat" xml:space="preserve">
+    <value>{0} testen</value>
+    <comment>Format for the screen reader label on a row's test button, filled with the command name</comment>
+  </data>
+  <data name="StopCommandFormat" xml:space="preserve">
+    <value>{0} stoppen</value>
+    <comment>Format for the screen reader label on a row's stop button, filled with the command name</comment>
+  </data>
+  <data name="EditCommandFormat" xml:space="preserve">
+    <value>{0} bearbeiten</value>
+    <comment>Format for the screen reader label on a row's edit button, filled with the item name</comment>
+  </data>
+  <data name="DeleteCommandFormat" xml:space="preserve">
+    <value>{0} löschen</value>
+    <comment>Format for the screen reader label on a row's delete button, filled with the item name</comment>
+  </data>
+  <data name="EnableDisableCommandFormat" xml:space="preserve">
+    <value>{0} aktivieren oder deaktivieren</value>
+    <comment>Format for the screen reader label on a row's enable switch, filled with the command name</comment>
+  </data>
+  <data name="CopyFormat" xml:space="preserve">
+    <value>{0} kopieren</value>
+    <comment>Format for the screen reader label on a row's copy button, filled with the item name</comment>
+  </data>
+  <data name="MoveUpFormat" xml:space="preserve">
+    <value>{0} nach oben verschieben</value>
+    <comment>Format for the screen reader label on a row's move up button, filled with the item name</comment>
+  </data>
+  <data name="MoveDownFormat" xml:space="preserve">
+    <value>{0} nach unten verschieben</value>
+    <comment>Format for the screen reader label on a row's move down button, filled with the item name</comment>
+  </data>
+  <data name="RemoveFormat" xml:space="preserve">
+    <value>{0} entfernen</value>
+    <comment>Format for the screen reader label on a row's remove button, filled with the item name</comment>
+  </data>
+  <data name="OpenFormat" xml:space="preserve">
+    <value>{0} öffnen</value>
+    <comment>Format for the screen reader label on a row's open button, filled with the item name</comment>
+  </data>
+  <data name="RaidFormat" xml:space="preserve">
+    <value>Raid auf {0} starten</value>
+    <comment>Format for the screen reader label on a row's raid button, filled with the channel name</comment>
+  </data>
+  <data name="CancelFormat" xml:space="preserve">
+    <value>{0} abbrechen</value>
+    <comment>Format for the screen reader label on a row's cancel button, filled with the command name</comment>
+  </data>
+  <data name="ReplayFormat" xml:space="preserve">
+    <value>{0} erneut abspielen</value>
+    <comment>Format for the screen reader label on a row's replay button, filled with the command name</comment>
+  </data>
+  <data name="SelectFormat" xml:space="preserve">
+    <value>{0} auswählen</value>
+    <comment>Format for the screen reader label on a row's selection checkbox, filled with the item name</comment>
+  </data>
+  <data name="RefundFormat" xml:space="preserve">
+    <value>{0} erstatten</value>
+    <comment>Format for the screen reader label on a row's refund button, filled with the product name</comment>
+  </data>
+  <data name="ManualRedeemFormat" xml:space="preserve">
+    <value>{0} manuell einlösen</value>
+    <comment>Format for the screen reader label on a row's manual redeem button, filled with the product name</comment>
+  </data>
+  <data name="ResetFormat" xml:space="preserve">
+    <value>{0} zurücksetzen</value>
+    <comment>Format for the screen reader label on a row's reset button, filled with the widget name</comment>
+  </data>
+  <data name="CopyLinkFormat" xml:space="preserve">
+    <value>Link für {0} kopieren</value>
+    <comment>Format for the screen reader label on a row's copy link button, filled with the widget name</comment>
+  </data>
+  <data name="SeeMoreCategoryFormat" xml:space="preserve">
+    <value>Weitere Kommandos für {0} anzeigen</value>
+    <comment>Format for the screen reader label on a category's see more arrow, filled with the category name</comment>
+  </data>
+  <data name="LaunchFormat" xml:space="preserve">
+    <value>{0} starten</value>
+    <comment>Format for the screen reader label on a row's launch button, filled with the endpoint name</comment>
+  </data>
+  <data name="EditDateFormat" xml:space="preserve">
+    <value>Datum für {0} bearbeiten</value>
+    <comment>Format for the screen reader label on a row's date button, filled with the quote text</comment>
+  </data>
+  <data name="EditTimeFormat" xml:space="preserve">
+    <value>Uhrzeit für {0} bearbeiten</value>
+    <comment>Format for the screen reader label on a row's time button, filled with the quote text</comment>
+  </data>
+  <data name="OptionalArgumentFormat" xml:space="preserve">
+    <value>{0} ist optional</value>
+    <comment>Format for the screen reader label on an argument row's optional checkbox, filled with the argument name</comment>
+  </data>
+  <data name="AnyOrderFormat" xml:space="preserve">
+    <value>Beliebige Reihenfolge für {0}</value>
+    <comment>Format for the screen reader label on a slot outcome's any order toggle, filled with the first symbol</comment>
   </data>
   <data name="Veadotube" xml:space="preserve">
     <value>veadotube</value>
@@ -11550,5 +11977,29 @@ Dies kann gemacht werden, indem Sie auf der Seite Channel Points in Mix It Up au
   </data>
   <data name="JoystickChatSendUnconfirmed" xml:space="preserve">
     <value>Joystick.tv hat die Zustellung der Chatnachricht nicht bestätigt.</value>
+  </data>
+  <data name="TwitchIgnoreRewardInputCommands" xml:space="preserve">
+    <value>Chat-Kommandos im Eingabefeld für Twitch-Kanalpunkte-Belohnungen ignorieren</value>
+  </data>
+  <data name="PasteAction" xml:space="preserve">
+    <value>Aktion einfügen</value>
+  </data>
+  <data name="OverlayChatTestMessage" xml:space="preserve">
+    <value>Hallo Welt! Dies ist eine Testnachricht von {0}.</value>
+  </data>
+  <data name="CopyActionFirst" xml:space="preserve">
+    <value>Zuerst eine Aktion aus einem Kommandoeditor kopieren.</value>
+  </data>
+  <data name="ExtendVIPRemoval" xml:space="preserve">
+    <value>Bestehende VIP-Dauer verlängern</value>
+  </data>
+  <data name="VIPTimeRemainingHelp" xml:space="preserve">
+    <value>$uservipremainingseconds gibt die verbleibenden Sekunden bis zum geplanten Entzug des Twitch-VIP-Status an. Ist kein Entzug geplant, ist der Wert 0.</value>
+  </data>
+  <data name="JoystickSubscriptions" xml:space="preserve">
+    <value>Joystick-Abonnements</value>
+  </data>
+  <data name="RazoSubscriptions" xml:space="preserve">
+    <value>Razo-Abonnements</value>
   </data>
 </root>

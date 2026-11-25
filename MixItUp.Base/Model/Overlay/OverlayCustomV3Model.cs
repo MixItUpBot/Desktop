@@ -109,6 +109,14 @@ namespace MixItUp.Base.Model.Overlay
             }
         }
 
+        public override async void OnSubscriptionsGiftedWithoutRecipients(UserV2ViewModel gifter, int count)
+        {
+            await this.CallFunction("MassSubscriptionGifted", new Dictionary<string, object>
+            {
+                ["Users"] = Array.Empty<UserV2ViewModel>(), ["Tier"] = string.Empty, ["Amount"] = count, ["Gifter"] = gifter
+            });
+        }
+
         public override async void OnMassSubscription(object sender, IEnumerable<SubscriptionDetailsModel> subscriptions)
         {
             List<SubscriptionDetailsModel> subscriptionList = subscriptions?.Where(s => s != null).ToList();

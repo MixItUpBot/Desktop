@@ -472,6 +472,23 @@
                     <TextBlock Grid.Row="2" Text="{Binding JoystickTippedEquation}" />
                 </Grid>
             </GroupBox>
+            <GroupBox Header="{x:Static resx:Resources.JoystickSubscriptions}" Grid.Row="20" Grid.Column="2">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBox Grid.Row="0" Text="{Binding JoystickSubscriptionAmount}" MaterialDesign:HintAssist.Hint="{x:Static resx:Resources.ProgressMultiplier}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" AutomationProperties.AutomationId="OverlayGoalV3.JoystickSubscriptionTextBox" AutomationProperties.Name="{x:Static resx:Resources.ProgressMultiplier}" />
+
+                    <TextBlock Grid.Row="2" Text="{Binding JoystickSubscriptionEquation}" />
+                </Grid>
+            </GroupBox>
+
             <GroupBox Header="{x:Static resx:Resources.RazoGift}" Grid.Row="22" Grid.Column="0">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -488,7 +505,7 @@
                     <TextBlock Grid.Row="2" Text="{Binding RazoGiftEquation}" />
                 </Grid>
             </GroupBox>
-            <GroupBox Header="{x:Static resx:Resources.RazoGiftedSubscriptions}" Grid.Row="22" Grid.Column="2">
+            <GroupBox Header="{x:Static resx:Resources.RazoSubscriptions}" Grid.Row="22" Grid.Column="2">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />

@@ -14,6 +14,7 @@ using MixItUp.Base.Services.Razo;
 using MixItUp.Base.Services.YouTube.New;
 using MixItUp.Base.Util;
 using MixItUp.Base.ViewModel.Chat;
+using MixItUp.Base.ViewModel.Chat.Twitch;
 using MixItUp.Base.ViewModel.Chat.YouTube;
 using MixItUp.Base.ViewModel.User;
 using System;
@@ -302,7 +303,8 @@ namespace MixItUp.Base.Services
             int deleted = 0;
             foreach (ChatMessageViewModel message in this.Messages.ToList())
             {
-                if (message.User != null && message.User.ID == user.ID && !message.IsDeleted)
+                if (message.User != null && message.User.ID == user.ID && !message.IsDeleted &&
+                    (!StreamingPlatforms.IsValidPlatform(user.Platform) || message.Platform == user.Platform))
                 {
                     await message.Delete(moderator, reason, triggerEventCommand: false);
 
@@ -381,6 +383,8 @@ namespace MixItUp.Base.Services
 
         public async Task TimeoutUser(UserV2ViewModel user, int durationInSeconds, string reason = null)
         {
+            if (user.Platform is StreamingPlatformTypeEnum.Joystick or StreamingPlatformTypeEnum.Razo or StreamingPlatformTypeEnum.AltStream) { return; }
+
             if (user.Platform == StreamingPlatformTypeEnum.Twitch && ServiceManager.Get<TwitchSession>().IsConnected)
             {
                 await ServiceManager.Get<TwitchSession>().TimeoutUser(user, durationInSeconds, reason);
@@ -461,8 +465,17 @@ namespace MixItUp.Base.Services
 
         }
 
-        public async Task BanUser(UserV2ViewModel user, string reason = null)
+        public async Task BanUser(UserV2ViewModel user, string reason = null, string triggeringMessageID = null)
         {
+            if (user.Platform == StreamingPlatformTypeEnum.Joystick)
+            {
+                if (!string.IsNullOrEmpty(triggeringMessageID) && this.messagesLookup.TryGetValue(triggeringMessageID, out var message) &&
+                    message is JoystickChatMessage row && row.User?.ID == user.ID)
+                    await ServiceManager.Get<JoystickSession>().ModerateMessageAuthor(row, true);
+                return;
+            }
+            if (user.Platform is StreamingPlatformTypeEnum.Razo or StreamingPlatformTypeEnum.AltStream) { return; }
+
             if (user.Platform == StreamingPlatformTypeEnum.Twitch && ServiceManager.Get<TwitchSession>().IsConnected)
             {
                 await ServiceManager.Get<TwitchSession>().BanUser(user, reason);
@@ -589,7 +602,7 @@ namespace MixItUp.Base.Services
             try
             {
                 message.ProcessingStartTime = DateTimeOffset.Now;
-                Logger.Log(LogLevel.Debug, string.Format("Message Received - {0} - {1} - {2}", message.ID.ToString(), message.ProcessingStartTime, message));
+                Logger.Log(LogLevel.Debug, $"Message Received - {message.Platform} - {message.ID} - {message.ProcessingStartTime} - {message.LogDescription}");
 
                 // Pre message processing
 
@@ -629,7 +642,7 @@ namespace MixItUp.Base.Services
 
                 if (message.ProcessingTime > 1000)
                 {
-                    Logger.Log(LogLevel.Error, string.Format("Long processing time detected for the following message (AFTER USER ADD/UPDATE): {0} - {1} ms - {2}", message.ID.ToString(), message.ProcessingTime, message));
+                    Logger.Log(LogLevel.Error, string.Format("Long processing time detected for the following message (AFTER USER ADD/UPDATE): {0} - {1} ms - {2}", message.ID.ToString(), message.ProcessingTime, message.LogDescription));
                 }
 
                 // Add message to chat list
@@ -654,7 +667,7 @@ namespace MixItUp.Base.Services
 
                 if (message.ProcessingTime > 1000)
                 {
-                    Logger.Log(LogLevel.Error, string.Format("Long processing time detected for the following message (AFTER ALERTS): {0} - {1} ms - {2}", message.ID.ToString(), message.ProcessingTime, message));
+                    Logger.Log(LogLevel.Error, string.Format("Long processing time detected for the following message (AFTER ALERTS): {0} - {1} ms - {2}", message.ID.ToString(), message.ProcessingTime, message.LogDescription));
                 }
 
                 // Post message processing
@@ -665,7 +678,7 @@ namespace MixItUp.Base.Services
 
                     if (message.ProcessingTime > 1000)
                     {
-                        Logger.Log(LogLevel.Error, string.Format("Long processing time detected for the following message (AFTER USER REFRESH): {0} - {1} ms - {2}", message.ID.ToString(), message.ProcessingTime, message));
+                        Logger.Log(LogLevel.Error, string.Format("Long processing time detected for the following message (AFTER USER REFRESH): {0} - {1} ms - {2}", message.ID.ToString(), message.ProcessingTime, message.LogDescription));
                     }
 
                     if (message.IsWhisper)
@@ -695,7 +708,7 @@ namespace MixItUp.Base.Services
 
                         if (this.DisableChat)
                         {
-                            Logger.Log(LogLevel.Debug, string.Format("Deleting Message As Chat Disabled - {0} - {1}", message.ID, message));
+                            Logger.Log(LogLevel.Debug, string.Format("Deleting Message As Chat Disabled - {0} - {1}", message.ID, message.LogDescription));
                             await this.DeleteMessage(message);
                             return;
                         }
@@ -717,7 +730,7 @@ namespace MixItUp.Base.Services
 
                         if (message.ProcessingTime > 1000)
                         {
-                            Logger.Log(LogLevel.Error, string.Format("Long processing time detected for the following message (AFTER MODERATION/NOTIFICATIONS): {0} - {1} ms - {2}", message.ID.ToString(), message.ProcessingTime, message));
+                            Logger.Log(LogLevel.Error, string.Format("Long processing time detected for the following message (AFTER MODERATION/NOTIFICATIONS): {0} - {1} ms - {2}", message.ID.ToString(), message.ProcessingTime, message.LogDescription));
                         }
 
                         if (message.User.TotalChatMessageSent == 1)
@@ -762,7 +775,7 @@ namespace MixItUp.Base.Services
 
                         if (message.ProcessingTime > 1000)
                         {
-                            Logger.Log(LogLevel.Error, string.Format("Long processing time detected for the following message (AFTER EVENT COMMANDS): {0} - {1} ms - {2}", message.ID.ToString(), message.ProcessingTime, message));
+                            Logger.Log(LogLevel.Error, string.Format("Long processing time detected for the following message (AFTER EVENT COMMANDS): {0} - {1} ms - {2}", message.ID.ToString(), message.ProcessingTime, message.LogDescription));
                         }
                     }
 
@@ -772,7 +785,7 @@ namespace MixItUp.Base.Services
 
                     if (message.ProcessingTime > 1000)
                     {
-                        Logger.Log(LogLevel.Error, string.Format("Long processing time detected for the following message (AFTER CHAT MESSAGE GLOBAL EVENT): {0} - {1} ms - {2}", message.ID.ToString(), message.ProcessingTime, message));
+                        Logger.Log(LogLevel.Error, string.Format("Long processing time detected for the following message (AFTER CHAT MESSAGE GLOBAL EVENT): {0} - {1} ms - {2}", message.ID.ToString(), message.ProcessingTime, message.LogDescription));
                     }
 
                     IEnumerable<string> arguments = null;
@@ -785,6 +798,11 @@ namespace MixItUp.Base.Services
                             return;
                         }
 
+                        if (ChannelSession.Settings.TwitchIgnoreRewardInputCommands && message is TwitchChatMessageViewModel { IsCustomRewardInput: true })
+                        {
+                            return;
+                        }
+
                         if (ChannelSession.Settings.IgnoreBotAccountCommands && message.Platform != StreamingPlatformTypeEnum.None)
                         {
                             if (StreamingPlatforms.GetPlatformSession(message.Platform).IsBotUser(message.User))
@@ -793,7 +811,7 @@ namespace MixItUp.Base.Services
                             }
                         }
 
-                        Logger.Log(LogLevel.Debug, string.Format("Checking Message For Command - {0} - {1}", message.ID, message));
+                        Logger.Log(LogLevel.Debug, string.Format("Checking Message For Command - {0} - {1}", message.ID, message.LogDescription));
 
                         bool commandTriggered = false;
                         if (message.User.CustomCommandIDs.Count > 0)
@@ -858,7 +876,7 @@ namespace MixItUp.Base.Services
 
                         if (message.ProcessingTime > 1000)
                         {
-                            Logger.Log(LogLevel.Error, string.Format("Long processing time detected for the following message (AFTER CHAT COMMAND PROCESSING): {0} - {1} ms - {2}", message.ID.ToString(), message.ProcessingTime, message));
+                            Logger.Log(LogLevel.Error, string.Format("Long processing time detected for the following message (AFTER CHAT COMMAND PROCESSING): {0} - {1} ms - {2}", message.ID.ToString(), message.ProcessingTime, message.LogDescription));
                         }
                     }
 
@@ -890,7 +908,7 @@ namespace MixItUp.Base.Services
                 Logger.Log(LogLevel.Debug, string.Format("Message Processing Complete: {0} - {1} ms", message.ID, message.ProcessingTime));
                 if (message.ProcessingTime > 1000)
                 {
-                    Logger.Log(LogLevel.Error, string.Format("Long processing time detected for the following message: {0} - {1} ms - {2}", message.ID.ToString(), message.ProcessingTime, message));
+                    Logger.Log(LogLevel.Error, string.Format("Long processing time detected for the following message: {0} - {1} ms - {2}", message.ID.ToString(), message.ProcessingTime, message.LogDescription));
                 }
             }
             catch (Exception ex)
@@ -933,8 +951,8 @@ namespace MixItUp.Base.Services
             {
                 try
                 {
-                    prepend = prepend ?? string.Empty;
-                    await ServiceManager.Get<IFileService>().AppendFile(this.currentChatEventLogFilePath, string.Format($"{prepend}{message} ({DateTime.Now.ToString("HH:mm", CultureInfo.InvariantCulture)})" + Environment.NewLine));
+                    string timestamp = DateTime.Now.ToString("HH:mm", CultureInfo.InvariantCulture);
+                    await ServiceManager.Get<IFileService>().AppendFile(this.currentChatEventLogFilePath, $"{prepend}{message.LogDescription} ({timestamp}){Environment.NewLine}");
                 }
                 catch (Exception) { }
             }
@@ -962,7 +980,7 @@ namespace MixItUp.Base.Services
 
         private async Task RunChatCommand(ChatMessageViewModel message, CommandModelBase command, IEnumerable<string> arguments)
         {
-            Logger.Log(LogLevel.Debug, string.Format("Command Found For Message - {0} - {1} - {2}", message.ID, message, command));
+            Logger.Log(LogLevel.Debug, string.Format("Command Found For Message - {0} - {1} - {2}", message.ID, message.LogDescription, command));
 
             CommandParametersModel parameters = new CommandParametersModel(message, arguments); // Overwrite arguments to account for variable argument length for commands
             await ServiceManager.Get<CommandService>().Queue(command, parameters);

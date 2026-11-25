@@ -15,6 +15,7 @@ namespace MixItUp.Base.Model.Actions
     [DataContract]
     public class OverlayActionModel : ActionModelBase
     {
+        public const string TwitchClipURLSpecialIdentifier = "twitchclipurl";
         public const string TwitchClipDurationSpecialIdentifier = "twitchclipduration";
 
         [DataMember]
@@ -293,18 +294,35 @@ namespace MixItUp.Base.Model.Actions
             }
             else
             {
+                var twitchClip = this.OverlayItemV3 as OverlayTwitchClipV3Model;
+                if (twitchClip?.SelectsRandomClip == true)
+                {
+                    parameters.SpecialIdentifiers[TwitchClipURLSpecialIdentifier] = string.Empty;
+                }
                 OverlayEndpointV3Service overlay = ServiceManager.Get<OverlayV3Service>().GetOverlayEndpointService(this.OverlayItemV3.OverlayEndpointID);
+                if (overlay == null && twitchClip?.SelectsRandomClip != true) { return; }
+
+                var clip = twitchClip == null ? null : await twitchClip.SelectClip(parameters);
+                if (twitchClip?.SelectsRandomClip == true && clip != null)
+                {
+                    parameters.SpecialIdentifiers[TwitchClipURLSpecialIdentifier] = clip.url ?? string.Empty;
+                }
+
                 if (overlay != null)
                 {
-                    if (this.OverlayItemV3 is OverlayTwitchClipV3Model)
+                    Dictionary<string, object> properties = this.OverlayItemV3.GetGenerationProperties();
+                    if (twitchClip != null)
                     {
-                        OverlayTwitchClipV3Model overlayTwitchClipItemV3 = (OverlayTwitchClipV3Model)this.OverlayItemV3;
-                        if (!await overlayTwitchClipItemV3.ProcessClip(parameters))
+                        if (clip == null) { return; }
+                        string playbackUrl = await ServiceManager.Get<MixItUpService>().GetTwitchClipUrl(clip.id);
+                        if (string.IsNullOrEmpty(playbackUrl))
                         {
+                            await ServiceManager.Get<ChatService>().SendMessage(Resources.OverlayTwitchClipErrorUnableToFindValidClip, StreamingPlatformTypeEnum.Twitch);
                             return;
                         }
-
-                        parameters.SpecialIdentifiers[TwitchClipDurationSpecialIdentifier] = overlayTwitchClipItemV3.ClipDuration.ToString(CultureInfo.InvariantCulture);
+                        properties[OverlayTwitchClipV3Model.ClipIDProperty] = clip.id;
+                        properties[OverlayTwitchClipV3Model.ClipDirectLinkProperty] = playbackUrl;
+                        parameters.SpecialIdentifiers[TwitchClipDurationSpecialIdentifier] = clip.duration.ToString(CultureInfo.InvariantCulture);
                     }
 
                     double.TryParse(await SpecialIdentifierStringBuilder.ProcessSpecialIdentifiers(this.Duration, parameters), NumberStyles.Any, CultureInfo.CurrentCulture, out double duration);
@@ -323,7 +341,6 @@ namespace MixItUp.Base.Model.Actions
                     iframeHTML = OverlayV3Service.ReplaceProperty(iframeHTML, nameof(this.OverlayItemV3.CSS), this.OverlayItemV3.CSS);
                     iframeHTML = OverlayV3Service.ReplaceProperty(iframeHTML, nameof(this.OverlayItemV3.Javascript), this.OverlayItemV3.GetJavascript());
 
-                    Dictionary<string, object> properties = this.OverlayItemV3.GetGenerationProperties();
                     await this.OverlayItemV3.ProcessAllGenerationProperties(properties, parameters);
 
                     Dictionary<string, object> animationProperties = new Dictionary<string, object>();

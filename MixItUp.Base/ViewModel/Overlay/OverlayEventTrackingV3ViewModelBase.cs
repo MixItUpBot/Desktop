@@ -274,9 +274,20 @@ namespace MixItUp.Base.ViewModel.Overlay
                 this.NotifyPropertyChanged(nameof(this.RazoSubscriptionEquation));
             }
         }
+        public double JoystickSubscriptionAmount
+        {
+            get { return this.joystickSubscriptionAmount; }
+            set
+            {
+                this.joystickSubscriptionAmount = value;
+                this.NotifyPropertyChanged();
+                this.NotifyPropertyChanged(nameof(this.JoystickSubscriptionEquation));
+            }
+        }
         private double vpzoneCheeredAmount;
         private double joystickTippedAmount;
         private double razoGiftAmount;
+        private double joystickSubscriptionAmount;
         private double razoSubscriptionAmount;
 
         public string VeloraCheeredEquation
@@ -317,7 +328,15 @@ namespace MixItUp.Base.ViewModel.Overlay
             get
             {
                 double total = this.RazoSubscriptionAmount * SampleIntegerAmount;
-                return $"{this.RazoSubscriptionAmount} * {SampleIntegerAmount} {Resources.RazoGiftedSubscriptions} = {total} {this.EquationUnits}";
+                return $"{this.RazoSubscriptionAmount} * {SampleIntegerAmount} {Resources.RazoSubscriptions} = {total} {this.EquationUnits}";
+            }
+        }
+        public string JoystickSubscriptionEquation
+        {
+            get
+            {
+                double total = this.JoystickSubscriptionAmount * SampleIntegerAmount;
+                return $"{this.JoystickSubscriptionAmount} * {SampleIntegerAmount} {Resources.JoystickSubscriptions} = {total} {this.EquationUnits}";
             }
         }
 
@@ -401,6 +420,7 @@ namespace MixItUp.Base.ViewModel.Overlay
             this.JoystickTippedAmount = item.JoystickTippedAmount;
             this.RazoGiftAmount = item.RazoGiftAmount;
             this.RazoSubscriptionAmount = item.RazoSubscriptionAmount;
+            this.JoystickSubscriptionAmount = item.JoystickSubscriptionAmount;
 
             this.DonationAmount = item.DonationAmount;
 
@@ -447,6 +467,7 @@ namespace MixItUp.Base.ViewModel.Overlay
             result.JoystickTippedAmount = this.JoystickTippedAmount;
             result.RazoGiftAmount = this.RazoGiftAmount;
             result.RazoSubscriptionAmount = this.RazoSubscriptionAmount;
+            result.JoystickSubscriptionAmount = this.JoystickSubscriptionAmount;
 
             result.DonationAmount = this.DonationAmount;
         }

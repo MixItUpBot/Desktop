@@ -20,6 +20,7 @@ namespace MixItUp.Base.Model.Twitch.EventSub
         cheermote,
         emote,
         mention,
+        gif,
     }
 
     public class ChatMessageNotification
@@ -60,6 +61,7 @@ namespace MixItUp.Base.Model.Twitch.EventSub
         public string text { get; set; }
         public ChatMessageNotificationFragmentCheermote cheermote { get; set; }
         public ChatMessageNotificationFragmentEmote emote { get; set; }
+        public ChatMessageNotificationFragmentGif gif { get; set; }
         public ChatMessageNotificationFragmentMention mention { get; set; }
 
         [JsonProperty("typeenum")]
@@ -82,6 +84,12 @@ namespace MixItUp.Base.Model.Twitch.EventSub
 
         public bool HasStatic { get { return this.format.Contains("static"); } }
         public bool HasAnimated { get { return this.format.Contains("animated"); } }
+    }
+
+    public class ChatMessageNotificationFragmentGif
+    {
+        public string gif_id { get; set; }
+        public string url { get; set; }
     }
 
     public class ChatMessageNotificationFragmentMention

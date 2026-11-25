@@ -108,6 +108,7 @@ namespace MixItUp.Base.Services.VPZone.New
                 {
                     this.lastFrameReceived = DateTimeOffset.Now;
                     this.SetChatSocketActive(true);
+                    Logger.Log(LogLevel.Debug, $"VPZone {(this.processIncomingEvents ? "streamer" : "bot")} chat gateway connected for {channelSlug}.");
                     return new Result();
                 }
 
@@ -181,6 +182,7 @@ namespace MixItUp.Base.Services.VPZone.New
                 ReplyTo = string.IsNullOrWhiteSpace(replyToMessageID) ? null : replyToMessageID,
             };
 
+            Logger.Log(LogLevel.Debug, $"VPZone chat send requested (nonce: {frame.Nonce}).");
             await this.Send(JsonConvert.SerializeObject(frame));
             return frame.Nonce;
         }
@@ -211,7 +213,12 @@ namespace MixItUp.Base.Services.VPZone.New
 
                 // Error frames are addressed to this connection alone and report why its own send was
                 // rejected, so they matter on the bot's send-only socket too.
-                if (string.Equals(frame.Type, VPZoneFrameTypes.Error, StringComparison.OrdinalIgnoreCase))
+                bool isError = string.Equals(frame.Type, VPZoneFrameTypes.Error, StringComparison.OrdinalIgnoreCase);
+                if (Logger.Level == LogLevel.Debug && (this.processIncomingEvents || isError))
+                {
+                    Logger.Log(LogLevel.Debug, $"VPZone {(this.processIncomingEvents ? "streamer" : "bot")} gateway event received: {packet}");
+                }
+                if (isError)
                 {
                     this.RecordBanExpiry(frame);
                     await this.dispatch.HandleErrorFrame(frame);

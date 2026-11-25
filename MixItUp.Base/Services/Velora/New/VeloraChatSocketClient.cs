@@ -349,6 +349,10 @@ namespace MixItUp.Base.Services.Velora.New
         {
             // commandResult reports whether a sendMessage / slash command succeeded; log rejections so a
             // blocked message (unverified bot email, sub-only mode, blacklist, ...) is diagnosable.
+            if (Logger.Level == LogLevel.Debug)
+            {
+                Logger.Log(LogLevel.Debug, $"Velora commandResult: {payload.ToString(Newtonsoft.Json.Formatting.None)}");
+            }
             bool success = payload.GetValueOrDefault<bool>("success", true);
             if (!success)
             {

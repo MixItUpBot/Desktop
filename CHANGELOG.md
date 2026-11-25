@@ -1,5 +1,55 @@
 # Mix It Up Desktop Changelog
 
+## 1.8.241 (HOTFIX)
+
+Release Date: 2026-11-24
+
+### FIXES
+
+- Fixed `$userstreamgame`, `$userstreamgamename`, `$userstreamgameimage`, `$userstreamtitle`, and `$userstreamislive` for AltStream viewers.
+  - Shoutouts and command arguments now use the target viewer's own stream details for identifiers such as `$targetuserstreamgame` and `$arg1userstreamtitle`.
+- Added a few missing translations in Desktop and the Error Reporter resource files
+
+## 1.8.240
+
+Release Date: 2026-11-24
+
+### FEATURES
+
+- Copy and paste actions between command editors, including groups with all their actions and settings.
+- In `Settings -> Commands`, you can ignore chat commands in Twitch Channel Points reward input while still running the reward command.
+- Use `$twitchclipurl` in a later `Specific Clip` action to show the same random Twitch clip across multiple overlay layouts.
+  - `Random Clip` and `Random Featured Clip` can select from your channel or a target user's channel. `$twitchclipurl` is empty if no clip is found.
+- Add `Extend existing VIP time` to timed Twitch VIP actions.
+  - `$uservipremainingseconds`, `$targetuservipremainingseconds`, and `$arg1uservipremainingseconds` give the seconds until scheduled VIP removal, or `0` when no time remains.
+- Choose one enabled platform in the Chat Widget's `Test` dialog to preview a message from that platform.
+- Mute or ban a Joystick.tv viewer from their channel chat message when you have moderation permission.
+- Show Joystick.tv and Razo subscriptions and gift subs in the Event List. Joystick.tv subscriptions can also count toward Goal, Persistent Timer, and Stream Boss widgets.
+
+### FIXES
+
+- Fixed an issue that could leave the Tiltify campaign list empty after reconnecting or restarting Mix It Up.
+- Fixed Twitch subscriber GIFs missing from the Chat Widget, including messages containing only a GIF.
+- Fixed Joystick.tv whispers appearing in the Chat Widget when the recipient was unknown.
+- Joystick.tv chat now uses the original message timestamp.
+- Custom Chat Widgets can recognize highlighted Joystick.tv messages with `IsHighlightedMessage`.
+- Chat Widgets saved with every platform unchecked now keep that selection when reopened.
+- Fixed bans and timeouts removing another platform's messages from the default Chat Widget when viewers shared a username.
+- Joystick.tv and Razo follows now update latest-follower identifiers such as `$latestfolloweruserdisplayname`. 
+- Joystick.tv subscriptions also update `$latestsubscriberuserdisplayname` and `$latestsubscribersubmonths`.
+- Joystick.tv gifted subscriptions with named recipients now follow your mass-gift threshold. Mass gifts report `$subsgiftedamount` and `$subsgiftedlifetimeamount`.
+- Joystick.tv and Razo gift subs now count in overlays even when the platform supplies only the number of gifts.
+- Fixed Twitch VIP status and `$userisvip` changing when Twitch rejected a grant or removal. Mix It Up now retries failed scheduled removals.
+- Sound actions now fall back to the Windows default output if the selected device becomes unavailable at playback.
+
+### PERFORMANCE & GENERAL IMPROVEMENTS
+
+- Expanded diagnostic logging for platform connections, chat messages, events, and API requests.
+  - Razo chat logs record the sender, timestamp, and message ID.
+- Desktop web requests now send the Mix It Up name and version by default. Custom `User-Agent` headers take precedence.
+- AltStream and Razo raid tests now include viewer counts. 
+- Razo event tests also populate subscription, gift, boost, and clip details.
+
 ## 1.8.231 (HOTFIX)
 
 Release Date: 2026-11-22

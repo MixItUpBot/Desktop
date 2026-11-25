@@ -413,8 +413,8 @@ namespace MixItUp.Base.Services
         public static event EventHandler<JoystickTippedEventModel> OnJoystickChannelTippedOccurred = delegate { };
         public static event EventHandler<RazoGiftEventModel> OnRazoChannelGiftOccurred = delegate { };
         public static void JoystickChannelTippedOccurred(JoystickTippedEventModel cheered) { OnJoystickChannelTippedOccurred(null, cheered); }
-        public static event Action<UserV2ViewModel, int> RazoSubscriptionsGifted = delegate { };
-        public static void NotifyRazoSubscriptionsGifted(UserV2ViewModel user, int count) => RazoSubscriptionsGifted(user, count);
+        public static event Action<UserV2ViewModel, int> SubscriptionsGiftedWithoutRecipients = delegate { };
+        public static void NotifySubscriptionsGiftedWithoutRecipients(UserV2ViewModel user, int count) => SubscriptionsGiftedWithoutRecipients(user, count);
 
         public static void RazoChannelGiftOccurred(RazoGiftEventModel cheered) { OnRazoChannelGiftOccurred(null, cheered); }
 
@@ -582,7 +582,7 @@ namespace MixItUp.Base.Services
                     EventCommandModel command = this.GetEventCommand(type);
                     if (command != null)
                     {
-                        Logger.Log(LogLevel.Debug, $"Performing platform event trigger: {type}");
+                        Logger.Log(LogLevel.Debug, $"Performing platform event trigger: {type} ({parameters.Platform}, user: {user?.ID})");
                         await ServiceManager.Get<CommandService>().Queue(command, parameters);
                     }
 
@@ -664,7 +664,7 @@ namespace MixItUp.Base.Services
 
                     if (genericCommand != null)
                     {
-                        Logger.Log(LogLevel.Debug, $"Performing generic event trigger: {genericCommand.EventType}");
+                        Logger.Log(LogLevel.Debug, $"Performing generic event trigger: {genericCommand.EventType} ({parameters.Platform}, user: {user?.ID})");
                         await ServiceManager.Get<CommandService>().Queue(genericCommand, parameters);
                     }
 

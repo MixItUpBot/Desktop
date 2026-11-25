@@ -6,14 +6,13 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
 	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	<SelfContained>true</SelfContained>
-    <RuntimeFrameworkVersion>8.0.32</RuntimeFrameworkVersion>
     <OutputType>WinExe</OutputType>
     <AssemblyName>MixItUp</AssemblyName>
     <AssemblyTitle>MixItUp.Client</AssemblyTitle>
     <Company>Blazing Cacti LLC</Company>
 		<Copyright>Copyright © 2026 Blazing Cacti LLC, All Rights Reserved.</Copyright>
-    <AssemblyVersion>1.8.231.0</AssemblyVersion>
-    <FileVersion>1.8.231.0</FileVersion>
+    <AssemblyVersion>1.8.241.0</AssemblyVersion>
+    <FileVersion>1.8.241.0</FileVersion>
 		<Version>1.8.210</Version>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>

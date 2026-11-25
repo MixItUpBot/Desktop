@@ -34,6 +34,12 @@ namespace MixItUp.Base.Util
             }
             string stock = current.Replace("\r\n", "\n");
             string saved = javascript?.Replace("\r\n", "\n");
+            if (type == OverlayItemV3Type.Chat && saved != null && saved != stock)
+            {
+                // The two shipped username-only removal scripts predate platform-scoped moderation.
+                string hash = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(saved)));
+                if (hash == "F9BF0357BF78C991C26FF1438DF27A53A84BF43494FFF070BFA840663F70E3D8" || hash == "C10DCAEC3E8933F777AA416E7C6214A83D3B4CE73DA8D040994C87473FA7C5E2") { return current; }
+            }
             if (type == OverlayItemV3Type.Goal)
             {
                 stock = stock.Replace("    if (data.GoalEnd !== undefined) { goalEnd.textContent = data.GoalEnd; }\n", string.Empty);

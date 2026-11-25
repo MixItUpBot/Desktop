@@ -26,8 +26,8 @@ namespace MixItUp.Base.Services.Razo
     public class RazoSession : ChannelChatSessionBase
     {
         private static readonly Uri gateway = new Uri("wss://razo.tv/api/bot/v1/events");
-        private static readonly HttpMessageInvoker transport = new HttpMessageInvoker(HttpConnectionFactory.CreateHandler(false));
-        private static readonly HttpClient sharedClient = new HttpClient(HttpConnectionFactory.CreateHandler(false))
+        private static readonly HttpMessageInvoker transport = new HttpMessageInvoker(HttpConnectionFactory.CreateRequestHandler(false));
+        private static readonly HttpClient sharedClient = new HttpClient(HttpConnectionFactory.CreateRequestHandler(false))
         {
             BaseAddress = new Uri("https://razo.tv/api/bot/v1/"), Timeout = TimeSpan.FromSeconds(10)
         };
@@ -90,6 +90,7 @@ namespace MixItUp.Base.Services.Razo
                     this.retryAt = DateTimeOffset.UtcNow.AddSeconds(seconds);
                 }
                 var close = (int?)socket.CloseStatus;
+                Logger.Log(LogLevel.Debug, $"Razo event feed handshake failed (HTTP status: {(int)status}, close code: {close}).");
                 socket.Dispose();
                 if (close == 4001) throw new HttpRequestException("Razo token revoked", null, HttpStatusCode.Unauthorized);
                 if (status == HttpStatusCode.Unauthorized || status == HttpStatusCode.Forbidden)
@@ -123,20 +124,29 @@ namespace MixItUp.Base.Services.Razo
                     this.BotID = RazoUserPlatformV2Model.GetUserID(this.BotUsername);
                     this.IsConnected = true;
                     this.IsBotConnected = this.scopes.Contains("chat:write");
+                    Logger.Log(LogLevel.Debug, $"Razo event feed connected for {channel} (scopes: {string.Join(", ", this.scopes)}).");
                     this.ChannelLink = "https://razo.tv/watch/" + Uri.EscapeDataString(channel);
                     if (this.scopes.Contains("stream:read")) await this.RefreshDetails();
                     while (await Read(connection.socket, cancel) is JObject frame)
                     {
                         if (!(frame["data"] is JObject data)) continue;
                         string type = frame.Value<string>("type");
-                        if (type == null || !this.scopes.Contains(EventScope(type)) ||
-                            (data.Value<string>("channel") is string other && !string.Equals(other, channel, StringComparison.OrdinalIgnoreCase))) continue;
+                        if (type == null || !this.scopes.Contains(EventScope(type)))
+                        {
+                            Logger.Log(LogLevel.Debug, $"Skipping unsupported or unpermitted Razo event: {type}");
+                            continue;
+                        }
+                        if (data.Value<string>("channel") is string other && !string.Equals(other, channel, StringComparison.OrdinalIgnoreCase)) continue;
                         string id = data.Value<string>("id");
                         if (type == "follow.new") id = data.Value<string>("username") + ":" + data.Value<string>("followed_at");
                         if (id != null)
                         {
                             string key = (type == "chat.command" ? "chat.message" : type) + ":" + id;
-                            if (!seen.Add(key)) continue;
+                            if (!seen.Add(key))
+                            {
+                                Logger.Log(LogLevel.Debug, $"Skipping duplicate Razo event: {type} ({id})");
+                                continue;
+                            }
                             order.Enqueue(key);
                             if (order.Count > 4096) seen.Remove(order.Dequeue());
                         }
@@ -164,7 +174,9 @@ namespace MixItUp.Base.Services.Razo
                 }
                 var backoff = TimeSpan.FromSeconds(Math.Max(6, delay));
                 var providerDelay = this.retryAt - DateTimeOffset.UtcNow;
-                await Task.Delay(backoff > providerDelay ? backoff : providerDelay, cancel);
+                TimeSpan retryDelay = backoff > providerDelay ? backoff : providerDelay;
+                Logger.Log(LogLevel.Debug, $"Razo event feed reconnecting in {retryDelay.TotalSeconds:0} seconds.");
+                await Task.Delay(retryDelay, cancel);
                 delay = Math.Min(60, delay * 2);
             }
         }
@@ -185,7 +197,10 @@ namespace MixItUp.Base.Services.Razo
             using var request = new HttpRequestMessage(method, path);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             if (body != null) request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
+            string endpoint = path.Split('?')[0];
+            Logger.Log(LogLevel.Debug, $"Razo API request: {method} {endpoint}");
             using var response = await this.client.SendAsync(request);
+            Logger.Log(LogLevel.Debug, $"Razo API response: {method} {endpoint} ({(int)response.StatusCode})");
             if (response.StatusCode == HttpStatusCode.TooManyRequests)
                 this.retryAt = response.Headers.RetryAfter?.Date ?? DateTimeOffset.UtcNow.Add(response.Headers.RetryAfter?.Delta ?? TimeSpan.FromMinutes(1));
             if (response.StatusCode == HttpStatusCode.Unauthorized) await this.RejectActiveToken(token);
@@ -260,6 +275,14 @@ namespace MixItUp.Base.Services.Razo
 
         private async Task Handle(string type, JObject data)
         {
+            if (Logger.Level == LogLevel.Debug)
+            {
+                // Razo requires deleted chat text to be removed from stored copies.
+                string details = type is "chat.message" or "chat.command" or "chat.deleted"
+                    ? $"id={data["id"] ?? data["message_id"]}, username={data["username"]}, sent_at={data["sent_at"]}"
+                    : data.ToString(Formatting.None);
+                Logger.Log(LogLevel.Debug, $"Razo event received: {type} - {details}");
+            }
             var chat = ServiceManager.Get<ChatService>();
             if (type == "chat.deleted")
             {
@@ -280,16 +303,21 @@ namespace MixItUp.Base.Services.Razo
                     model.FollowDate = data["followed_at"]?.ToObject<DateTimeOffset?>() ?? DateTimeOffset.Now;
                     model.Roles.Add(UserRoleEnum.Follower);
                     if (await ServiceManager.Get<EventService>().PerformEvent(EventTypeEnum.RazoChannelFollowed, new CommandParametersModel(user, this.Platform)))
+                    {
+                        ChannelSession.Settings.LatestSpecialIdentifiersData[SpecialIdentifierStringBuilder.LatestFollowerUserData] = user.ID;
                         EventService.FollowOccurred(user);
+                    }
                 }
                 else if (!string.IsNullOrWhiteSpace(data.Value<string>("id")))
                 {
                     model.DisplayName = author.DisplayName;
+                    if (!string.IsNullOrEmpty(author.AvatarLink)) model.AvatarLink = author.AvatarLink;
                     if (model.Roles.Contains(UserRoleEnum.Follower)) author.Roles.Add(UserRoleEnum.Follower);
                     model.Roles = author.Roles;
                     model.RoleBadgeLink = author.RoleBadgeLink;
                     model.SubscriberBadgeLink = author.SubscriberBadgeLink;
                     model.SpecialtyBadgeLink = author.SpecialtyBadgeLink;
+                    user.RefreshCachedProperties();
                     var row = new RazoChatMessage(this.ChannelID, data, user);
                     await chat.AddMessage(row);
                 }
@@ -329,7 +357,7 @@ namespace MixItUp.Base.Services.Razo
                         parameters.HasNoTarget = true;
                         parameters.SpecialIdentifiers["subsgiftedamount"] = count.ToString();
                         if (await events.PerformEvent(EventTypeEnum.RazoChannelMassSubscriptionsGifted, parameters))
-                            EventService.NotifyRazoSubscriptionsGifted(actor, count);
+                            EventService.NotifySubscriptionsGiftedWithoutRecipients(actor, count);
                     }
                     break;
                 case "raid.incoming":

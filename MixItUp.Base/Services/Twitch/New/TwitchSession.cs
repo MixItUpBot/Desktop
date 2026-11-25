@@ -138,6 +138,7 @@ namespace MixItUp.Base.Services.Twitch.New
         public TwitchService StreamerService { get; private set; } = new TwitchService(StreamerScopes);
         public TwitchService BotService { get; private set; } = new TwitchService(BotScopes, isBotService: true);
 
+        private readonly SemaphoreSlim vipUpdateLock = new SemaphoreSlim(1, 1);
         private readonly object sharedChatLock = new object();
         private string sharedChatSessionID;
         private int sharedChatRevision;
@@ -507,19 +508,12 @@ namespace MixItUp.Base.Services.Twitch.New
                 }
             }
 
-            foreach (var key in ChannelSession.Settings.TwitchVIPAutomaticRemovals.Keys.ToList())
+            foreach (var removal in ChannelSession.Settings.TwitchVIPAutomaticRemovals)
             {
-                if (ChannelSession.Settings.TwitchVIPAutomaticRemovals.TryGetValue(key, out DateTimeOffset removalTime) && removalTime < DateTimeOffset.Now)
+                if (removal.Value <= DateTimeOffset.Now)
                 {
-                    ChannelSession.Settings.TwitchVIPAutomaticRemovals.Remove(key);
-
-                    await this.StreamerService.UnVIPUser(this.StreamerModel, key);
-
-                    UserV2ViewModel user = await ServiceManager.Get<UserService>().GetUserByPlatform(StreamingPlatformTypeEnum.Twitch, platformID: key);
-                    if (user != null)
-                    {
-                        user.Roles.Remove(UserRoleEnum.TwitchVIP);
-                    }
+                    var user = await ServiceManager.Get<UserService>().GetUserByPlatform(this.Platform, platformID: removal.Key);
+                    await this.UpdateVIP(removal.Key, user, false, expectedExpiry: removal.Value);
                 }
             }
 
@@ -651,20 +645,51 @@ namespace MixItUp.Base.Services.Twitch.New
             }
         }
 
-        public async Task VIPUser(UserV2ViewModel user)
+        public Task VIPUser(UserV2ViewModel user, DurationSpan duration = null, bool extend = false)
         {
-            if (!string.IsNullOrEmpty(user?.PlatformID))
-            {
-                await this.StreamerService.VIPUser(this.StreamerModel, user.PlatformID);
-            }
+            return this.UpdateVIP(user?.Model.GetPlatformID(this.Platform), user, true, duration, extend);
         }
 
-        public async Task UnVIPUser(UserV2ViewModel user)
+        public Task UnVIPUser(UserV2ViewModel user)
         {
-            if (!string.IsNullOrEmpty(user?.PlatformID))
+            return this.UpdateVIP(user?.Model.GetPlatformID(this.Platform), user, false);
+        }
+
+        private async Task UpdateVIP(string userID, UserV2ViewModel user, bool vip, DurationSpan duration = null, bool extend = false, DateTimeOffset? expectedExpiry = null)
+        {
+            if (string.IsNullOrEmpty(userID)) { return; }
+            var settings = ChannelSession.Settings;
+            var channel = this.StreamerModel;
+            await this.vipUpdateLock.WaitAsync();
+            try
             {
-                await this.StreamerService.UnVIPUser(this.StreamerModel, user.PlatformID);
+                var removals = settings.TwitchVIPAutomaticRemovals;
+                removals.TryGetValue(userID, out DateTimeOffset expiry);
+                if (settings != ChannelSession.Settings || channel == null || channel != this.StreamerModel ||
+                    (expectedExpiry.HasValue && expectedExpiry.Value != expiry) ||
+                    !await this.StreamerService.SetVIPStatus(channel, userID, vip))
+                {
+                    return;
+                }
+
+                var profile = user?.GetPlatformData<TwitchUserPlatformV2Model>(this.Platform);
+                if (vip) { profile?.Roles.Add(UserRoleEnum.TwitchVIP); }
+                else { profile?.Roles.Remove(UserRoleEnum.TwitchVIP); }
+                if (user?.Platform == this.Platform) { user.RefreshCachedProperties(); }
+                if (duration != null || (!vip && removals.ContainsKey(userID)))
+                {
+                    // Publish a snapshot so a simultaneous settings save or expiry scan can finish iterating.
+                    var updated = new Dictionary<string, DateTimeOffset>(removals);
+                    if (vip)
+                    {
+                        var now = DateTimeOffset.Now;
+                        updated[userID] = duration.GetDateTimeOffsetFrom(extend && expiry > now ? expiry : now);
+                    }
+                    else { updated.Remove(userID); }
+                    settings.TwitchVIPAutomaticRemovals = updated;
+                }
             }
+            finally { this.vipUpdateLock.Release(); }
         }
 
         public async Task Raid(string targetChannel)

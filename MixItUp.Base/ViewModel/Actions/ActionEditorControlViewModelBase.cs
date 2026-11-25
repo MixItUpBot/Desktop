@@ -27,6 +27,7 @@ namespace MixItUp.Base.ViewModel.Actions
         public ICommand PlayCommand { get; private set; }
         public ICommand MoveUpCommand { get; private set; }
         public ICommand MoveDownCommand { get; private set; }
+        public ICommand DuplicateCommand { get; private set; }
         public ICommand CopyCommand { get; private set; }
         public ICommand HelpCommand { get; private set; }
         public ICommand DeleteCommand { get; private set; }
@@ -211,6 +212,17 @@ namespace MixItUp.Base.ViewModel.Actions
             if (this.CopyCommand == null)
             {
                 this.CopyCommand = this.CreateCommand(async () =>
+                {
+                    if (this.actionEditorListControlViewModel != null)
+                    {
+                        await this.actionEditorListControlViewModel.CopyAction(this);
+                    }
+                });
+            }
+
+            if (this.DuplicateCommand == null)
+            {
+                this.DuplicateCommand = this.CreateCommand(async () =>
                 {
                     if (this.actionEditorListControlViewModel != null)
                     {

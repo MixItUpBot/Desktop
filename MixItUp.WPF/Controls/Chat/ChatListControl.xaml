@@ -25,6 +25,18 @@
                     Header="{x:Static resx:Resources.DeleteMessage}"
                     AutomationProperties.AutomationId="Chat.DeleteMessageMenuItem" />
                 <MenuItem
+                    x:Name="JoystickMuteMenuItem"
+                    Click="JoystickModerationMenuItem_Click"
+                    Header="{x:Static resx:Resources.Mute}"
+                    Visibility="Collapsed"
+                    AutomationProperties.AutomationId="Chat.JoystickMuteMenuItem" />
+                <MenuItem
+                    x:Name="JoystickBanMenuItem"
+                    Click="JoystickModerationMenuItem_Click"
+                    Header="{x:Static resx:Resources.BanUser}"
+                    Visibility="Collapsed"
+                    AutomationProperties.AutomationId="Chat.JoystickBanMenuItem" />
+                <MenuItem
                     x:Name="GoToLinkMenuItem"
                     Click="GoToLinkMenuItem_Click"
                     Header="{x:Static resx:Resources.GoToLink}"

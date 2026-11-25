@@ -553,7 +553,7 @@ namespace MixItUp.Base.Model.Overlay
             }
         }
 
-        public override void OnRazoSubscriptionsGifted(UserV2ViewModel gifter, int count)
+        public override void OnSubscriptionsGiftedWithoutRecipients(UserV2ViewModel gifter, int count)
         {
             foreach (var section in this.Sections.Where(s => s.Type == OverlayEndCreditsSectionV3Type.GiftedSubscriptions))
                 section.Track(gifter, count);

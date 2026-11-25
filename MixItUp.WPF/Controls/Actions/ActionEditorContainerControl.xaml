@@ -44,6 +44,8 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="5" />
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="5" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Column="0" Text="{Binding Name}" VerticalAlignment="Center" TextDecorations="{Binding Disabled, Converter={StaticResource StrikethroughConverter}}" Visibility="{Binding ShowNameTextBlock, Converter={StaticResource BooleanToVisibilityConverter}}" Foreground="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" Width="Auto"  />
@@ -56,13 +58,15 @@
                     <Controls:IconButton Grid.Column="4" Style="{StaticResource GroupBoxHeaderIconButton}" Command="{Binding MoveUpCommand}" Icon="arrow_upward" ToolTip="{x:Static resx:Resources.MoveUp}" AutomationProperties.AutomationId="ActionEditorContainer.MoveUpButton" AutomationProperties.Name="{x:Static resx:Resources.MoveUp}" />
                     <Controls:IconButton Grid.Column="6" Style="{StaticResource GroupBoxHeaderIconButton}" Command="{Binding MoveDownCommand}" Icon="arrow_downward" ToolTip="{x:Static resx:Resources.MoveDown}" AutomationProperties.AutomationId="ActionEditorContainer.MoveDownButton" AutomationProperties.Name="{x:Static resx:Resources.MoveDown}" />
 
-                    <Controls:IconButton Grid.Column="8" Style="{StaticResource GroupBoxHeaderIconButton}" Command="{Binding CopyCommand}" Icon="content_copy" ToolTip="{x:Static resx:Resources.Duplicate}" AutomationProperties.AutomationId="ActionEditorContainer.DuplicateButton" AutomationProperties.Name="{x:Static resx:Resources.Duplicate}" />
+                    <Controls:IconButton Grid.Column="8" Style="{StaticResource GroupBoxHeaderIconButton}" Command="{Binding DuplicateCommand}" Icon="library_add" ToolTip="{x:Static resx:Resources.Duplicate}" AutomationProperties.AutomationId="ActionEditorContainer.DuplicateButton" AutomationProperties.Name="{x:Static resx:Resources.Duplicate}" />
 
-                    <Controls:IconButton Grid.Column="10" Style="{StaticResource GroupBoxHeaderIconButton}" Command="{Binding HelpCommand}" Icon="help" ToolTip="{x:Static resx:Resources.Help}" AutomationProperties.AutomationId="ActionEditorContainer.HelpButton" AutomationProperties.Name="{x:Static resx:Resources.Help}" />
+                    <Controls:IconButton Grid.Column="10" Style="{StaticResource GroupBoxHeaderIconButton}" Command="{Binding CopyCommand}" Icon="content_copy" ToolTip="{x:Static resx:Resources.Copy}" AutomationProperties.AutomationId="ActionEditorContainer.CopyButton" AutomationProperties.Name="{x:Static resx:Resources.Copy}" />
 
-                    <Controls:IconButton Grid.Column="12" Style="{StaticResource GroupBoxHeaderIconButton}" Command="{Binding DeleteCommand}" Icon="delete" ToolTip="{x:Static resx:Resources.Delete}" AutomationProperties.AutomationId="ActionEditorContainer.DeleteButton" AutomationProperties.Name="{x:Static resx:Resources.Delete}" />
+                    <Controls:IconButton Grid.Column="12" Style="{StaticResource GroupBoxHeaderIconButton}" Command="{Binding HelpCommand}" Icon="help" ToolTip="{x:Static resx:Resources.Help}" AutomationProperties.AutomationId="ActionEditorContainer.HelpButton" AutomationProperties.Name="{x:Static resx:Resources.Help}" />
 
-                    <ToggleButton Grid.Column="14" VerticalAlignment="Center" IsChecked="{Binding Enabled}" ToolTip="{x:Static resx:Resources.EnableDisable}" BorderBrush="{DynamicResource MaterialDesign.Brush.Primary.Light}" AutomationProperties.AutomationId="ActionEditorContainer.EnableDisableToggle" AutomationProperties.Name="{x:Static resx:Resources.EnableDisable}" />
+                    <Controls:IconButton Grid.Column="14" Style="{StaticResource GroupBoxHeaderIconButton}" Command="{Binding DeleteCommand}" Icon="delete" ToolTip="{x:Static resx:Resources.Delete}" AutomationProperties.AutomationId="ActionEditorContainer.DeleteButton" AutomationProperties.Name="{x:Static resx:Resources.Delete}" />
+
+                    <ToggleButton Grid.Column="16" VerticalAlignment="Center" IsChecked="{Binding Enabled}" ToolTip="{x:Static resx:Resources.EnableDisable}" BorderBrush="{DynamicResource MaterialDesign.Brush.Primary.Light}" AutomationProperties.AutomationId="ActionEditorContainer.EnableDisableToggle" AutomationProperties.Name="{x:Static resx:Resources.EnableDisable}" />
                 </Grid>
             </Controls:AccordianGroupBoxControl.Header>
 

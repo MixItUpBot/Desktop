@@ -22,7 +22,7 @@ namespace MixItUp.Base.Web
 
         public static async Task ConnectAsync(ClientWebSocket socket, Uri uri, CancellationToken cancellationToken)
         {
-            using var handler = CreateHandler(socket.Options);
+            using var handler = HttpConnectionFactory.CreateRequestHandler(CreateHandler(socket.Options));
             using var invoker = new HttpMessageInvoker(handler, disposeHandler: false);
             await socket.ConnectAsync(uri, invoker, cancellationToken).ConfigureAwait(false);
             // An upgraded WebSocket owns its stream independently of the HTTP handler.

@@ -407,6 +407,10 @@
         </Grid>
 
         <Grid Grid.Row="2" Visibility="{Binding ShowVIPUserSettingsGrid, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="20" />
@@ -430,6 +434,7 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
+            <CheckBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="5" Margin="0,8,0,0" IsChecked="{Binding ExtendVIPRemoval}" Content="{x:Static resx:Resources.ExtendVIPRemoval}" ToolTip="{x:Static resx:Resources.VIPTimeRemainingHelp}" AutomationProperties.AutomationId="TwitchActionEditor.ExtendVIPRemoval" />
         </Grid>
 
         <Grid Grid.Row="2" Visibility="{Binding ShowWarnUserGrid, Converter={StaticResource BooleanToVisibilityConverter}}">

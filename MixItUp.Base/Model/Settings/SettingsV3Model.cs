@@ -241,6 +241,8 @@ namespace MixItUp.Base.Model.Settings
         [DataMember]
         public bool IgnoreBotAccountCommands { get; set; }
         [DataMember]
+        public bool TwitchIgnoreRewardInputCommands { get; set; }
+        [DataMember]
         public bool DeleteChatCommandsWhenRun { get; set; }
         [DataMember]
         [Obsolete]

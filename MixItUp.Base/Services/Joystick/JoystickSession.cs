@@ -154,7 +154,11 @@ namespace MixItUp.Base.Services.Joystick
             {
                 lock (this.eventIDs)
                 {
-                    if (!this.eventIDs.Add(item.ID)) return;
+                    if (!this.eventIDs.Add(item.ID))
+                    {
+                        Logger.Log(LogLevel.Debug, $"Skipping duplicate Joystick event: {item.Type} ({item.ID})");
+                        return;
+                    }
                     this.recentEvents.Enqueue(item.ID);
                     if (this.recentEvents.Count > 2048) this.eventIDs.Remove(this.recentEvents.Dequeue());
                 }
@@ -183,7 +187,11 @@ namespace MixItUp.Base.Services.Joystick
                     ?? await users.CreateUser(model, matchUsername: false);
             }
             if (user == null) return;
-            if (author != null) user.GetPlatformData<JoystickUserPlatformV2Model>(this.Platform)?.SetAuthor(author);
+            if (author != null)
+            {
+                user.GetPlatformData<JoystickUserPlatformV2Model>(this.Platform)?.SetAuthor(author);
+                user.RefreshCachedProperties();
+            }
             var events = ServiceManager.Get<EventService>();
             var parameters = new CommandParametersModel(user, this.Platform);
             switch (item.Type)
@@ -197,38 +205,70 @@ namespace MixItUp.Base.Services.Joystick
                 case "leave_stream": await users.RemoveActiveUser(user); break;
                 case "followed":
                     user.Roles.Add(UserRoleEnum.Follower);
-                    user.FollowDate = DateTimeOffset.Now;
-                    if (await events.PerformEvent(EventTypeEnum.JoystickChannelFollowed, parameters)) EventService.FollowOccurred(user);
+                    user.FollowDate = item.OccurredAt ?? DateTimeOffset.Now;
+                    if (await events.PerformEvent(EventTypeEnum.JoystickChannelFollowed, parameters))
+                    {
+                        ChannelSession.Settings.LatestSpecialIdentifiersData[SpecialIdentifierStringBuilder.LatestFollowerUserData] = user.ID;
+                        EventService.FollowOccurred(user);
+                    }
                     break;
                 case "subscribed":
                 case "resubscribed":
                     user.Roles.Add(UserRoleEnum.Subscriber);
-                    int months = data.Value<int?>("months") ?? 1;
+                    int months = Math.Max(1, data.Value<int?>("months") ?? 1);
+                    user.SubscribeDate = item.OccurredAt ?? DateTimeOffset.Now;
+                    user.TotalMonthsSubbed = Math.Max(user.TotalMonthsSubbed, (uint)months);
                     parameters.SpecialIdentifiers["usersubmonths"] = months.ToString();
                     var subscription = new SubscriptionDetailsModel(this.Platform, user, months: months);
-                    if (item.Type == "subscribed" && await events.PerformEvent(EventTypeEnum.JoystickChannelSubscribed, parameters))
-                        EventService.SubscribeOccurred(subscription);
-                    if (item.Type == "resubscribed" && await events.PerformEvent(EventTypeEnum.JoystickChannelResubscribed, parameters))
-                        EventService.ResubscribeOccurred(subscription);
+                    bool resub = item.Type == "resubscribed";
+                    if (await events.PerformEvent(resub ? EventTypeEnum.JoystickChannelResubscribed : EventTypeEnum.JoystickChannelSubscribed, parameters))
+                    {
+                        ChannelSession.Settings.LatestSpecialIdentifiersData[SpecialIdentifierStringBuilder.LatestSubscriberUserData] = user.ID;
+                        ChannelSession.Settings.LatestSpecialIdentifiersData[SpecialIdentifierStringBuilder.LatestSubscriberSubMonthsData] = months;
+                        if (resub) EventService.ResubscribeOccurred(subscription);
+                        else EventService.SubscribeOccurred(subscription);
+                    }
                     break;
                 case "gifted_subscriptions":
                     int? count = data.Value<int?>("quantity") ?? data.Value<int?>("how_many");
                     var names = (data["recipients"] as JArray)?.Values<string>().Where(n => !string.IsNullOrWhiteSpace(n)).ToList() ?? new List<string>();
                     if (names.Count == 0 && data["recipient"]?.Type == JTokenType.String) names.Add((string)data["recipient"]);
+                    names = names.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+                    int quantity = Math.Max(count ?? 0, names.Count);
+                    if (quantity <= 0) break;
+                    int filter = ChannelSession.Settings.MassGiftedSubsFilterAmount;
+                    bool fireMassEvent = names.Count == 0 || filter == 0 || quantity > filter;
+                    user.TotalSubsGifted += (uint)quantity;
                     var gifts = new List<SubscriptionDetailsModel>();
-                    foreach (string name in names.Distinct(StringComparer.OrdinalIgnoreCase))
+                    foreach (string name in names)
                     {
                         var recipient = JoystickUserPlatformV2Model.FromAuthor(new JObject { ["username"] = name });
                         var target = await users.CreateUser(recipient, matchUsername: false);
                         if (target == null) continue;
+                        target.Roles.Add(UserRoleEnum.Subscriber);
+                        target.SubscribeDate = item.OccurredAt ?? DateTimeOffset.Now;
+                        target.TotalSubsReceived++;
                         var gift = new SubscriptionDetailsModel(this.Platform, target, user);
                         gifts.Add(gift);
-                        var single = new CommandParametersModel(user, this.Platform) { TargetUser = target };
-                        if (await events.PerformEvent(EventTypeEnum.JoystickChannelSubscriptionGifted, single)) EventService.SubscriptionGiftedOccurred(gift);
+                        parameters.Arguments.Add(target.Username);
+                        if (filter == 0 || quantity <= filter)
+                        {
+                            var single = new CommandParametersModel(user, this.Platform) { TargetUser = target };
+                            single.Arguments.Add(target.Username);
+                            if (await events.PerformEvent(EventTypeEnum.JoystickChannelSubscriptionGifted, single) && !fireMassEvent) EventService.SubscriptionGiftedOccurred(gift);
+                        }
                     }
-                    if (count.HasValue || gifts.Count > 0) parameters.SpecialIdentifiers["subsgiftedamount"] = (count ?? gifts.Count).ToString();
-                    if (await events.PerformEvent(EventTypeEnum.JoystickChannelMassSubscriptionsGifted, parameters) && gifts.Count > 0)
-                        EventService.MassSubscriptionsGiftedOccurred(gifts);
+                    if (fireMassEvent)
+                    {
+                        parameters.HasNoTarget = names.Count == 0;
+                        parameters.SpecialIdentifiers["subsgiftedamount"] = quantity.ToString();
+                        parameters.SpecialIdentifiers["subsgiftedlifetimeamount"] = user.TotalSubsGifted.ToString();
+                        if (await events.PerformEvent(EventTypeEnum.JoystickChannelMassSubscriptionsGifted, parameters))
+                        {
+                            if (gifts.Count > 0) EventService.MassSubscriptionsGiftedOccurred(gifts);
+                            else EventService.NotifySubscriptionsGiftedWithoutRecipients(user, quantity);
+                        }
+                    }
                     break;
                 case "tipped":
                     int? amount = data.Value<int?>("how_much");
@@ -257,10 +297,22 @@ namespace MixItUp.Base.Services.Joystick
                 await this.Service.Request(HttpMethod.Post, "whispers", new { username, text });
         }
         public override Task<Result> SetStreamCategory(string category) => Task.FromResult(new Result(false));
+        public bool CanModerateMessage(ChatMessageViewModel message) =>
+            this.IsConnected && this.Permissions.Contains("chat:moderate") && message is JoystickChatMessage row && !row.IsWhisper &&
+            !string.IsNullOrWhiteSpace(row.ProviderID) && row.ChannelID == this.ChannelID;
+
         public override async Task DeleteMessage(ChatMessageViewModel message)
         {
-            if (message is JoystickChatMessage row && !string.IsNullOrWhiteSpace(row.ProviderID) && this.Permissions.Contains("chat:moderate"))
+            if (message is JoystickChatMessage row && this.CanModerateMessage(row))
                 await this.Service.Request(HttpMethod.Delete, "messages/" + Uri.EscapeDataString(row.ProviderID));
+        }
+
+        public async Task ModerateMessageAuthor(JoystickChatMessage message, bool ban)
+        {
+            if (!this.CanModerateMessage(message)) { return; }
+            await this.Service.Request(HttpMethod.Post, $"messages/{Uri.EscapeDataString(message.ProviderID)}/{(ban ? "ban" : "mute")}");
+            if (ban) { ChatService.ChatUserBanned(message.User); }
+            else { ChatService.ChatUserTimedOut(message.User); }
         }
         public override Task ClearMessages() => Task.CompletedTask;
         public override Task TimeoutUser(UserV2ViewModel user, int durationInSeconds, string reason = null) => Task.CompletedTask;

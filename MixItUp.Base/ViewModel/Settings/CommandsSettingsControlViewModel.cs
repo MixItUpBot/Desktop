@@ -30,6 +30,7 @@ namespace MixItUp.Base.ViewModel.Settings
         public GenericToggleSettingsOptionControlViewModel TwitchReplyToCommandChatMessages { get; set; }
         public GenericToggleSettingsOptionControlViewModel TwitchSlashMeForAllChatMessages { get; set; }
         public GenericNumberSettingsOptionControlViewModel TwitchUpcomingAdCommandTriggerAmount { get; set; }
+        public GenericToggleSettingsOptionControlViewModel TwitchIgnoreRewardInputCommands { get; set; }
         public GenericToggleSettingsOptionControlViewModel TwitchAllowSharedChatEvents { get; set; }
 
 
@@ -75,6 +76,8 @@ namespace MixItUp.Base.ViewModel.Settings
                 (value) => { ChannelSession.Settings.TwitchSlashMeForAllChatMessages = value; });
             this.TwitchUpcomingAdCommandTriggerAmount = new GenericNumberSettingsOptionControlViewModel(MixItUp.Base.Resources.TwitchUpcomingAdCommandTriggerAmount, ChannelSession.Settings.TwitchUpcomingAdCommandTriggerAmount,
                 (value) => { ChannelSession.Settings.TwitchUpcomingAdCommandTriggerAmount = value; });
+            this.TwitchIgnoreRewardInputCommands = new GenericToggleSettingsOptionControlViewModel(Resources.TwitchIgnoreRewardInputCommands,
+                ChannelSession.Settings.TwitchIgnoreRewardInputCommands, (value) => { ChannelSession.Settings.TwitchIgnoreRewardInputCommands = value; });
             this.TwitchAllowSharedChatEvents = new GenericToggleSettingsOptionControlViewModel(MixItUp.Base.Resources.TwitchAllowSharedChatEvents, ChannelSession.Settings.TwitchAllowSharedChatEvents,
                 (value) => { ChannelSession.Settings.TwitchAllowSharedChatEvents = value; });
 

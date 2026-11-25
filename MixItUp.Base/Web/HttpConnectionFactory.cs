@@ -18,7 +18,41 @@ namespace MixItUp.Base.Web
     {
         internal static readonly TimeSpan ConnectionAttemptDelay = TimeSpan.FromMilliseconds(250);
 
-        public static HttpClient CreateClient() => new HttpClient(CreateHandler());
+        public static HttpClient CreateClient() => new HttpClient(CreateRequestHandler());
+
+        public static HttpMessageHandler CreateRequestHandler(bool allowAutoRedirect = true)
+            => CreateRequestHandler(CreateHandler(allowAutoRedirect));
+
+        public static HttpMessageHandler CreateRequestHandler(SocketsHttpHandler transport)
+            => new UserAgentHandler(transport);
+
+        private sealed class UserAgentHandler : DelegatingHandler
+        {
+            private static readonly string ApplicationUserAgent = $"MixItUp/{typeof(HttpConnectionFactory).Assembly.GetName().Version} (Web call from Mix It Up; https://mixitup.bot; support@mixitupapp.com)";
+
+            public UserAgentHandler(SocketsHttpHandler transport) : base(transport) { }
+
+            private static void SetDefaultUserAgent(HttpRequestMessage request)
+            {
+                // HttpClient has already applied any client-level or per-request override.
+                if (!request.Headers.Contains("User-Agent"))
+                {
+                    request.Headers.TryAddWithoutValidation("User-Agent", ApplicationUserAgent);
+                }
+            }
+
+            protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                SetDefaultUserAgent(request);
+                return base.Send(request, cancellationToken);
+            }
+
+            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                SetDefaultUserAgent(request);
+                return base.SendAsync(request, cancellationToken);
+            }
+        }
 
         public static SocketsHttpHandler CreateHandler(bool allowAutoRedirect = true)
         {

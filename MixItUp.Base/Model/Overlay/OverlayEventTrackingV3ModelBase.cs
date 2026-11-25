@@ -61,6 +61,10 @@ namespace MixItUp.Base.Model.Overlay
         [DataMember]
         public virtual bool VPZoneCheered { get; set; }
         [DataMember]
+        public virtual bool JoystickSubscriptions { get; set; }
+        [DataMember]
+        public virtual bool RazoSubscriptions { get; set; }
+        [DataMember]
         public virtual bool JoystickTipped { get; set; }
         [DataMember]
         public virtual bool RazoGift { get; set; }
@@ -107,13 +111,13 @@ namespace MixItUp.Base.Model.Overlay
                 EventService.OnRaidOccurred += OnRaid;
             }
 
-            if (this.TwitchSubscriptions)
+            if (this.TwitchSubscriptions || this.YouTubeMemberships || this.KickSubscriptions || this.VeloraSubscriptions || this.VPZoneSubscriptions || this.JoystickSubscriptions || this.RazoSubscriptions)
             {
                 EventService.OnSubscribeOccurred += OnSubscribe;
                 EventService.OnResubscribeOccurred += OnSubscribe;
                 EventService.OnSubscriptionGiftedOccurred += OnSubscribe;
                 EventService.OnMassSubscriptionsGiftedOccurred += OnMassSubscription;
-                EventService.RazoSubscriptionsGifted += OnRazoSubscriptionsGifted;
+                EventService.SubscriptionsGiftedWithoutRecipients += OnSubscriptionsGiftedWithoutRecipients;
             }
 
             if (this.Donations)
@@ -219,7 +223,7 @@ namespace MixItUp.Base.Model.Overlay
 
         public virtual void OnVPZoneCheered(object sender, VPZoneCheeredEventModel cheered) { }
         public virtual void OnJoystickTipped(object sender, JoystickTippedEventModel cheered) { }
-        public virtual void OnRazoSubscriptionsGifted(UserV2ViewModel gifter, int count) { }
+        public virtual void OnSubscriptionsGiftedWithoutRecipients(UserV2ViewModel gifter, int count) { }
         public virtual void OnRazoGift(object sender, RazoGiftEventModel cheered) { }
 
         public virtual void OnYouTubeJewelsGift(object sender, YouTubeJewelsGiftViewModel jewelsGift) { }
@@ -243,7 +247,7 @@ namespace MixItUp.Base.Model.Overlay
             EventService.OnResubscribeOccurred -= OnSubscribe;
             EventService.OnSubscriptionGiftedOccurred -= OnSubscribe;
             EventService.OnMassSubscriptionsGiftedOccurred -= OnMassSubscription;
-            EventService.RazoSubscriptionsGifted -= OnRazoSubscriptionsGifted;
+            EventService.SubscriptionsGiftedWithoutRecipients -= OnSubscriptionsGiftedWithoutRecipients;
             EventService.OnDonationOccurred -= OnDonation;
             EventService.OnTwitchBitsCheeredOccurred -= OnTwitchBits;
             EventService.OnTwitchPowerUpOccurred -= OnTwitchPowerUp;

@@ -1,6 +1,9 @@
 ﻿using MixItUp.Base.Model;
 using MixItUp.Base.Model.User;
+using MixItUp.Base.Services;
+using MixItUp.Base.Services.Joystick;
 using MixItUp.Base.ViewModel.User;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace MixItUp.WPF.Controls.Dialogs
@@ -42,6 +45,16 @@ namespace MixItUp.WPF.Controls.Dialogs
                 await this.user.Refresh(force: true);
 
                 this.DataContext = this.user;
+                if (this.user.Platform is StreamingPlatformTypeEnum.Joystick or StreamingPlatformTypeEnum.Razo or StreamingPlatformTypeEnum.AltStream)
+                {
+                    // Joystick accepts mute and ban only from a specific chat message.
+                    this.PurgeButton.Visibility = this.TimeoutOneMinButton.Visibility = this.TimeoutFiveMinButton.Visibility = Visibility.Collapsed;
+                    this.PromoteToModButton.Visibility = this.DemoteFromModButton.Visibility = this.BanButton.Visibility = Visibility.Collapsed;
+                    this.UnbanButton.Visibility = this.user.Platform == StreamingPlatformTypeEnum.Joystick &&
+                        ServiceManager.Get<JoystickSession>() is { IsConnected: true } joystick && joystick.Permissions.Contains("chat:moderate")
+                        ? Visibility.Visible : Visibility.Collapsed;
+                    return;
+                }
 
 #pragma warning disable CS0612 // Type or member is obsolete
                 if (this.user.HasRole(UserRoleEnum.Banned))
